@@ -4,10 +4,10 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 4 — dificuldade progressiva** (Fases 0 a 3 concluídas: ambiente
+Status geral: **Fase 5 — telas, pausa e recorde** (Fases 0 a 4 concluídas: ambiente
 uv, estrada em perspectiva rolando, jogador trocando de pista, comida vindo do
-horizonte e a partida completa — peso, pontuação, HUD e game over —, com pytest
-verde).
+horizonte, a partida completa — peso, pontuação, HUD e game over — e a rampa de
+dificuldade que aperta a corrida ao longo de 3 minutos, com pytest verde).
 
 ---
 
@@ -53,7 +53,8 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual e troca de pista
 [x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
-[x] testes/        # test_config, test_perspectiva, test_jogador, test_comida, test_jogo
+[x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
+                   # test_jogo, test_dificuldade
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [ ] telas.py       # menu inicial (com instruções), pausa e game over
@@ -61,8 +62,11 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [ ] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões — o
-único desvio foi o ponto de entrada, que virou `main.py`. O aviso de game over da
+Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Os
+desvios foram dois: o ponto de entrada, que virou `main.py`, e o
+`dificuldade.py`, arquivo novo que a fase 4 trouxe — o plano imaginava a rampa
+dentro do `jogo.py`, mas ela é lógica pura sobre o tempo, do mesmo naipe da
+`perspectiva.py`, e sozinha num arquivo dá para ler a curva inteira de uma vez. O aviso de game over da
 fase 3 nasceu dentro do `desenho.py`; na fase 5 ele se muda para o `telas.py`,
 junto do menu e da pausa. Nada disso é definitivo: se um arquivo ficar pequeno
 demais ou grande demais no caminho, ele é fundido ou dividido — e a mudança é
@@ -92,11 +96,14 @@ isso). Ficam todos centralizados, nenhum espalhado pelo código.
 A comida boa é mais rara e devolve menos peso do que a ruim adiciona: sem erro
 nenhum o jogo ainda aperta, e com o tempo termina.
 
-Do que já está valendo no `config.py`: velocidade, intervalo de spawn, chance de
-comida ruim e tamanho da comida (todos ainda no valor inicial, sem a progressão
-da fase 4), além dos números de peso e pontuação que a fase 3 trouxe. A
+Toda a tabela já está valendo no `config.py`. Desde a fase 4, os três números
+que mudam com o tempo viram pares (largada e teto): `VELOCIDADE_INICIAL` 0,5 →
+`VELOCIDADE_MAXIMA` 1,0; `INTERVALO_SPAWN_INICIAL` 1,1 s →
+`INTERVALO_SPAWN_MINIMO` 0,45 s; `CHANCE_COMIDA_RUIM_INICIAL` 60% →
+`CHANCE_COMIDA_RUIM_MAXIMA` 85%, todos alcançados em `DURACAO_RAMPA = 180` s. A
 pontuação por distância virou `PONTOS_POR_Z = 20`, que no ritmo inicial de
-0,5 z/s dá exatamente os 10 pontos por segundo da tabela.
+0,5 z/s dá exatamente os 10 pontos por segundo da tabela — e paga mais quando a
+corrida acelera.
 
 ---
 
@@ -150,10 +157,18 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   com a pontuação final. `main.py` virou só loop, teclado e desenho. 15 testes
   novos em `testes/test_jogo.py` (47 no total).
 
-### [ ] Fase 4 — Dificuldade progressiva
+### [x] Fase 4 — Dificuldade progressiva
 - Velocidade, frequência de spawn e chance de comida ruim crescendo com o tempo de partida.
 - Testes: os três valores crescem de forma monotônica e param nos tetos definidos.
 - **Pronto quando:** uma partida longa fica visivelmente mais difícil e termina sozinha.
+- **Feito:** `dificuldade.py` com `progresso`, `velocidade`, `intervalo_de_spawn`
+  e `chance_de_comida_ruim` — rampa linear do valor de largada até o teto em
+  `DURACAO_RAMPA = 180` s. A `Jogo` passou a guardar `self.tempo` e a repassá-lo
+  ao `GeradorDeComida`, que pergunta à dificuldade os três números do quadro;
+  `Comida.avancar` recebe a velocidade e `sortear` recebe a chance de ruim. O
+  chão rolante acelerou junto sem uma linha de mudança no `desenho.py`, porque
+  já vinha da distância. 14 testes novos (`testes/test_dificuldade.py` mais os
+  de fim de rampa em `test_comida.py` e `test_jogo.py`): 61 no total.
 
 ### [ ] Fase 5 — Telas, pausa e recorde
 - `telas.py`: menu inicial com título, instruções curtas (controles + regra do peso) e recorde; tela de game over com pontuação final e recorde; overlay de pausa (ESC/P).
@@ -200,4 +215,9 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — Pontuação contada **por distância em z** (`PONTOS_POR_Z = 20`), não por tempo: no ritmo inicial dá os 10 pontos por segundo do plano e, quando a fase 4 acelerar, sobreviver ao trecho rápido passa a pagar mais.
 - **2026-08-19** — O game over **congela a partida e espera Espaço/Enter**, em vez de reiniciar na hora como o plano dizia. Sem isso não dá para ver que perdeu nem qual foi a pontuação. São poucas linhas em `desenho.desenhar_game_over`, que a fase 5 leva para o `telas.py`.
 - **2026-08-19** — O peso é travado nas duas pontas (`PESO_MINIMO = 30`, `PESO_GAME_OVER = 100`), então o HUD nunca mostra número fora da faixa e o fim de partida acontece com `100 / 100 kg` na tela.
+- **2026-08-19** — A dificuldade cresce com o **tempo de partida**, não com a distância percorrida: a distância já acelera junto com a velocidade, então usá-la faria a rampa se realimentar e fechar antes da conta. Com o relógio, os 180 s de `DURACAO_RAMPA` são exatamente 180 s para qualquer jogador, o que é mais fácil de balancear na fase 7 e de testar (basta perguntar o valor de um instante).
+- **2026-08-19** — Rampa **linear** entre a largada e o teto (`inicial + (final - inicial) * progresso`), com `progresso` travado em 1,0 daí em diante. Uma curva (progresso²) foi considerada e descartada: linear é o que se explica numa linha e já dá a diferença visível que a fase pedia.
+- **2026-08-19** — Os três números que a rampa mexe viraram **pares no `config.py`** — `VELOCIDADE_INICIAL`/`VELOCIDADE_MAXIMA`, `INTERVALO_SPAWN_INICIAL`/`INTERVALO_SPAWN_MINIMO`, `CHANCE_COMIDA_RUIM_INICIAL`/`CHANCE_COMIDA_RUIM_MAXIMA`. O antigo `VELOCIDADE_JOGO` (que já tinha sido rebatizado na fase 2) virou `VELOCIDADE_INICIAL`: com dois valores por número, o nome tem de dizer qual dos dois é.
+- **2026-08-19** — Quem pergunta à `dificuldade` é o **`GeradorDeComida`**, que recebe o tempo de partida em `atualizar(dt, tempo)`; a `Jogo` só repassa o cronômetro. A alternativa era a `Jogo` injetar os três valores prontos, o que engordaria a assinatura para quatro parâmetros sem tirar dependência de ninguém. Nos testes o tempo é um argumento comum: dá para congelar a largada ou o fim da rampa sem mock.
+- **2026-08-19** — Simulando a partida sem janela (jogador parado, 30 sementes), a morte vem entre 47 s e 106 s, mediana de 77 s — a rampa aperta de verdade. No outro extremo, um "jogador ideal" simulado (lê a estrada inteira e troca de pista todo quadro) sobrevive 30 min sem perder: no teto de 0,45 s por spawn quase nunca as três pistas ficam bloqueadas ao mesmo tempo. Nenhum humano joga assim, mas fica anotado para a **fase 7**: se quisermos que até o jogo perfeito termine, o caminho é spawn mínimo mais curto ou soltar duas comidas de uma vez no fim da rampa.
 - **2026-08-19** — O chão rolante passou a ser calculado a partir da **distância percorrida** em vez de `tempo * VELOCIDADE_JOGO`. É o mesmo valor enquanto a velocidade é constante, mas na fase 4 o asfalto acompanha a aceleração sozinho — e a `Jogo` não precisa guardar um cronômetro só para o desenho.

@@ -1,13 +1,15 @@
 """O estado de uma partida: peso, pontuacao, colisoes e fim de jogo.
 
 Aqui moram as regras, e so elas: o peso que sobe com o ultraprocessado e desce
-com o alimento saudavel, a pontuacao que cresce com a distancia e o momento em
-que a balanca bate no limite e a corrida acaba. Nada disso sabe o que e um
-pixel, entao tudo pode ser testado sem abrir janela nenhuma.
+com o alimento saudavel, a pontuacao que cresce com a distancia, o cronometro
+que faz a ``dificuldade`` apertar e o momento em que a balanca bate no limite e
+a corrida acaba. Nada disso sabe o que e um pixel, entao tudo pode ser testado
+sem abrir janela nenhuma.
 """
 
 import comida
 import config
+import dificuldade
 import jogador
 
 
@@ -28,6 +30,7 @@ class Jogo:
         self.corredor = jogador.Jogador()
         self.gerador = comida.GeradorDeComida(self.aleatorio)
         self.peso = config.PESO_INICIAL
+        self.tempo = 0.0
         self.distancia = 0.0
         self.bonus = 0
         self.acabou = False
@@ -41,9 +44,10 @@ class Jogo:
         """Avanca a partida em ``dt`` segundos. Depois do game over nada mais anda."""
         if self.acabou:
             return
-        self.distancia += config.VELOCIDADE_JOGO * dt
+        self.tempo += dt
+        self.distancia += dificuldade.velocidade(self.tempo) * dt
         self.corredor.atualizar(dt)
-        self.gerador.atualizar(dt)
+        self.gerador.atualizar(dt, self.tempo)
         self._resolver_colisoes()
 
     def _resolver_colisoes(self):

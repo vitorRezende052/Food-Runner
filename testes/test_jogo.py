@@ -82,7 +82,7 @@ def test_comida_e_engolida_em_algum_quadro_da_travessia():
         partida, comida.RUIM, partida.corredor.pista, config.Z_SPAWN
     )
     passo = 1 / config.FPS
-    travessia = (config.Z_SPAWN - config.Z_SUMICO) / config.VELOCIDADE_JOGO
+    travessia = (config.Z_SPAWN - config.Z_SUMICO) / config.VELOCIDADE_INICIAL
     for _ in range(round(travessia * config.FPS) + 1):
         partida.atualizar(passo)
         if alimento not in partida.gerador.comidas:
@@ -90,6 +90,12 @@ def test_comida_e_engolida_em_algum_quadro_da_travessia():
 
     assert alimento not in partida.gerador.comidas, "a comida ficou presa na estrada"
     assert partida.peso == config.PESO_INICIAL + config.PESO_GANHO_COMIDA_RUIM
+
+
+def test_a_zona_de_colisao_aguenta_a_velocidade_maxima():
+    """Nem no trecho mais rapido a comida pula a zona entre dois quadros."""
+    avanco_por_quadro = config.VELOCIDADE_MAXIMA / config.FPS
+    assert avanco_por_quadro < 2 * config.ZONA_COLISAO
 
 
 def test_zona_de_colisao_cabe_dentro_da_estrada_visivel():
@@ -120,17 +126,31 @@ def test_depois_do_game_over_nada_mais_anda():
     por_na_estrada(partida, comida.BOA, partida.corredor.pista)
     partida.atualizar(1.0)
     assert partida.distancia == distancia
+    assert partida.tempo == 0
     assert partida.peso == config.PESO_INICIAL
     assert len(partida.gerador.comidas) == 1
 
 
 def test_pontuacao_cresce_com_a_distancia():
+    """Cada segundo corrido paga, e nunca menos que o segundo anterior."""
     partida = partida_limpa()
     partida.atualizar(1.0)
-    pontos_de_um_segundo = partida.pontuacao
-    assert pontos_de_um_segundo > 0
+    primeiro_segundo = partida.pontuacao
+    assert primeiro_segundo > 0
     partida.atualizar(1.0)
-    assert partida.pontuacao == 2 * pontos_de_um_segundo
+    assert partida.pontuacao - primeiro_segundo >= primeiro_segundo
+
+
+def test_a_partida_fica_mais_rapida_com_o_tempo():
+    """O mesmo segundo de corrida rende mais distancia (e mais pontos) la no fim."""
+    partida = partida_limpa()
+    partida.atualizar(1.0)
+    no_comeco = partida.distancia
+
+    partida.tempo = config.DURACAO_RAMPA
+    antes = partida.distancia
+    partida.atualizar(1.0)
+    assert partida.distancia - antes > no_comeco
 
 
 def test_bonus_soma_com_a_distancia():
@@ -153,6 +173,7 @@ def test_reiniciar_volta_tudo_para_a_largada():
     partida.reiniciar()
     assert partida.peso == config.PESO_INICIAL
     assert partida.pontuacao == 0
+    assert partida.tempo == 0
     assert partida.corredor.pista == config.PISTA_INICIAL
     assert partida.gerador.comidas == []
     assert not partida.acabou

@@ -3,11 +3,16 @@
 Nada aqui sabe o que e um pixel. Cada comida guarda apenas a pista em que nasceu
 e a profundidade ``z``, que cai de ``Z_SPAWN`` (horizonte) ate ``Z_SUMICO``,
 quando ela ja passou pelo jogador e sai da lista.
+
+O ritmo desse desfile nao e fixo: o gerador recebe o tempo de partida e pergunta
+a ``dificuldade`` com que velocidade, de quanto em quanto tempo e com que chance
+de vir ultraprocessado a comida deve aparecer.
 """
 
 import random
 
 import config
+import dificuldade
 
 BOA = "boa"
 RUIM = "ruim"
@@ -46,18 +51,18 @@ class Comida:
         self.forma = forma
         self.z = z
 
-    def avancar(self, dt):
-        """Aproxima a comida do jogador no ritmo da corrida."""
-        self.z -= config.VELOCIDADE_JOGO * dt
+    def avancar(self, dt, velocidade):
+        """Aproxima a comida do jogador no ritmo atual da corrida."""
+        self.z -= velocidade * dt
 
     def passou(self):
         """Diz se a comida ja ficou para tras e pode sair da lista."""
         return self.z <= config.Z_SUMICO
 
 
-def sortear(aleatorio):
+def sortear(aleatorio, chance_de_ruim):
     """Cria uma comida nova no horizonte, em pista e tipo sorteados."""
-    if aleatorio.random() < config.CHANCE_COMIDA_RUIM:
+    if aleatorio.random() < chance_de_ruim:
         tipo, cardapio = RUIM, COMIDAS_RUINS
     else:
         tipo, cardapio = BOA, COMIDAS_BOAS
@@ -71,15 +76,22 @@ class GeradorDeComida:
     def __init__(self, aleatorio=None):
         self.aleatorio = aleatorio or random.Random()
         self.comidas = []
-        self.ate_a_proxima = config.INTERVALO_SPAWN
+        self.ate_a_proxima = config.INTERVALO_SPAWN_INICIAL
 
-    def atualizar(self, dt):
-        """Avanca as comidas, joga fora as que passaram e solta as novas."""
+    def atualizar(self, dt, tempo):
+        """Avanca as comidas, joga fora as que passaram e solta as novas.
+
+        ``tempo`` e ha quantos segundos a partida comecou: e ele que diz quanto
+        do aperto da ``dificuldade`` ja vale neste quadro.
+        """
+        velocidade = dificuldade.velocidade(tempo)
         for comida in self.comidas:
-            comida.avancar(dt)
+            comida.avancar(dt, velocidade)
         self.comidas = [comida for comida in self.comidas if not comida.passou()]
 
+        intervalo = dificuldade.intervalo_de_spawn(tempo)
+        chance_de_ruim = dificuldade.chance_de_comida_ruim(tempo)
         self.ate_a_proxima -= dt
         while self.ate_a_proxima <= 0:
-            self.comidas.append(sortear(self.aleatorio))
-            self.ate_a_proxima += config.INTERVALO_SPAWN
+            self.comidas.append(sortear(self.aleatorio, chance_de_ruim))
+            self.ate_a_proxima += intervalo
