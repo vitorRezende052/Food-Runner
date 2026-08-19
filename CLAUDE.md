@@ -36,11 +36,11 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 ## Comandos
 `uv` 0.12.5 instalado via winget (18/08/2026). Se `uv` não for encontrado no shell, abra um terminal novo — o instalador alterou o PATH.
 
-- Rodar: `uv run principal.py`
+- Rodar: `uv run main.py`
 - Adicionar dependência: `uv add <pacote>` — dev: `uv add --dev <pacote>`
 - Sincronizar ambiente: `uv sync`
 - Rodar testes: `uv run pytest`
-- Build (confirmar flags): `uv run pyinstaller --onefile --windowed principal.py`
+- Build (confirmar flags): `uv run pyinstaller --onefile --windowed main.py`
 - Conferir o desenho sem abrir janela: num script à parte, `SDL_VIDEODRIVER=dummy` + desenhar num `pygame.Surface` + `pygame.image.save` — bom para checar a perspectiva rápido, sem ficar abrindo o jogo.
 
 ## Estrutura
@@ -49,7 +49,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 `[x]` = já existe; o resto entra nas fases seguintes (o status por fase fica no `PLAN.md`).
 
 ```
-[x] principal.py   # loop principal e troca de telas (ponto de entrada)
+[x] main.py        # loop principal e troca de telas (ponto de entrada)
 [x] config.py      # valores centralizados: cores, tamanhos, balanceamento, velocidades
 [x] perspectiva.py # projeta (pista, profundidade z) -> (x, y, escala) na tela
 [x] jogador.py     # personagem e troca de pista
@@ -64,7 +64,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 
 ## Convenções
 - Modular: arquivos pequenos, uma responsabilidade cada.
-- **Tudo em pt-br:** nomes de variáveis, funções, classes e arquivos; comentários e docstrings; e todo o texto visível no jogo (menu, HUD, game over, mensagens). Nomes de arquivo sem acentos e sem cedilha.
+- **Tudo em pt-br:** nomes de variáveis, funções, classes e arquivos; comentários e docstrings; e todo o texto visível no jogo (menu, HUD, game over, mensagens). Nomes de arquivo sem acentos e sem cedilha. Única exceção: o ponto de entrada é `main.py`, convenção universal de projetos Python — não renomear.
 - **Acentos só no que o jogador lê:** dentro do código (nomes, comentários e docstrings) escrevemos sem acento e sem cedilha, como já está em `config.py` e `perspectiva.py`; o texto que aparece na tela vai acentuado normalmente.
 - Sem números mágicos: cores, tamanhos e balanceamento centralizados num módulo de configuração (não espalhados pelo código).
 - Commits pequenos, descritivos, **em português**, no modo imperativo (ex.: `adiciona troca de pista`).

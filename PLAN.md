@@ -47,7 +47,7 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 `[x]` = já existe no repositório; o resto entra nas fases seguintes.
 
 ```
-[x] principal.py   # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
+[x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
 [x] config.py      # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual e troca de pista
@@ -91,16 +91,16 @@ nenhum o jogo ainda aperta, e com o tempo termina.
 
 ## Fases
 
-Cada fase deixa o jogo **rodando** (`uv run principal.py`), com os testes da
+Cada fase deixa o jogo **rodando** (`uv run main.py`), com os testes da
 lógica alterada passando, e termina em pelo menos um commit em português.
 Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da próxima.
 
 ### [x] Fase 0 — Ambiente
 - `uv init`, `uv add pygame-ce`, `uv add --dev pytest`, `.gitignore` (`.venv`, `__pycache__`, `dist`, `build`, `recorde.json`).
-- `config.py` com tela e cores; `principal.py` abrindo uma janela preta 960×720 que fecha no ESC/X.
-- **Pronto quando:** `uv run principal.py` abre a janela e `uv run pytest` roda.
+- `config.py` com tela e cores; `main.py` abrindo uma janela preta 960×720 que fecha no ESC/X.
+- **Pronto quando:** `uv run main.py` abre a janela e `uv run pytest` roda.
 - **Feito:** pygame-ce 2.5.8 e pytest 9.1.1 no ambiente; `config.py` (janela + paleta),
-  `principal.py` (loop com `relogio.tick`, saída no ESC/X) e `testes/test_config.py`.
+  `main.py` (loop com `relogio.tick`, saída no ESC/X) e `testes/test_config.py`.
 
 ### [x] Fase 1 — Perspectiva e jogador
 - `perspectiva.py` com a projeção descrita acima.
@@ -110,7 +110,7 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **Pronto quando:** dá para correr pela pista e trocar de faixa, sem obstáculos.
 - **Feito:** `perspectiva.py` (`fator`, `deslocamento_da_pista`, `projetar`),
   `jogador.py` (pista lógica + `pista_visual` deslizando) e `desenho.py`
-  (estrada, linhas de chão rolando e o personagem). `principal.py` passou a
+  (estrada, linhas de chão rolando e o personagem). `main.py` passou a
   medir delta time e a tratar ← → e A/D. 20 testes verdes em
   `testes/test_perspectiva.py` e `testes/test_jogador.py`.
 
@@ -122,7 +122,7 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **Feito:** `comida.py` com o cardápio (nome + forma de cada alimento), `Comida`
   (pista, tipo, `z`, `avancar`, `passou`), `sortear` e `GeradorDeComida`
   (cronômetro de spawn, avanço e descarte). `desenho.desenhar_comidas` pinta da
-  mais distante para a mais próxima, com uma função por forma. `principal.py`
+  mais distante para a mais próxima, com uma função por forma. `main.py`
   atualiza e desenha o gerador. 12 testes novos em `testes/test_comida.py`
   (32 no total).
 
@@ -166,9 +166,10 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-18** — Perspectiva **pseudo-3D** escolhida no lugar do top-down 2D: fica mais perto da referência (Subway Surfers). Custo aceito: a projeção `(pista, z) → tela` fica isolada em `perspectiva.py` para a lógica seguir testável.
 - **2026-08-18** — Extras aprovados além do escopo original: recorde salvo em arquivo, pausa (ESC/P) e instruções no menu.
 - **2026-08-18** — `uv` 0.12.5 instalado via winget (não existia na máquina).
-- **2026-08-18** — Layout **achatado na raiz** em vez do `src/food_runner/` que o `uv init` criou: o alvo é um executável PyInstaller, não um pacote publicável, então `[project.scripts]` e `[build-system]` saíram do `pyproject.toml` e os módulos ficam na raiz (`uv run principal.py`, como o plano previa).
+- **2026-08-18** — Layout **achatado na raiz** em vez do `src/food_runner/` que o `uv init` criou: o alvo é um executável PyInstaller, não um pacote publicável, então `[project.scripts]` e `[build-system]` saíram do `pyproject.toml` e os módulos ficam na raiz (`uv run main.py`, como o plano previa).
 - **2026-08-18** — Python **3.12** (`.python-version`) em vez do 3.14 do sistema: é a versão com suporte mais rodado em pygame-ce e PyInstaller, e a fase 8 depende dos dois.
 - **2026-08-18** — pytest configurado no `pyproject.toml` (`testpaths = ["testes"]`, `pythonpath = ["."]`) para os testes importarem os módulos da raiz sem gambiarra de `sys.path`.
+- **2026-08-19** — O ponto de entrada passou de `principal.py` para **`main.py`** (pedido do autor). É a única quebra da regra de nomes em pt-br: `main.py` é a convenção universal de projetos Python e é o primeiro arquivo que quem abre o repositório procura. Roda com `uv run main.py`; o build da fase 8 aponta para ele.
 - **2026-08-19** — Constantes da perspectiva fechadas: `HORIZONTE_Y = 250`, `BASE_Y = 640` e `PROFUNDIDADE = 9.0` (com 9.0 o objeto no horizonte fica com 1/10 do tamanho). Pistas a 250 px de distância na base, o que deixa a estrada inteira dentro dos 960 px — há um teste garantindo isso.
 - **2026-08-19** — A estrada é desenhada até `Z_FUNDO_TELA = -0.03`, um pouco **além** do plano do jogador, para o asfalto sair pelo rodapé em vez de terminar nos pés dele. Como isso exige `z` negativo, `perspectiva.fator` aceita profundidade negativa (objeto passando pela câmera fica maior que 1.0) e trava em `Z_MINIMO = -0.05`, longe do ponto em que a divisão explodiria.
 - **2026-08-19** — Troca de pista com **duas posições**: `pista` (inteira, muda na hora, é a que vale para a colisão da fase 3) e `pista_visual` (quebrada, corre atrás em `DURACAO_TROCA_PISTA = 0,12 s`). Assim o desenho desliza sem que a lógica fique dependendo da animação.
