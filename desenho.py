@@ -11,14 +11,15 @@ import config
 import perspectiva
 
 
-def desenhar_cenario(tela, tempo):
+def desenhar_cenario(tela, distancia):
     """Pinta o fundo, a estrada, as linhas de chao rolando e as divisorias das pistas.
 
-    ``tempo`` e o tempo de jogo em segundos: e so ele que faz o chao rolar.
+    ``distancia`` e o quanto a partida ja andou em z: e so ela que faz o chao
+    rolar, entao o asfalto acompanha qualquer mudanca de velocidade.
     """
     tela.fill(config.COR_FUNDO)
     _desenhar_estrada(tela)
-    _desenhar_linhas_de_chao(tela, tempo)
+    _desenhar_linhas_de_chao(tela, distancia)
     _desenhar_divisorias(tela)
 
 
@@ -47,6 +48,70 @@ def desenhar_jogador(tela, jogador):
     pygame.draw.circle(tela, config.COR_CABECA_JOGADOR, (x, corpo.top - raio), raio)
 
 
+def desenhar_hud(tela, partida):
+    """Escreve o peso num canto de cima e a pontuacao no outro."""
+    fonte = _fonte(config.TAMANHO_FONTE_HUD)
+    peso = fonte.render(
+        f"{round(partida.peso)} / {round(config.PESO_GAME_OVER)} kg",
+        True,
+        config.COR_TEXTO,
+    )
+    pontos = fonte.render(
+        f"Pontos: {_com_separador(partida.pontuacao)}", True, config.COR_TEXTO
+    )
+    tela.blit(peso, (config.MARGEM_HUD, config.MARGEM_HUD))
+    largura_pontos = pontos.get_width()
+    tela.blit(
+        pontos, (config.LARGURA - config.MARGEM_HUD - largura_pontos, config.MARGEM_HUD)
+    )
+
+
+def desenhar_game_over(tela, partida):
+    """Escurece a tela e anuncia o fim da partida com a pontuacao final."""
+    veu = pygame.Surface((config.LARGURA, config.ALTURA))
+    veu.fill(config.COR_VEU)
+    veu.set_alpha(config.OPACIDADE_VEU)
+    tela.blit(veu, (0, 0))
+
+    limite = round(config.PESO_GAME_OVER)
+    linhas = [
+        (config.TAMANHO_FONTE_TITULO, f"Você chegou a {limite} kg"),
+        (config.TAMANHO_FONTE_HUD, f"Pontos: {_com_separador(partida.pontuacao)}"),
+        (config.TAMANHO_FONTE_AVISO, "Espaço para recomeçar"),
+    ]
+    _escrever_no_meio(tela, linhas)
+
+
+_fontes = {}
+
+
+def _fonte(tamanho):
+    """Fonte padrao do pygame no tamanho pedido, guardada para nao recriar todo quadro."""
+    if tamanho not in _fontes:
+        _fontes[tamanho] = pygame.font.Font(None, tamanho)
+    return _fontes[tamanho]
+
+
+def _com_separador(numero):
+    '''1240 vira "1.240", do jeito que se escreve numero em portugues.'''
+    return f"{numero:,}".replace(",", ".")
+
+
+def _escrever_no_meio(tela, linhas):
+    """Empilha as linhas ``(tamanho da fonte, texto)`` centralizadas na tela."""
+    imagens = [
+        _fonte(tamanho).render(texto, True, config.COR_TEXTO)
+        for tamanho, texto in linhas
+    ]
+    alturas = sum(imagem.get_height() for imagem in imagens)
+    altura_total = alturas + config.ESPACO_ENTRE_LINHAS * (len(imagens) - 1)
+
+    y = (config.ALTURA - altura_total) // 2
+    for imagem in imagens:
+        tela.blit(imagem, ((config.LARGURA - imagem.get_width()) // 2, y))
+        y += imagem.get_height() + config.ESPACO_ENTRE_LINHAS
+
+
 def _bordas_da_estrada():
     """Pistas imaginarias meia faixa alem da primeira e da ultima: os limites do asfalto."""
     return -0.5, config.QTD_PISTAS - 0.5
@@ -70,25 +135,24 @@ def _desenhar_estrada(tela):
     pygame.draw.polygon(tela, config.COR_PISTA, cantos)
 
 
-def _profundidades_das_linhas(tempo):
-    """Profundidade de cada linha de chao no instante dado.
+def _profundidades_das_linhas(distancia):
+    """Profundidade de cada linha de chao depois de a partida andar ``distancia``.
 
     As linhas ficam igualmente espacadas em z e caminham juntas em direcao ao
     jogador; ao sair pelo rodape cada uma reaparece la no horizonte.
     """
     trecho_visivel = config.Z_HORIZONTE - config.Z_FUNDO_TELA
     espacamento = trecho_visivel / config.QTD_LINHAS_CHAO
-    andado = tempo * config.VELOCIDADE_JOGO
     return [
-        config.Z_FUNDO_TELA + (indice * espacamento - andado) % trecho_visivel
+        config.Z_FUNDO_TELA + (indice * espacamento - distancia) % trecho_visivel
         for indice in range(config.QTD_LINHAS_CHAO)
     ]
 
 
-def _desenhar_linhas_de_chao(tela, tempo):
+def _desenhar_linhas_de_chao(tela, distancia):
     """Risca o asfalto de lado a lado para dar a sensacao de velocidade."""
     esquerda, direita = _bordas_da_estrada()
-    for z in _profundidades_das_linhas(tempo):
+    for z in _profundidades_das_linhas(distancia):
         escala = perspectiva.fator(z)
         espessura = max(1, round(config.ESPESSURA_LINHA_CHAO * escala))
         pygame.draw.line(

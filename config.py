@@ -20,6 +20,7 @@ COR_COMIDA_RUIM = (206, 62, 52)
 COR_LINHA_CHAO = (96, 96, 112)
 COR_JOGADOR = (86, 156, 214)
 COR_CABECA_JOGADOR = (226, 186, 148)
+COR_VEU = (10, 10, 14)  # escurece a tela por tras do aviso de game over
 
 # --- Pistas ---
 QTD_PISTAS = 3
@@ -61,3 +62,21 @@ CHANCE_COMIDA_RUIM = 0.60  # o resto sai comida boa
 ESPESSURA_ROSQUINHA = 0.28  # largura do anel do donut, em fracao do tamanho dele
 LARGURA_GARRAFA = 0.45  # largura do refrigerante, em fracao do tamanho dele
 ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das comidas quadradas, em fracao
+
+# --- Peso e pontuacao ---
+PESO_INICIAL = 45.0
+PESO_GAME_OVER = 100.0  # chegou nele, acabou a partida
+PESO_MINIMO = 30.0  # nem comendo so comida boa da para emagrecer alem disso
+PESO_GANHO_COMIDA_RUIM = 4.0  # em kg, por ultraprocessado engolido
+PESO_PERDIDO_COMIDA_BOA = 2.0  # em kg: devolve menos do que a ruim cobra
+BONUS_COMIDA_BOA = 50  # pontos por alimento saudavel coletado
+PONTOS_POR_Z = 20.0  # com VELOCIDADE_JOGO em 0,5 da os 10 pontos por segundo
+ZONA_COLISAO = 0.04  # a comida acerta enquanto o z dela estiver a essa distancia do jogador
+
+# --- HUD e avisos ---
+TAMANHO_FONTE_HUD = 40
+TAMANHO_FONTE_TITULO = 76
+TAMANHO_FONTE_AVISO = 36
+MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
+ESPACO_ENTRE_LINHAS = 40  # separacao das linhas do aviso de game over
+OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)

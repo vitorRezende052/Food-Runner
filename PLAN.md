@@ -4,9 +4,10 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 3 — colisão, peso e pontuação** (Fases 0 a 2 concluídas:
-ambiente uv, estrada em perspectiva rolando, jogador trocando de pista e comida
-vindo do horizonte, com pytest verde).
+Status geral: **Fase 4 — dificuldade progressiva** (Fases 0 a 3 concluídas: ambiente
+uv, estrada em perspectiva rolando, jogador trocando de pista, comida vindo do
+horizonte e a partida completa — peso, pontuação, HUD e game over —, com pytest
+verde).
 
 ---
 
@@ -52,18 +53,20 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual e troca de pista
 [x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
-[x] testes/        # test_config, test_perspectiva, test_jogador, test_comida
+[x] testes/        # test_config, test_perspectiva, test_jogador, test_comida, test_jogo
 [x] comida.py      # tipos de comida, spawn e avanço em z
-[ ] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
+[x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [ ] telas.py       # menu inicial (com instruções), pausa e game over
 [ ] audio.py       # síntese dos sons com numpy
 [ ] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
 Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões — o
-único desvio foi o ponto de entrada, que virou `main.py`. Nada disso é
-definitivo: se um arquivo ficar pequeno demais ou grande demais no caminho, ele
-é fundido ou dividido — e a mudança é anotada aqui.
+único desvio foi o ponto de entrada, que virou `main.py`. O aviso de game over da
+fase 3 nasceu dentro do `desenho.py`; na fase 5 ele se muda para o `telas.py`,
+junto do menu e da pausa. Nada disso é definitivo: se um arquivo ficar pequeno
+demais ou grande demais no caminho, ele é fundido ou dividido — e a mudança é
+anotada aqui.
 
 ---
 
@@ -91,7 +94,9 @@ nenhum o jogo ainda aperta, e com o tempo termina.
 
 Do que já está valendo no `config.py`: velocidade, intervalo de spawn, chance de
 comida ruim e tamanho da comida (todos ainda no valor inicial, sem a progressão
-da fase 4). Os números de peso e pontuação entram na fase 3.
+da fase 4), além dos números de peso e pontuação que a fase 3 trouxe. A
+pontuação por distância virou `PONTOS_POR_Z = 20`, que no ritmo inicial de
+0,5 z/s dá exatamente os 10 pontos por segundo da tabela.
 
 ---
 
@@ -132,12 +137,18 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   atualiza e desenha o gerador. 12 testes novos em `testes/test_comida.py`
   (32 no total).
 
-### [ ] Fase 3 — Colisão, peso e pontuação
+### [x] Fase 3 — Colisão, peso e pontuação
 - `jogo.py`: colisão (mesma pista + `z` dentro da zona do jogador), peso, pontuação por distância e bônus.
 - HUD em `desenho.py`: `45 / 100 kg` e a pontuação, ambos em pt-br.
 - Game over ao atingir 100 kg (por enquanto, volta ao início).
 - Testes: peso sobe/desce e trava nos limites, pontuação acumula, colisão só na mesma pista.
 - **Pronto quando:** o jogo tem risco e recompensa de verdade, do início ao game over.
+- **Feito:** `jogo.Jogo` juntando corredor e gerador, com `peso`, `distancia`,
+  `bonus`, a propriedade `pontuacao` e o `acabou`; colisão por zona em torno do
+  jogador, com a comida saindo da estrada ao ser engolida. `desenho.py` ganhou o
+  HUD (`62 / 100 kg` à esquerda, `Pontos: 1.240` à direita) e o véu de game over
+  com a pontuação final. `main.py` virou só loop, teclado e desenho. 15 testes
+  novos em `testes/test_jogo.py` (47 no total).
 
 ### [ ] Fase 4 — Dificuldade progressiva
 - Velocidade, frequência de spawn e chance de comida ruim crescendo com o tempo de partida.
@@ -185,3 +196,8 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — O `GeradorDeComida` recebe um `random.Random` opcional: no jogo ele usa o sorteio normal e nos testes recebe uma semente fixa, sem precisar de mock.
 - **2026-08-19** — Desenho em uma passada só, do fundo para a frente, e o jogador por último. No instante em que a comida cruza o plano dele ela fica escondida atrás do personagem — invisível na prática, e na fase 3 esse é justamente o momento em que ela some ao ser coletada.
 - **2026-08-19** — As linhas de chão são calculadas a partir do tempo de jogo (`_profundidades_das_linhas`), sem estado guardado: o cenário não precisa de objeto próprio.
+- **2026-08-19** — Colisão por **zona em torno do jogador**: acerta quem estiver na mesma pista com `abs(z) <= ZONA_COLISAO = 0,04`. Foi preferida a "cruzou o plano do jogador" porque não deixa a comida já ultrapassada continuar valendo se o jogador entrar na pista dela depois, e porque a janela de 0,08 em z aguenta a aceleração da fase 4 sem a comida atravessar entre dois quadros. A zona termina em `z = -0,04`, ainda acima do `Z_SUMICO = -0,05`, então nada é descartado antes de ser conferido — há teste para isso.
+- **2026-08-19** — Pontuação contada **por distância em z** (`PONTOS_POR_Z = 20`), não por tempo: no ritmo inicial dá os 10 pontos por segundo do plano e, quando a fase 4 acelerar, sobreviver ao trecho rápido passa a pagar mais.
+- **2026-08-19** — O game over **congela a partida e espera Espaço/Enter**, em vez de reiniciar na hora como o plano dizia. Sem isso não dá para ver que perdeu nem qual foi a pontuação. São poucas linhas em `desenho.desenhar_game_over`, que a fase 5 leva para o `telas.py`.
+- **2026-08-19** — O peso é travado nas duas pontas (`PESO_MINIMO = 30`, `PESO_GAME_OVER = 100`), então o HUD nunca mostra número fora da faixa e o fim de partida acontece com `100 / 100 kg` na tela.
+- **2026-08-19** — O chão rolante passou a ser calculado a partir da **distância percorrida** em vez de `tempo * VELOCIDADE_JOGO`. É o mesmo valor enquanto a velocidade é constante, mas na fase 4 o asfalto acompanha a aceleração sozinho — e a `Jogo` não precisa guardar um cronômetro só para o desenho.
