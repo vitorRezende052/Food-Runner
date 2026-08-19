@@ -60,9 +60,10 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [ ] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Nada
-disso é definitivo: se um arquivo ficar pequeno demais ou grande demais no
-caminho, ele é fundido ou dividido — e a mudança é anotada aqui.
+Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões — o
+único desvio foi o ponto de entrada, que virou `main.py`. Nada disso é
+definitivo: se um arquivo ficar pequeno demais ou grande demais no caminho, ele
+é fundido ou dividido — e a mudança é anotada aqui.
 
 ---
 
@@ -80,12 +81,17 @@ isso). Ficam todos centralizados, nenhum espalhado pelo código.
 | Comida boa | −2 kg e +50 pontos |
 | Pontos por distância | 10 por segundo (no ritmo inicial) |
 | Chance de comida ruim | 60% no começo → 85% no fim |
-| Velocidade | sobe ~2× ao longo de ~3 min |
+| Velocidade | 0,5 z por segundo, subindo ~2× ao longo de ~3 min |
 | Intervalo entre spawns | 1,1 s no começo → 0,45 s no fim |
+| Tamanho da comida | 90 px de lado ao chegar no jogador |
 | Janela / FPS | 960×720, 60 FPS, movimento por delta time |
 
 A comida boa é mais rara e devolve menos peso do que a ruim adiciona: sem erro
 nenhum o jogo ainda aperta, e com o tempo termina.
+
+Do que já está valendo no `config.py`: velocidade, intervalo de spawn, chance de
+comida ruim e tamanho da comida (todos ainda no valor inicial, sem a progressão
+da fase 4). Os números de peso e pontuação entram na fase 3.
 
 ---
 
