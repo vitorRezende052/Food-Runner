@@ -5,8 +5,8 @@ e a profundidade ``z``, que cai de ``Z_SPAWN`` (horizonte) ate ``Z_SUMICO``,
 quando ela ja passou pelo jogador e sai da lista.
 
 O ritmo desse desfile nao e fixo: o gerador recebe o tempo de partida e pergunta
-a ``dificuldade`` com que velocidade, de quanto em quanto tempo e com que chance
-de vir ultraprocessado a comida deve aparecer.
+a ``dificuldade`` com que velocidade, de quanto em quanto tempo, com que chance
+de vir ultraprocessado e em quantas pistas de uma vez a comida deve aparecer.
 """
 
 import random
@@ -60,14 +60,23 @@ class Comida:
         return self.z <= config.Z_SUMICO
 
 
-def sortear(aleatorio, chance_de_ruim):
-    """Cria uma comida nova no horizonte, em pista e tipo sorteados."""
+def sortear(aleatorio, chance_de_ruim, pista):
+    """Cria uma comida nova no horizonte, na pista dada e com o tipo sorteado."""
     if aleatorio.random() < chance_de_ruim:
         tipo, cardapio = RUIM, COMIDAS_RUINS
     else:
         tipo, cardapio = BOA, COMIDAS_BOAS
     nome, forma = aleatorio.choice(cardapio)
-    return Comida(aleatorio.randrange(config.QTD_PISTAS), tipo, nome, forma)
+    return Comida(pista, tipo, nome, forma)
+
+
+def sortear_pistas(aleatorio, quantidade):
+    """Sorteia em quais pistas o proximo spawn solta comida, sem repetir nenhuma.
+
+    Duas comidas na mesma pista ficariam uma escondida atras da outra, e a de
+    tras nem chegaria a ser desviada: por isso o sorteio e sem reposicao.
+    """
+    return aleatorio.sample(range(config.QTD_PISTAS), quantidade)
 
 
 class GeradorDeComida:
@@ -91,7 +100,9 @@ class GeradorDeComida:
 
         intervalo = dificuldade.intervalo_de_spawn(tempo)
         chance_de_ruim = dificuldade.chance_de_comida_ruim(tempo)
+        quantidade = dificuldade.comidas_por_spawn(tempo)
         self.ate_a_proxima -= dt
         while self.ate_a_proxima <= 0:
-            self.comidas.append(sortear(self.aleatorio, chance_de_ruim))
+            for pista in sortear_pistas(self.aleatorio, quantidade):
+                self.comidas.append(sortear(self.aleatorio, chance_de_ruim, pista))
             self.ate_a_proxima += intervalo

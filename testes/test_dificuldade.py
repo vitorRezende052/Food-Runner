@@ -24,6 +24,7 @@ def test_largada_usa_os_valores_iniciais():
     assert dificuldade.velocidade(0) == config.VELOCIDADE_INICIAL
     assert dificuldade.intervalo_de_spawn(0) == config.INTERVALO_SPAWN_INICIAL
     assert dificuldade.chance_de_comida_ruim(0) == config.CHANCE_COMIDA_RUIM_INICIAL
+    assert dificuldade.comidas_por_spawn(0) == config.COMIDAS_POR_SPAWN_INICIAL
 
 
 def test_fim_da_rampa_bate_nos_tetos():
@@ -35,6 +36,7 @@ def test_fim_da_rampa_bate_nos_tetos():
     assert dificuldade.chance_de_comida_ruim(fim) == pytest.approx(
         config.CHANCE_COMIDA_RUIM_MAXIMA
     )
+    assert dificuldade.comidas_por_spawn(fim) == config.COMIDAS_POR_SPAWN_MAXIMA
 
 
 def test_a_corrida_so_acelera():
@@ -55,11 +57,28 @@ def test_o_ultraprocessado_so_fica_mais_provavel():
     assert max(valores) == pytest.approx(config.CHANCE_COMIDA_RUIM_MAXIMA)
 
 
+def test_a_estrada_so_solta_mais_comida_de_uma_vez():
+    valores = [dificuldade.comidas_por_spawn(tempo) for tempo in INSTANTES]
+    assert valores == sorted(valores)
+    assert max(valores) == config.COMIDAS_POR_SPAWN_MAXIMA
+
+
+def test_a_rajada_cabe_nas_pistas():
+    """Nunca pode sair mais comida de uma vez do que ha pista para receber."""
+    assert config.COMIDAS_POR_SPAWN_MAXIMA <= config.QTD_PISTAS
+
+
+def test_a_rajada_deixa_pista_livre():
+    """Sempre sobra por onde escapar: quem morre e quem escolheu mal, nao o azarado."""
+    assert config.COMIDAS_POR_SPAWN_MAXIMA < config.QTD_PISTAS
+
+
 def test_a_rampa_aperta_de_verdade():
     """Os tetos do config tem que ser mais duros que a largada, nunca o contrario."""
     assert config.VELOCIDADE_MAXIMA > config.VELOCIDADE_INICIAL
     assert config.INTERVALO_SPAWN_MINIMO < config.INTERVALO_SPAWN_INICIAL
     assert config.CHANCE_COMIDA_RUIM_INICIAL < config.CHANCE_COMIDA_RUIM_MAXIMA <= 1
+    assert config.COMIDAS_POR_SPAWN_INICIAL < config.COMIDAS_POR_SPAWN_MAXIMA
     assert config.DURACAO_RAMPA > 0
 
 

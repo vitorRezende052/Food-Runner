@@ -13,6 +13,8 @@ TITULO = "Food Runner"
 # --- Cores (R, G, B) ---
 COR_FUNDO = (18, 18, 24)
 COR_TEXTO = (240, 240, 240)
+COR_TITULO = (108, 208, 122)  # verde do titulo do menu, no tom da comida boa
+COR_ALERTA = (232, 138, 62)  # peso perto do limite e titulo do game over
 COR_PISTA = (58, 58, 68)
 COR_FAIXA = (232, 232, 240)
 COR_COMIDA_BOA = (72, 190, 90)
@@ -20,7 +22,7 @@ COR_COMIDA_RUIM = (206, 62, 52)
 COR_LINHA_CHAO = (96, 96, 112)
 COR_JOGADOR = (86, 156, 214)
 COR_CABECA_JOGADOR = (226, 186, 148)
-COR_VEU = (10, 10, 14)  # escurece a tela por tras do aviso de game over
+COR_VEU = (10, 10, 14)  # escurece a corrida por tras do menu, da pausa e do game over
 
 # --- Pistas ---
 QTD_PISTAS = 3
@@ -62,9 +64,11 @@ Z_SPAWN = Z_HORIZONTE  # toda comida nasce no fundo da estrada
 Z_SUMICO = Z_MINIMO  # ja saiu pelo rodape: e o piso da projecao, nao adianta ir alem
 TAMANHO_COMIDA = 90  # lado da comida em pixels quando chega no jogador
 INTERVALO_SPAWN_INICIAL = 1.1  # segundos entre uma comida e a proxima
-INTERVALO_SPAWN_MINIMO = 0.45  # no fim da rampa a estrada fica bem mais cheia
+INTERVALO_SPAWN_MINIMO = 0.35  # no fim da rampa a estrada fica bem mais cheia
 CHANCE_COMIDA_RUIM_INICIAL = 0.60  # o resto sai comida boa
 CHANCE_COMIDA_RUIM_MAXIMA = 0.85  # no fim da rampa quase tudo e ultraprocessado
+COMIDAS_POR_SPAWN_INICIAL = 1  # na largada a estrada solta uma comida por vez
+COMIDAS_POR_SPAWN_MAXIMA = 2  # na metade da rampa passa a soltar duas, em pistas diferentes
 ESPESSURA_ROSQUINHA = 0.28  # largura do anel do donut, em fracao do tamanho dele
 LARGURA_GARRAFA = 0.45  # largura do refrigerante, em fracao do tamanho dele
 ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das comidas quadradas, em fracao
@@ -73,6 +77,7 @@ ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das comidas quadradas, em frac
 PESO_INICIAL = 45.0
 PESO_GAME_OVER = 100.0  # chegou nele, acabou a partida
 PESO_MINIMO = 30.0  # nem comendo so comida boa da para emagrecer alem disso
+PESO_DE_ALERTA = 80.0  # daqui para cima o HUD muda de cor: a balanca esta perto do fim
 PESO_GANHO_COMIDA_RUIM = 4.0  # em kg, por ultraprocessado engolido
 PESO_PERDIDO_COMIDA_BOA = 2.0  # em kg: devolve menos do que a ruim cobra
 BONUS_COMIDA_BOA = 50  # pontos por alimento saudavel coletado
@@ -84,7 +89,7 @@ TAMANHO_FONTE_HUD = 40
 TAMANHO_FONTE_TITULO = 76
 TAMANHO_FONTE_AVISO = 36
 MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
-ESPACO_ENTRE_LINHAS = 40  # separacao das linhas do aviso de game over
+ESPACO_ENTRE_LINHAS = 40  # separacao entre as linhas de texto das telas
 OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)
 OPACIDADE_VEU_MENU = 130  # no menu o veu e mais leve: a estrada fica a vista
 

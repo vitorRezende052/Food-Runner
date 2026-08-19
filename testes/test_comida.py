@@ -16,9 +16,9 @@ def gerador_com_sorte_fixa(semente=7):
     return comida.GeradorDeComida(random.Random(semente))
 
 
-def sortear_no_tempo(aleatorio, tempo):
+def sortear_no_tempo(aleatorio, tempo, pista=config.PISTA_INICIAL):
     """Sorteia uma comida com a chance de ultraprocessado daquele instante."""
-    return comida.sortear(aleatorio, dificuldade.chance_de_comida_ruim(tempo))
+    return comida.sortear(aleatorio, dificuldade.chance_de_comida_ruim(tempo), pista)
 
 
 def contar_spawns(gerador, tempo, duracao):
@@ -52,7 +52,21 @@ def test_comida_nasce_no_horizonte():
 def test_spawn_sempre_cai_numa_pista_valida():
     aleatorio = random.Random(3)
     for _ in range(200):
-        assert sortear_no_tempo(aleatorio, LARGADA).pista in range(config.QTD_PISTAS)
+        pistas = comida.sortear_pistas(aleatorio, config.COMIDAS_POR_SPAWN_MAXIMA)
+        assert all(pista in range(config.QTD_PISTAS) for pista in pistas)
+
+
+def test_rajada_nunca_repete_pista():
+    """Duas comidas na mesma pista esconderiam uma atras da outra."""
+    aleatorio = random.Random(17)
+    for _ in range(200):
+        pistas = comida.sortear_pistas(aleatorio, config.COMIDAS_POR_SPAWN_MAXIMA)
+        assert len(set(pistas)) == len(pistas)
+
+
+def test_a_comida_nasce_na_pista_pedida():
+    for pista in range(config.QTD_PISTAS):
+        assert sortear_no_tempo(random.Random(19), LARGADA, pista).pista == pista
 
 
 def test_tipo_sorteado_combina_com_o_cardapio():
@@ -70,7 +84,10 @@ def test_comida_ruim_e_mais_comum_que_a_boa():
     aleatorio = random.Random(11)
     amostras = 3000
     chance = config.CHANCE_COMIDA_RUIM_INICIAL
-    ruins = sum(comida.sortear(aleatorio, chance).tipo == comida.RUIM for _ in range(amostras))
+    ruins = sum(
+        comida.sortear(aleatorio, chance, config.PISTA_INICIAL).tipo == comida.RUIM
+        for _ in range(amostras)
+    )
     assert abs(ruins / amostras - chance) < 0.05
     assert chance > 0.5
 
@@ -135,6 +152,15 @@ def test_gerador_mantem_o_ritmo_de_spawn():
     for _ in range(round(2 * config.INTERVALO_SPAWN_INICIAL * config.FPS)):
         gerador.atualizar(passo, LARGADA)
     assert len(gerador.comidas) == 2
+
+
+def test_no_fim_da_rampa_cada_spawn_solta_uma_rajada():
+    """Passada a metade da rampa a comida vem em dupla, em pistas diferentes."""
+    gerador = gerador_com_sorte_fixa()
+    gerador.atualizar(config.INTERVALO_SPAWN_INICIAL, FIM_DA_RAMPA)  # a primeira espera
+    pistas = [alimento.pista for alimento in gerador.comidas]
+    assert len(pistas) == config.COMIDAS_POR_SPAWN_MAXIMA
+    assert len(set(pistas)) == len(pistas)
 
 
 def test_a_estrada_enche_mais_no_fim_da_partida():
