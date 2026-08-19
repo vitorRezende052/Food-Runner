@@ -11,13 +11,13 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Comida boa (frutas, verduras, carne grelhada) → diminui o peso e dá bônus de pontos.
 - Peso no máximo (100 kg) → game over.
 - Pontuação = distância percorrida + bônus das comidas boas.
-- Dificuldade aumenta ao longo da partida (velocidade e frequência de comida ruim crescentes).
+- Dificuldade aumenta ao longo da partida: velocidade, frequência de spawn e chance de comida ruim crescentes e, da metade da rampa em diante, duas comidas por spawn em pistas diferentes (nunca as três — sempre sobra por onde escapar).
 - Balanceamento: comida boa é mais rara e reduz menos peso do que a ruim adiciona — o jogo endurece com o tempo e eventualmente termina.
 
 ## Decisões travadas (não mudar sem confirmar)
 - Desktop / executável (sem navegador).
 - Perspectiva **pseudo-3D**: as 3 pistas convergem para um horizonte, o jogador fica fixo na base e a comida nasce pequena no fundo e cresce ao se aproximar.
-- Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone.
+- Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo.
 - Comida boa reduz peso E dá pontos.
 - Arte: formas coloridas simples (verde = boa, vermelho = ruim), fácil de trocar por sprites depois.
 - Áudio: sons sintéticos gerados por código (numpy), sem arquivos externos — jogo autocontido.

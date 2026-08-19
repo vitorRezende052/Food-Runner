@@ -49,7 +49,8 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem; o que falta nas fases 7 e 8 é polimento e empacotamento, não código novo.
+existem; o que falta na fase 8 é empacotamento, não código novo. A fase 7 mexeu
+em cinco módulos e não criou nenhum.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -256,7 +257,7 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — Rampa **linear** entre a largada e o teto (`inicial + (final - inicial) * progresso`), com `progresso` travado em 1,0 daí em diante. Uma curva (progresso²) foi considerada e descartada: linear é o que se explica numa linha e já dá a diferença visível que a fase pedia.
 - **2026-08-19** — Os três números que a rampa mexe viraram **pares no `config.py`** — `VELOCIDADE_INICIAL`/`VELOCIDADE_MAXIMA`, `INTERVALO_SPAWN_INICIAL`/`INTERVALO_SPAWN_MINIMO`, `CHANCE_COMIDA_RUIM_INICIAL`/`CHANCE_COMIDA_RUIM_MAXIMA`. O antigo `VELOCIDADE_JOGO` (que já tinha sido rebatizado na fase 2) virou `VELOCIDADE_INICIAL`: com dois valores por número, o nome tem de dizer qual dos dois é.
 - **2026-08-19** — Quem pergunta à `dificuldade` é o **`GeradorDeComida`**, que recebe o tempo de partida em `atualizar(dt, tempo)`; a `Jogo` só repassa o cronômetro. A alternativa era a `Jogo` injetar os três valores prontos, o que engordaria a assinatura para quatro parâmetros sem tirar dependência de ninguém. Nos testes o tempo é um argumento comum: dá para congelar a largada ou o fim da rampa sem mock.
-- **2026-08-19** — Simulando a partida sem janela (jogador parado, 30 sementes), a morte vem entre 47 s e 106 s, mediana de 77 s — a rampa aperta de verdade. No outro extremo, um "jogador ideal" simulado (lê a estrada inteira e troca de pista todo quadro) sobrevive 30 min sem perder: no teto de 0,45 s por spawn quase nunca as três pistas ficam bloqueadas ao mesmo tempo. Nenhum humano joga assim, mas fica anotado para a **fase 7**: se quisermos que até o jogo perfeito termine, o caminho é spawn mínimo mais curto ou soltar duas comidas de uma vez no fim da rampa.
+- **2026-08-19** — Simulando a partida sem janela (jogador parado, 30 sementes), a morte vem entre 47 s e 106 s, mediana de 77 s — a rampa aperta de verdade. No outro extremo, um "jogador ideal" simulado (lê a estrada inteira e troca de pista todo quadro) sobrevive 30 min sem perder: no teto de 0,45 s por spawn quase nunca as três pistas ficam bloqueadas ao mesmo tempo. Nenhum humano joga assim, mas fica anotado para a **fase 7**: se quisermos que até o jogo perfeito termine, o caminho é spawn mínimo mais curto ou soltar duas comidas de uma vez no fim da rampa. **Resolvido na fase 7**, pelos dois caminhos: a rajada de duas comidas e o spawn mínimo em 0,35 s.
 - **2026-08-19** — O chão rolante passou a ser calculado a partir da **distância percorrida** em vez de `tempo * VELOCIDADE_JOGO`. É o mesmo valor enquanto a velocidade é constante, mas na fase 4 o asfalto acompanha a aceleração sozinho — e a `Jogo` não precisa guardar um cronômetro só para o desenho.
 - **2026-08-19** — O jogo virou uma **máquina de estados de cinco nomes** no `main.py` (`MENU`, `JOGANDO`, `PAUSADO`, `FIM`, `SAINDO`), com `tratar_tecla(estado, partida, tecla)` devolvendo o estado seguinte. A alternativa era uma classe por tela com `atualizar`/`desenhar`: é o padrão de livro, mas para quatro telas que só desenham texto vira cerimônia. Como a função é pura em `(estado, tecla)`, a tabela inteira de controles ficou testável sem abrir janela — é o que o `testes/test_telas.py` faz.
 - **2026-08-19** — Teclas por tela: o **ESC é contextual** (na partida pausa, no menu fecha o jogo, na pausa volta a jogar) e o **M volta ao menu** a partir da pausa e do game over. O ESC continua sendo a tecla de sair, como era antes da fase 5, mas só onde sair faz sentido — ninguém mais fecha o jogo sem querer no meio da corrida. Cada tela lista as próprias teclas na tela, então não é preciso decorar nada.
@@ -304,8 +305,9 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   por vez a conta não fecha — a janela de colisão tem 0,08 em z e o spawn mais
   apertado é de 0,35 s, então as três pistas nunca ficam bloqueadas juntas.
   Encurtar mais o intervalo não resolveria; soltar mais de uma comida resolve.
-  Depois da mudança os mesmos bots morrem com mediana de 226 s a 312 s, e o
-  jogador parado continua morrendo por volta dos 80 s.
+  Depois da mudança — já com o spawn mínimo em 0,35 s, que é o valor que ficou
+  — os mesmos bots morrem com mediana entre 224 s e 262 s, e o jogador parado
+  continua morrendo por volta dos 80 s.
 - **2026-08-19** — A rajada é de **duas comidas, nunca três**: com três, todo
   mundo morria junto por volta dos 150 s, no instante em que a conta arredonda —
   morte por falta de saída, não por erro. Com duas sempre sobra pista livre, e a
