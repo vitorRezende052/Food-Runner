@@ -86,3 +86,4 @@ TAMANHO_FONTE_AVISO = 36
 MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
 ESPACO_ENTRE_LINHAS = 40  # separacao das linhas do aviso de game over
 OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)
+OPACIDADE_VEU_MENU = 130  # no menu o veu e mais leve: a estrada fica a vista

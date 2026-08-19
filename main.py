@@ -6,31 +6,64 @@ import config
 import desenho
 import jogador
 import jogo
+import recorde
+import telas
 
 TECLAS_ESQUERDA = (pygame.K_LEFT, pygame.K_a)
 TECLAS_DIREITA = (pygame.K_RIGHT, pygame.K_d)
-TECLAS_RECOMECAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
+TECLAS_COMECAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
+TECLAS_PAUSA = (pygame.K_ESCAPE, pygame.K_p)
+TECLA_MENU = pygame.K_m
 
 
-def tratar_tecla(partida, tecla):
-    """Manda a tecla para quem sabe o que fazer com ela na situacao atual."""
-    if partida.acabou:
-        if tecla in TECLAS_RECOMECAR:
+def tratar_tecla(estado, partida, tecla):
+    """Devolve o estado em que o jogo fica depois desta tecla.
+
+    Cada tela entende as suas teclas e ignora as outras; quem nao muda de tela
+    devolve o mesmo estado que recebeu.
+    """
+    if estado == telas.MENU:
+        if tecla in TECLAS_COMECAR:
             partida.reiniciar()
-    elif tecla in TECLAS_ESQUERDA:
-        partida.corredor.mover(jogador.ESQUERDA)
-    elif tecla in TECLAS_DIREITA:
-        partida.corredor.mover(jogador.DIREITA)
+            return telas.JOGANDO
+        if tecla == pygame.K_ESCAPE:
+            return telas.SAINDO
+    elif estado == telas.JOGANDO:
+        if tecla in TECLAS_PAUSA:
+            return telas.PAUSADO
+        if tecla in TECLAS_ESQUERDA:
+            partida.corredor.mover(jogador.ESQUERDA)
+        elif tecla in TECLAS_DIREITA:
+            partida.corredor.mover(jogador.DIREITA)
+    elif estado == telas.PAUSADO:
+        if tecla in TECLAS_PAUSA:
+            return telas.JOGANDO
+        if tecla == TECLA_MENU:
+            return telas.MENU
+    elif estado == telas.FIM:
+        if tecla in TECLAS_COMECAR:
+            partida.reiniciar()
+            return telas.JOGANDO
+        if tecla == TECLA_MENU:
+            return telas.MENU
+    return estado
 
 
-def desenhar(tela, partida):
-    """Pinta um quadro inteiro: cenario, comidas, jogador, HUD e o aviso de fim."""
+def desenhar(tela, estado, partida, melhor_pontuacao):
+    """Pinta um quadro inteiro: a estrada no fundo e a tela da vez por cima."""
+    if estado == telas.MENU:
+        desenho.desenhar_cenario(tela, 0.0)  # estrada parada, so de cenario
+        telas.desenhar_menu(tela, melhor_pontuacao)
+        return
+
     desenho.desenhar_cenario(tela, partida.distancia)
     desenho.desenhar_comidas(tela, partida.gerador.comidas)
     desenho.desenhar_jogador(tela, partida.corredor)
     desenho.desenhar_hud(tela, partida)
-    if partida.acabou:
-        desenho.desenhar_game_over(tela, partida)
+    if estado == telas.PAUSADO:
+        telas.desenhar_pausa(tela)
+    elif estado == telas.FIM:
+        telas.desenhar_game_over(tela, partida, melhor_pontuacao)
 
 
 def executar():
@@ -41,22 +74,28 @@ def executar():
     relogio = pygame.time.Clock()
 
     partida = jogo.Jogo()
+    melhor_pontuacao = recorde.ler()
+    estado = telas.MENU
 
-    rodando = True
-    while rodando:
+    while estado != telas.SAINDO:
         dt = relogio.tick(config.FPS) / 1000.0
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                rodando = False
+                estado = telas.SAINDO
             elif evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_ESCAPE:
-                    rodando = False
-                else:
-                    tratar_tecla(partida, evento.key)
+                estado = tratar_tecla(estado, partida, evento.key)
 
-        partida.atualizar(dt)
-        desenhar(tela, partida)
+        if estado == telas.SAINDO:
+            continue  # pediram para fechar: nao vale desenhar mais um quadro
+
+        if estado == telas.JOGANDO:
+            partida.atualizar(dt)
+            if partida.acabou:  # unico ponto em que a partida termina
+                melhor_pontuacao = recorde.salvar(partida.pontuacao)
+                estado = telas.FIM
+
+        desenhar(tela, estado, partida, melhor_pontuacao)
         pygame.display.flip()
 
     pygame.quit()

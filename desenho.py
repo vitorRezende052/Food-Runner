@@ -50,14 +50,14 @@ def desenhar_jogador(tela, jogador):
 
 def desenhar_hud(tela, partida):
     """Escreve o peso num canto de cima e a pontuacao no outro."""
-    fonte = _fonte(config.TAMANHO_FONTE_HUD)
-    peso = fonte.render(
+    letra = fonte(config.TAMANHO_FONTE_HUD)
+    peso = letra.render(
         f"{round(partida.peso)} / {round(config.PESO_GAME_OVER)} kg",
         True,
         config.COR_TEXTO,
     )
-    pontos = fonte.render(
-        f"Pontos: {_com_separador(partida.pontuacao)}", True, config.COR_TEXTO
+    pontos = letra.render(
+        f"Pontos: {com_separador(partida.pontuacao)}", True, config.COR_TEXTO
     )
     tela.blit(peso, (config.MARGEM_HUD, config.MARGEM_HUD))
     largura_pontos = pontos.get_width()
@@ -66,41 +66,33 @@ def desenhar_hud(tela, partida):
     )
 
 
-def desenhar_game_over(tela, partida):
-    """Escurece a tela e anuncia o fim da partida com a pontuacao final."""
+def escurecer(tela, opacidade=config.OPACIDADE_VEU):
+    """Joga um veu escuro por cima do jogo, para o texto da tela por cima aparecer."""
     veu = pygame.Surface((config.LARGURA, config.ALTURA))
     veu.fill(config.COR_VEU)
-    veu.set_alpha(config.OPACIDADE_VEU)
+    veu.set_alpha(opacidade)
     tela.blit(veu, (0, 0))
-
-    limite = round(config.PESO_GAME_OVER)
-    linhas = [
-        (config.TAMANHO_FONTE_TITULO, f"Você chegou a {limite} kg"),
-        (config.TAMANHO_FONTE_HUD, f"Pontos: {_com_separador(partida.pontuacao)}"),
-        (config.TAMANHO_FONTE_AVISO, "Espaço para recomeçar"),
-    ]
-    _escrever_no_meio(tela, linhas)
 
 
 _fontes = {}
 
 
-def _fonte(tamanho):
+def fonte(tamanho):
     """Fonte padrao do pygame no tamanho pedido, guardada para nao recriar todo quadro."""
     if tamanho not in _fontes:
         _fontes[tamanho] = pygame.font.Font(None, tamanho)
     return _fontes[tamanho]
 
 
-def _com_separador(numero):
+def com_separador(numero):
     '''1240 vira "1.240", do jeito que se escreve numero em portugues.'''
     return f"{numero:,}".replace(",", ".")
 
 
-def _escrever_no_meio(tela, linhas):
+def escrever_no_meio(tela, linhas):
     """Empilha as linhas ``(tamanho da fonte, texto)`` centralizadas na tela."""
     imagens = [
-        _fonte(tamanho).render(texto, True, config.COR_TEXTO)
+        fonte(tamanho).render(texto, True, config.COR_TEXTO)
         for tamanho, texto in linhas
     ]
     alturas = sum(imagem.get_height() for imagem in imagens)

@@ -4,10 +4,11 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 5 — telas, pausa e recorde** (Fases 0 a 4 concluídas: ambiente
+Status geral: **Fase 6 — áudio sintetizado** (Fases 0 a 5 concluídas: ambiente
 uv, estrada em perspectiva rolando, jogador trocando de pista, comida vindo do
-horizonte, a partida completa — peso, pontuação, HUD e game over — e a rampa de
-dificuldade que aperta a corrida ao longo de 3 minutos, com pytest verde).
+horizonte, a partida completa — peso, pontuação, HUD e game over —, a rampa de
+dificuldade que aperta a corrida ao longo de 3 minutos e o ciclo fechado de
+menu, pausa, game over e recorde em arquivo, com pytest verde).
 
 ---
 
@@ -54,13 +55,13 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [x] jogador.py     # pista atual e troca de pista
 [x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
-                   # test_jogo, test_dificuldade
+                   # test_jogo, test_dificuldade, test_recorde, test_telas
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
-[ ] telas.py       # menu inicial (com instruções), pausa e game over
+[x] telas.py       # menu inicial (com instruções), pausa e game over
 [ ] audio.py       # síntese dos sons com numpy
-[ ] recorde.py     # lê e grava a maior pontuação em arquivo local
+[x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
 Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Os
@@ -68,8 +69,11 @@ desvios foram dois: o ponto de entrada, que virou `main.py`, e o
 `dificuldade.py`, arquivo novo que a fase 4 trouxe — o plano imaginava a rampa
 dentro do `jogo.py`, mas ela é lógica pura sobre o tempo, do mesmo naipe da
 `perspectiva.py`, e sozinha num arquivo dá para ler a curva inteira de uma vez.
-O aviso de game over da fase 3 nasceu dentro do `desenho.py`; na fase 5 ele se
-muda para o `telas.py`, junto do menu e da pausa. Nada disso é definitivo: se um
+O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
+mudou-se para o `telas.py` na fase 5, junto do menu e da pausa; o `desenho.py`
+ficou com o cenário, o HUD e os utilitários de texto que as duas camadas usam
+(`fonte`, `com_separador`, `escrever_no_meio` e `escurecer`). Nada disso é
+definitivo: se um
 arquivo ficar pequeno demais ou grande demais no caminho, ele é fundido ou
 dividido — e a mudança é anotada aqui.
 
@@ -171,11 +175,17 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   já vinha da distância. 14 testes novos (`testes/test_dificuldade.py` mais os
   de fim de rampa em `test_comida.py` e `test_jogo.py`): 61 no total.
 
-### [ ] Fase 5 — Telas, pausa e recorde
+### [x] Fase 5 — Telas, pausa e recorde
 - `telas.py`: menu inicial com título, instruções curtas (controles + regra do peso) e recorde; tela de game over com pontuação final e recorde; overlay de pausa (ESC/P).
 - `recorde.py`: grava a maior pontuação num arquivo local ao lado do jogo.
 - Testes: recorde só sobe, arquivo ausente/corrompido não quebra o jogo.
 - **Pronto quando:** dá para abrir, jogar, pausar, perder e recomeçar sem sair do jogo.
+- **Feito:** `telas.py` com os nomes dos estados (`MENU`, `JOGANDO`, `PAUSADO`,
+  `FIM`, `SAINDO`) e o desenho de cada tela; `recorde.py` gravando a maior
+  pontuação num JSON ao lado do jogo. O `main.py` virou o despacho: guarda o
+  estado, `tratar_tecla(estado, partida, tecla)` devolve o próximo e só o
+  `JOGANDO` faz o tempo andar. 19 testes novos (`test_recorde.py` e
+  `test_telas.py`): 80 no total.
 
 ### [ ] Fase 6 — Áudio sintetizado
 - `audio.py` com numpy: som de coleta (boa), impacto (ruim), game over e confirmação do menu. Sem arquivos externos.
@@ -222,3 +232,11 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — Quem pergunta à `dificuldade` é o **`GeradorDeComida`**, que recebe o tempo de partida em `atualizar(dt, tempo)`; a `Jogo` só repassa o cronômetro. A alternativa era a `Jogo` injetar os três valores prontos, o que engordaria a assinatura para quatro parâmetros sem tirar dependência de ninguém. Nos testes o tempo é um argumento comum: dá para congelar a largada ou o fim da rampa sem mock.
 - **2026-08-19** — Simulando a partida sem janela (jogador parado, 30 sementes), a morte vem entre 47 s e 106 s, mediana de 77 s — a rampa aperta de verdade. No outro extremo, um "jogador ideal" simulado (lê a estrada inteira e troca de pista todo quadro) sobrevive 30 min sem perder: no teto de 0,45 s por spawn quase nunca as três pistas ficam bloqueadas ao mesmo tempo. Nenhum humano joga assim, mas fica anotado para a **fase 7**: se quisermos que até o jogo perfeito termine, o caminho é spawn mínimo mais curto ou soltar duas comidas de uma vez no fim da rampa.
 - **2026-08-19** — O chão rolante passou a ser calculado a partir da **distância percorrida** em vez de `tempo * VELOCIDADE_JOGO`. É o mesmo valor enquanto a velocidade é constante, mas na fase 4 o asfalto acompanha a aceleração sozinho — e a `Jogo` não precisa guardar um cronômetro só para o desenho.
+- **2026-08-19** — O jogo virou uma **máquina de estados de cinco nomes** no `main.py` (`MENU`, `JOGANDO`, `PAUSADO`, `FIM`, `SAINDO`), com `tratar_tecla(estado, partida, tecla)` devolvendo o estado seguinte. A alternativa era uma classe por tela com `atualizar`/`desenhar`: é o padrão de livro, mas para quatro telas que só desenham texto vira cerimônia. Como a função é pura em `(estado, tecla)`, a tabela inteira de controles ficou testável sem abrir janela — é o que o `testes/test_telas.py` faz.
+- **2026-08-19** — Teclas por tela: o **ESC é contextual** (na partida pausa, no menu fecha o jogo, na pausa volta a jogar) e o **M volta ao menu** a partir da pausa e do game over. O ESC continua sendo a tecla de sair, como era antes da fase 5, mas só onde sair faz sentido — ninguém mais fecha o jogo sem querer no meio da corrida. Cada tela lista as próprias teclas na tela, então não é preciso decorar nada.
+- **2026-08-19** — No game over, o **Espaço recomeça na hora** (mantendo o que a fase 3 já fazia) em vez de passar pelo menu: é o ritmo de endless runner, perdeu e tenta outra vez. Quem quiser o menu aperta M.
+- **2026-08-19** — Os utilitários de texto do `desenho.py` (`fonte`, `com_separador`, `escrever_no_meio`) e o véu (`escurecer`) **viraram públicos**, e o `telas.py` os reaproveita. A dependência aponta numa direção só, `telas` → `desenho`, para o HUD continuar no lado que sabe de pixels sem inverter a seta.
+- **2026-08-19** — O recorde mora num **JSON de uma chave** (`recorde.json`) ao lado do jogo: no script, a pasta do `main.py`; empacotado (`sys.frozen`), a pasta do `.exe` — sem isso o build `--onefile` da fase 8 gravaria numa pasta temporária e perderia o recorde a cada partida. Arquivo ausente, corrompido, com número negativo ou sem permissão de escrita vale zero e não derruba o jogo; há teste para cada um desses casos.
+- **2026-08-19** — `ler` e `salvar` recebem um **`caminho` opcional**, mesmo truque do `aleatorio=None` do `GeradorDeComida`: no jogo fica em `None` (o arquivo de verdade) e nos testes recebe o `tmp_path` do pytest, sem mock e sem escrever na máquina de quem roda a suíte. Quem grava é só o `main.py`, no único instante em que a partida acaba.
+- **2026-08-19** — A fonte padrão do pygame **não tem os glifos das setas**: `←` e `→` saem como quadradinhos vazios. O menu escreve "Setas ou A e D trocam de pista" — os controles continuam os mesmos, só o texto mudou. Se algum dia entrar uma fonte própria no projeto, dá para voltar às setas.
+- **2026-08-19** — O menu desenha a **estrada parada atrás de um véu mais leve** (`OPACIDADE_VEU_MENU = 130`, contra os 200 da pausa e do game over): custa uma linha, já que o cenário é uma função sem estado, e o menu deixa de ser um retângulo preto com texto.
