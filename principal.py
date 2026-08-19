@@ -2,6 +2,7 @@
 
 import pygame
 
+import comida
 import config
 import desenho
 import jogador
@@ -18,6 +19,7 @@ def executar():
     relogio = pygame.time.Clock()
 
     corredor = jogador.Jogador()
+    gerador = comida.GeradorDeComida()
     tempo = 0.0
 
     rodando = True
@@ -37,8 +39,10 @@ def executar():
                     corredor.mover(jogador.DIREITA)
 
         corredor.atualizar(dt)
+        gerador.atualizar(dt)
 
         desenho.desenhar_cenario(tela, tempo)
+        desenho.desenhar_comidas(tela, gerador.comidas)
         desenho.desenhar_jogador(tela, corredor)
         pygame.display.flip()
 

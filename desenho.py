@@ -1,4 +1,4 @@
-"""Desenha o cenario em perspectiva e o jogador.
+"""Desenha o cenario em perspectiva, as comidas e o jogador.
 
 Este e o lado grafico do jogo: recebe as posicoes logicas prontas, pergunta a
 ``perspectiva`` onde elas caem na tela e pinta. Nenhuma regra do jogo mora aqui.
@@ -6,6 +6,7 @@ Este e o lado grafico do jogo: recebe as posicoes logicas prontas, pergunta a
 
 import pygame
 
+import comida
 import config
 import perspectiva
 
@@ -19,6 +20,16 @@ def desenhar_cenario(tela, tempo):
     _desenhar_estrada(tela)
     _desenhar_linhas_de_chao(tela, tempo)
     _desenhar_divisorias(tela)
+
+
+def desenhar_comidas(tela, comidas):
+    """Desenha as comidas da mais distante para a mais proxima.
+
+    Nessa ordem a comida que esta na frente cobre a que vem atras, que e o que a
+    perspectiva pede.
+    """
+    for alimento in sorted(comidas, key=lambda item: item.z, reverse=True):
+        _desenhar_comida(tela, alimento)
 
 
 def desenhar_jogador(tela, jogador):
@@ -67,7 +78,7 @@ def _profundidades_das_linhas(tempo):
     """
     trecho_visivel = config.Z_HORIZONTE - config.Z_FUNDO_TELA
     espacamento = trecho_visivel / config.QTD_LINHAS_CHAO
-    andado = tempo * config.VELOCIDADE_CHAO
+    andado = tempo * config.VELOCIDADE_JOGO
     return [
         config.Z_FUNDO_TELA + (indice * espacamento - andado) % trecho_visivel
         for indice in range(config.QTD_LINHAS_CHAO)
@@ -97,3 +108,63 @@ def _desenhar_divisorias(tela):
             _ponto(divisoria, config.Z_FUNDO_TELA),
             config.ESPESSURA_DIVISORIA,
         )
+
+
+def _cor_da_comida(alimento):
+    """Verde para a comida boa, vermelho para a ruim."""
+    if alimento.tipo == comida.BOA:
+        return config.COR_COMIDA_BOA
+    return config.COR_COMIDA_RUIM
+
+
+def _desenhar_comida(tela, alimento):
+    """Coloca a comida apoiada no asfalto, do tamanho que a distancia manda."""
+    x, y, escala = perspectiva.projetar(alimento.pista, alimento.z)
+    lado = config.TAMANHO_COMIDA * escala
+    caixa = pygame.Rect(0, 0, lado, lado)
+    caixa.midbottom = (x, y)
+    _DESENHOS_POR_FORMA[alimento.forma](tela, _cor_da_comida(alimento), caixa)
+
+
+def _desenhar_circulo(tela, cor, caixa):
+    pygame.draw.circle(tela, cor, caixa.center, caixa.width / 2)
+
+
+def _desenhar_quadrado(tela, cor, caixa):
+    arredondamento = round(caixa.width * config.ARREDONDAMENTO_COMIDA)
+    pygame.draw.rect(tela, cor, caixa, border_radius=arredondamento)
+
+
+def _desenhar_triangulo(tela, cor, caixa):
+    pygame.draw.polygon(tela, cor, [caixa.midtop, caixa.bottomleft, caixa.bottomright])
+
+
+def _desenhar_losango(tela, cor, caixa):
+    pygame.draw.polygon(
+        tela, cor, [caixa.midtop, caixa.midright, caixa.midbottom, caixa.midleft]
+    )
+
+
+def _desenhar_garrafa(tela, cor, caixa):
+    """Retangulo alto e estreito: o refrigerante."""
+    estreitamento = caixa.width * (1 - config.LARGURA_GARRAFA)
+    garrafa = caixa.inflate(-estreitamento, 0)
+    arredondamento = round(garrafa.width * config.ARREDONDAMENTO_COMIDA)
+    pygame.draw.rect(tela, cor, garrafa, border_radius=arredondamento)
+
+
+def _desenhar_rosquinha(tela, cor, caixa):
+    """Anel: o furo do donut deixa o asfalto aparecer."""
+    raio = caixa.width / 2
+    espessura = max(1, round(caixa.width * config.ESPESSURA_ROSQUINHA))
+    pygame.draw.circle(tela, cor, caixa.center, raio, espessura)
+
+
+_DESENHOS_POR_FORMA = {
+    comida.CIRCULO: _desenhar_circulo,
+    comida.QUADRADO: _desenhar_quadrado,
+    comida.TRIANGULO: _desenhar_triangulo,
+    comida.LOSANGO: _desenhar_losango,
+    comida.GARRAFA: _desenhar_garrafa,
+    comida.ROSQUINHA: _desenhar_rosquinha,
+}

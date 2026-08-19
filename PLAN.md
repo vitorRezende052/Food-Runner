@@ -4,8 +4,9 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 2 — comida na pista** (Fases 0 e 1 concluídas: ambiente uv,
-estrada em perspectiva rolando e jogador trocando de pista, com pytest verde).
+Status geral: **Fase 3 — colisão, peso e pontuação** (Fases 0 a 2 concluídas:
+ambiente uv, estrada em perspectiva rolando, jogador trocando de pista e comida
+vindo do horizonte, com pytest verde).
 
 ---
 
@@ -51,8 +52,8 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual e troca de pista
 [x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
-[x] testes/        # test_config.py, test_perspectiva.py, test_jogador.py
-[ ] comida.py      # tipos de comida, spawn e avanço em z
+[x] testes/        # test_config, test_perspectiva, test_jogador, test_comida
+[x] comida.py      # tipos de comida, spawn e avanço em z
 [ ] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [ ] telas.py       # menu inicial (com instruções), pausa e game over
 [ ] audio.py       # síntese dos sons com numpy
@@ -113,11 +114,17 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   medir delta time e a tratar ← → e A/D. 20 testes verdes em
   `testes/test_perspectiva.py` e `testes/test_jogador.py`.
 
-### [ ] Fase 2 — Comida na pista
+### [x] Fase 2 — Comida na pista
 - `comida.py`: tipos bons (maçã, brócolis, cenoura, carne grelhada) e ruins (hambúrguer, batata frita, refri, donut) como formas coloridas — verde = boa, vermelho = ruim.
 - Spawn em `z = 1.0` numa pista sorteada, avanço em direção ao jogador, remoção ao passar.
 - Testes: spawn respeita as pistas válidas, comida some depois de passar, proporção bom/ruim.
 - **Pronto quando:** a comida vem do horizonte crescendo e atravessa o jogador sem efeito.
+- **Feito:** `comida.py` com o cardápio (nome + forma de cada alimento), `Comida`
+  (pista, tipo, `z`, `avancar`, `passou`), `sortear` e `GeradorDeComida`
+  (cronômetro de spawn, avanço e descarte). `desenho.desenhar_comidas` pinta da
+  mais distante para a mais próxima, com uma função por forma. `principal.py`
+  atualiza e desenha o gerador. 12 testes novos em `testes/test_comida.py`
+  (32 no total).
 
 ### [ ] Fase 3 — Colisão, peso e pontuação
 - `jogo.py`: colisão (mesma pista + `z` dentro da zona do jogador), peso, pontuação por distância e bônus.
@@ -165,4 +172,9 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — Constantes da perspectiva fechadas: `HORIZONTE_Y = 250`, `BASE_Y = 640` e `PROFUNDIDADE = 9.0` (com 9.0 o objeto no horizonte fica com 1/10 do tamanho). Pistas a 250 px de distância na base, o que deixa a estrada inteira dentro dos 960 px — há um teste garantindo isso.
 - **2026-08-19** — A estrada é desenhada até `Z_FUNDO_TELA = -0.03`, um pouco **além** do plano do jogador, para o asfalto sair pelo rodapé em vez de terminar nos pés dele. Como isso exige `z` negativo, `perspectiva.fator` aceita profundidade negativa (objeto passando pela câmera fica maior que 1.0) e trava em `Z_MINIMO = -0.05`, longe do ponto em que a divisão explodiria.
 - **2026-08-19** — Troca de pista com **duas posições**: `pista` (inteira, muda na hora, é a que vale para a colisão da fase 3) e `pista_visual` (quebrada, corre atrás em `DURACAO_TROCA_PISTA = 0,12 s`). Assim o desenho desliza sem que a lógica fique dependendo da animação.
+- **2026-08-19** — Cada alimento tem sua **forma própria** (círculo, triângulo, losango, quadrado, garrafa e rosquinha) — a cor continua sendo o único sinal de bom/ruim. Assim os 8 nomes do cardápio têm serventia e o jogador diferencia os itens de longe, sem custo nenhum de complexidade: é uma função de desenho por forma, trocável por sprite depois.
+- **2026-08-19** — `VELOCIDADE_CHAO` virou **`VELOCIDADE_JOGO`**, usada pelas linhas de chão e pela comida. Em ritmos diferentes a comida pareceria flutuar sobre o asfalto; de quebra, a fase 4 tem um único número para acelerar.
+- **2026-08-19** — A comida é descartada em `Z_SUMICO = Z_MINIMO`: nesse ponto ela já saiu pelo rodapé (há um teste conferindo) e é onde a projeção satura, então não faz sentido segui-la além disso.
+- **2026-08-19** — O `GeradorDeComida` recebe um `random.Random` opcional: no jogo ele usa o sorteio normal e nos testes recebe uma semente fixa, sem precisar de mock.
+- **2026-08-19** — Desenho em uma passada só, do fundo para a frente, e o jogador por último. No instante em que a comida cruza o plano dele ela fica escondida atrás do personagem — invisível na prática, e na fase 3 esse é justamente o momento em que ela some ao ser coletada.
 - **2026-08-19** — As linhas de chão são calculadas a partir do tempo de jogo (`_profundidades_das_linhas`), sem estado guardado: o cenário não precisa de objeto próprio.

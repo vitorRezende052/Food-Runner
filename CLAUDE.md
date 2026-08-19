@@ -55,7 +55,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] jogador.py     # personagem e troca de pista
 [x] desenho.py     # cenário, pistas, jogador, comidas e HUD
 [x] testes/        # testes pytest da lógica pura
-[ ] comida.py      # spawn e tipos de comida
+[x] comida.py      # spawn e tipos de comida
 [ ] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade
 [ ] telas.py       # menu inicial, pausa e game over
 [ ] audio.py       # síntese dos sons com numpy

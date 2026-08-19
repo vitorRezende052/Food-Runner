@@ -37,9 +37,11 @@ HORIZONTE_Y = 250
 BASE_Y = 640  # altura, na tela, do plano onde o jogador corre
 PROFUNDIDADE = 9.0  # com 9.0 um objeto no horizonte fica com 1/10 do tamanho
 
+# --- Ritmo da corrida ---
+VELOCIDADE_JOGO = 0.5  # em z por segundo: vale para o chao e para a comida
+
 # --- Chao rolando (so sensacao de velocidade, nao afeta a jogabilidade) ---
 QTD_LINHAS_CHAO = 14
-VELOCIDADE_CHAO = 0.5  # em z por segundo
 ESPESSURA_LINHA_CHAO = 5  # em pixels, na base; encolhe junto com a perspectiva
 ESPESSURA_DIVISORIA = 2  # em pixels, das linhas que separam as pistas
 
@@ -49,3 +51,13 @@ ALTURA_JOGADOR = 150
 RAIO_CABECA_JOGADOR = 46
 ARREDONDAMENTO_JOGADOR = 32  # canto arredondado do corpo, em pixels
 DURACAO_TROCA_PISTA = 0.12  # segundos para deslizar de uma pista para a vizinha
+
+# --- Comida ---
+Z_SPAWN = Z_HORIZONTE  # toda comida nasce no fundo da estrada
+Z_SUMICO = Z_MINIMO  # ja saiu pelo rodape: e o piso da projecao, nao adianta ir alem
+TAMANHO_COMIDA = 90  # lado da comida em pixels quando chega no jogador
+INTERVALO_SPAWN = 1.1  # segundos entre uma comida e a proxima
+CHANCE_COMIDA_RUIM = 0.60  # o resto sai comida boa
+ESPESSURA_ROSQUINHA = 0.28  # largura do anel do donut, em fracao do tamanho dele
+LARGURA_GARRAFA = 0.45  # largura do refrigerante, em fracao do tamanho dele
+ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das comidas quadradas, em fracao
