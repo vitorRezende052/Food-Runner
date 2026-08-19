@@ -21,7 +21,7 @@ def desenhar_menu(tela, recorde):
     """Titulo, instrucoes curtas e o recorde, por cima da estrada parada."""
     desenho.escurecer(tela, config.OPACIDADE_VEU_MENU)
     linhas = [
-        (config.TAMANHO_FONTE_TITULO, config.TITULO),
+        (config.TAMANHO_FONTE_TITULO, config.TITULO, config.COR_TITULO),
         (config.TAMANHO_FONTE_AVISO, "Coma o que faz bem e desvie dos ultraprocessados"),
         (config.TAMANHO_FONTE_AVISO, "Setas ou A e D trocam de pista"),
         (
@@ -52,6 +52,7 @@ def desenhar_game_over(tela, partida, recorde):
         (
             config.TAMANHO_FONTE_TITULO,
             f"Você chegou a {round(config.PESO_GAME_OVER)} kg",
+            config.COR_ALERTA,
         ),
         (
             config.TAMANHO_FONTE_HUD,

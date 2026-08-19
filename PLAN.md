@@ -4,12 +4,13 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 7 — polimento e balanceamento** (Fases 0 a 6 concluídas:
+Status geral: **Fase 8 — executável** (Fases 0 a 7 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
-de menu, pausa, game over e recorde em arquivo, e os quatro sons sintetizados
-com numpy, com pytest verde).
+de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
+com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
+bem —, com 104 testes verdes e o `README.md` no ar).
 
 ---
 
@@ -98,21 +99,27 @@ isso). Ficam todos centralizados, nenhum espalhado pelo código.
 | Pontos por distância | 10 por segundo (no ritmo inicial) |
 | Chance de comida ruim | 60% no começo → 85% no fim |
 | Velocidade | 0,5 z por segundo, subindo ~2× ao longo de ~3 min |
-| Intervalo entre spawns | 1,1 s no começo → 0,45 s no fim |
+| Intervalo entre spawns | 1,1 s no começo → 0,35 s no fim |
+| Comidas por spawn | 1 até a metade da rampa → 2, em pistas diferentes |
 | Tamanho da comida | 90 px de lado ao chegar no jogador |
 | Janela / FPS | 960×720, 60 FPS, movimento por delta time |
 
 A comida boa é mais rara e devolve menos peso do que a ruim adiciona: sem erro
 nenhum o jogo ainda aperta, e com o tempo termina.
 
-Toda a tabela já está valendo no `config.py`. Desde a fase 4, os três números
-que mudam com o tempo viram pares (largada e teto): `VELOCIDADE_INICIAL` 0,5 →
+Toda a tabela já está valendo no `config.py`. Desde a fase 4, os números que
+mudam com o tempo viram pares (largada e teto): `VELOCIDADE_INICIAL` 0,5 →
 `VELOCIDADE_MAXIMA` 1,0; `INTERVALO_SPAWN_INICIAL` 1,1 s →
-`INTERVALO_SPAWN_MINIMO` 0,45 s; `CHANCE_COMIDA_RUIM_INICIAL` 60% →
-`CHANCE_COMIDA_RUIM_MAXIMA` 85%, todos alcançados em `DURACAO_RAMPA = 180` s. A
-pontuação por distância virou `PONTOS_POR_Z = 20`, que no ritmo inicial de
-0,5 z/s dá exatamente os 10 pontos por segundo da tabela — e paga mais quando a
-corrida acelera.
+`INTERVALO_SPAWN_MINIMO` 0,35 s; `CHANCE_COMIDA_RUIM_INICIAL` 60% →
+`CHANCE_COMIDA_RUIM_MAXIMA` 85%; e, desde a fase 7,
+`COMIDAS_POR_SPAWN_INICIAL` 1 → `COMIDAS_POR_SPAWN_MAXIMA` 2 — todos alcançados
+em `DURACAO_RAMPA = 180` s. A pontuação por distância virou `PONTOS_POR_Z = 20`,
+que no ritmo inicial de 0,5 z/s dá exatamente os 10 pontos por segundo da tabela
+— e paga mais quando a corrida acelera.
+
+Os dois números que a fase 7 mexeu foram o intervalo mínimo de spawn (0,45 s →
+0,35 s) e a rajada, que é nova. O resto da tabela sobreviveu ao teste de jogo
+sem ajuste.
 
 ---
 
@@ -203,9 +210,17 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   a lista `eventos`, esvaziada a cada quadro, e o `main` a drena tocando o que
   vier. numpy 2.5.2 no ambiente. 18 testes novos: 98 no total.
 
-### [ ] Fase 7 — Polimento e balanceamento
+### [x] Fase 7 — Polimento e balanceamento
 - Jogar, ajustar os números do `config.py`, revisar nomes e comentários, garantir a suíte de testes verde.
 - Atualizar o `README.md` (o que é, como rodar, como jogar, como testar).
+- **Feito:** a rajada de spawn (`comidas_por_spawn` na `dificuldade`, mais o
+  `sortear_pistas` no `comida.py`) fechou o buraco que a fase 4 tinha anotado —
+  com uma comida por vez, um jogador atento nunca perdia. O
+  `INTERVALO_SPAWN_MINIMO` caiu de 0,45 s para 0,35 s. No polimento, o peso do
+  HUD fica alaranjado a partir de `PESO_DE_ALERTA = 80` kg e os títulos do menu
+  e do game over ganharam cor própria (`escrever_no_meio` passou a aceitar uma
+  cor por linha). `README.md` reescrito em português: o que é, como rodar, como
+  jogar, como testar e o mapa dos arquivos. 6 testes novos: 104 no total.
 
 ### [ ] Fase 8 — Executável
 - `uv add --dev pyinstaller` e build (flags a confirmar antes de rodar).
@@ -281,3 +296,39 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   formato pedido e converte por conta própria.
 - **2026-08-19** — Sem tecla de mudo: a fase não pede e o jogo é curto. Se fizer
   falta, entra na fase 7 em poucas linhas.
+- **2026-08-19** — A partida passou a soltar **duas comidas por spawn** a partir
+  da metade da rampa (`COMIDAS_POR_SPAWN_INICIAL` 1 →
+  `COMIDAS_POR_SPAWN_MAXIMA` 2, arredondando a mesma reta das outras três). Era
+  o buraco anotado na fase 4: simulando bots que leem a estrada inteira e reagem
+  em 0,20 s ou 0,35 s, **nenhum morria** em 6 minutos de jogo. Com uma comida
+  por vez a conta não fecha — a janela de colisão tem 0,08 em z e o spawn mais
+  apertado é de 0,35 s, então as três pistas nunca ficam bloqueadas juntas.
+  Encurtar mais o intervalo não resolveria; soltar mais de uma comida resolve.
+  Depois da mudança os mesmos bots morrem com mediana de 226 s a 312 s, e o
+  jogador parado continua morrendo por volta dos 80 s.
+- **2026-08-19** — A rajada é de **duas comidas, nunca três**: com três, todo
+  mundo morria junto por volta dos 150 s, no instante em que a conta arredonda —
+  morte por falta de saída, não por erro. Com duas sempre sobra pista livre, e a
+  regra `COMIDAS_POR_SPAWN_MAXIMA < QTD_PISTAS` virou teste para ninguém subir
+  esse número sem querer. As pistas da rajada saem de um `sample` (sem
+  reposição): duas comidas na mesma pista ficariam uma escondida atrás da outra.
+- **2026-08-19** — `sortear` passou a **receber a pista** em vez de sorteá-la
+  por dentro, e quem sorteia as pistas é o `sortear_pistas`. Sem isso não dava
+  para garantir pistas diferentes numa rajada — o sorteio por comida repetiria
+  faixa de vez em quando.
+- **2026-08-19** — `INTERVALO_SPAWN_MINIMO` de 0,45 s para **0,35 s**: medindo
+  os mesmos bots, é o valor que fecha o último caso de jogador que sobrevive
+  para sempre (de 4 em 12 para 1 em 12), sem apertar o jogador comum — a mediana
+  do bot mais lento praticamente não mudou. 0,40 s foi medido e não trouxe
+  diferença nenhuma.
+- **2026-08-19** — O peso do HUD fica **alaranjado a partir de 80 kg**
+  (`PESO_DE_ALERTA`, `COR_ALERTA`), e a mesma cor pinta o título do game over. É
+  o único aviso de perigo do jogo: com o peso em número, sem barra, faltava um
+  sinal periférico de que a corrida estava perto do fim.
+- **2026-08-19** — `escrever_no_meio` passou a aceitar linhas de **dois ou três
+  itens**: `(tamanho, texto)` usa a cor padrão e `(tamanho, texto, cor)` escolhe
+  outra. Foi o jeito de dar cor ao título do menu e ao do game over sem obrigar
+  as outras treze linhas das telas a repetir `config.COR_TEXTO`.
+- **2026-08-19** — Sem tela de mudo e sem sprites: a fase 7 é de polimento e
+  balanceamento, e o jogo é curto. Fica registrado que a arte continua sendo
+  formas coloridas, como o `CLAUDE.md` prevê, trocáveis por sprite depois.

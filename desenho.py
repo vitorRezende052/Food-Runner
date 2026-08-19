@@ -54,7 +54,7 @@ def desenhar_hud(tela, partida):
     peso = letra.render(
         f"{round(partida.peso)} / {round(config.PESO_GAME_OVER)} kg",
         True,
-        config.COR_TEXTO,
+        _cor_do_peso(partida.peso),
     )
     pontos = letra.render(
         f"Pontos: {com_separador(partida.pontuacao)}", True, config.COR_TEXTO
@@ -64,6 +64,13 @@ def desenhar_hud(tela, partida):
     tela.blit(
         pontos, (config.LARGURA - config.MARGEM_HUD - largura_pontos, config.MARGEM_HUD)
     )
+
+
+def _cor_do_peso(peso):
+    """Perto do limite o numero fica alaranjado: e o aviso de que a corrida vai acabar."""
+    if peso >= config.PESO_DE_ALERTA:
+        return config.COR_ALERTA
+    return config.COR_TEXTO
 
 
 def escurecer(tela, opacidade=config.OPACIDADE_VEU):
@@ -90,10 +97,14 @@ def com_separador(numero):
 
 
 def escrever_no_meio(tela, linhas):
-    """Empilha as linhas ``(tamanho da fonte, texto)`` centralizadas na tela."""
+    """Empilha as linhas centralizadas na tela.
+
+    Cada linha e ``(tamanho da fonte, texto)`` ou, quando quiser fugir da cor
+    padrao, ``(tamanho da fonte, texto, cor)``.
+    """
     imagens = [
-        fonte(tamanho).render(texto, True, config.COR_TEXTO)
-        for tamanho, texto in linhas
+        fonte(tamanho).render(texto, True, cor)
+        for tamanho, texto, cor in map(_com_cor, linhas)
     ]
     alturas = sum(imagem.get_height() for imagem in imagens)
     altura_total = alturas + config.ESPACO_ENTRE_LINHAS * (len(imagens) - 1)
@@ -102,6 +113,13 @@ def escrever_no_meio(tela, linhas):
     for imagem in imagens:
         tela.blit(imagem, ((config.LARGURA - imagem.get_width()) // 2, y))
         y += imagem.get_height() + config.ESPACO_ENTRE_LINHAS
+
+
+def _com_cor(linha):
+    """Completa a linha com a cor padrao do texto quando ela nao trouxe uma."""
+    if len(linha) == 2:
+        return (*linha, config.COR_TEXTO)
+    return linha
 
 
 def _bordas_da_estrada():
