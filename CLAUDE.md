@@ -46,7 +46,7 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 ## Estrutura
 Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
 
-`[x]` = já existe; o resto entra nas fases seguintes (o status por fase fica no `PLAN.md`).
+`[x]` = já existe. Todos os módulos previstos existem desde a fase 6 (o status por fase fica no `PLAN.md`).
 
 ```
 [x] main.py        # loop principal e troca de telas (ponto de entrada)

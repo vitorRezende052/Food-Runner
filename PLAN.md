@@ -47,7 +47,8 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 
 ## Estrutura de arquivos
 
-`[x]` = já existe no repositório; o resto entra nas fases seguintes.
+`[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
+existem; o que falta nas fases 7 e 8 é polimento e empacotamento, não código novo.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -76,7 +77,7 @@ mudou-se para o `telas.py` na fase 5, junto do menu e da pausa; o `desenho.py`
 ficou com o cenário, o HUD e os utilitários de texto que as duas camadas usam
 (`fonte`, `com_separador`, `escrever_no_meio` e `escurecer`). O `audio.py` da
 fase 6 nasceu exatamente onde o plano previa, sem tocar em nenhum outro módulo
-além de três linhas no `main.py` e quatro no `jogo.py`. Nada disso é
+além de sete linhas no `main.py` e seis no `jogo.py`. Nada disso é
 definitivo: se um arquivo ficar pequeno demais ou grande demais no caminho, ele
 é fundido ou dividido — e a mudança é anotada aqui.
 
@@ -200,7 +201,7 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   (quadrada 180→110 Hz), game over desce mais fundo e mais devagar (quadrada
   330→220→165 Hz) e a confirmação é um toque só (senoide 520 Hz). A `Jogo` ganhou
   a lista `eventos`, esvaziada a cada quadro, e o `main` a drena tocando o que
-  vier. 18 testes novos: 98 no total.
+  vier. numpy 2.5.2 no ambiente. 18 testes novos: 98 no total.
 
 ### [ ] Fase 7 — Polimento e balanceamento
 - Jogar, ajustar os números do `config.py`, revisar nomes e comentários, garantir a suíte de testes verde.
