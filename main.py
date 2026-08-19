@@ -2,6 +2,7 @@
 
 import pygame
 
+import audio
 import config
 import desenho
 import jogador
@@ -69,6 +70,7 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
 def executar():
     """Inicializa o pygame, roda o loop principal e encerra tudo no final."""
     pygame.init()
+    audio.iniciar()
     tela = pygame.display.set_mode((config.LARGURA, config.ALTURA))
     pygame.display.set_caption(config.TITULO)
     relogio = pygame.time.Clock()
@@ -84,13 +86,18 @@ def executar():
             if evento.type == pygame.QUIT:
                 estado = telas.SAINDO
             elif evento.type == pygame.KEYDOWN:
-                estado = tratar_tecla(estado, partida, evento.key)
+                proximo = tratar_tecla(estado, partida, evento.key)
+                if proximo != estado:  # trocou de tela: confirma para o jogador
+                    audio.tocar(config.SOM_CONFIRMACAO)
+                estado = proximo
 
         if estado == telas.SAINDO:
             continue  # pediram para fechar: nao vale desenhar mais um quadro
 
         if estado == telas.JOGANDO:
             partida.atualizar(dt)
+            for som in partida.eventos:  # o que a partida acabou de fazer soar
+                audio.tocar(som)
             if partida.acabou:  # unico ponto em que a partida termina
                 melhor_pontuacao = recorde.salvar(partida.pontuacao)
                 estado = telas.FIM

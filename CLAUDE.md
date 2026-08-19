@@ -59,7 +59,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade
 [x] dificuldade.py # rampa de velocidade, spawn e chance de comida ruim
 [x] telas.py       # menu inicial, pausa e game over
-[ ] audio.py       # síntese dos sons com numpy
+[x] audio.py       # síntese dos sons com numpy
 [x] recorde.py     # lê e grava a maior pontuação
 ```
 

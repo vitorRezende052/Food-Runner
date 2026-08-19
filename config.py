@@ -87,3 +87,17 @@ MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
 ESPACO_ENTRE_LINHAS = 40  # separacao das linhas do aviso de game over
 OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)
 OPACIDADE_VEU_MENU = 130  # no menu o veu e mais leve: a estrada fica a vista
+
+# --- Audio ---
+# Os quatro sons do jogo. Os nomes moram aqui, e nao no audio.py, porque a
+# partida avisa o que aconteceu e o audio toca: assim os dois falam a mesma
+# lingua sem a logica pura precisar importar o pygame.
+SOM_COLETA = "coleta"  # engoliu comida boa
+SOM_IMPACTO = "impacto"  # engoliu ultraprocessado
+SOM_FIM = "fim"  # a balanca bateu no limite
+SOM_CONFIRMACAO = "confirmacao"  # o jogador trocou de tela
+
+TAXA_AMOSTRAGEM = 44100  # amostras por segundo das ondas sintetizadas
+AMPLITUDE_SOM = 32767  # maior valor de uma amostra em 16 bits
+VOLUME_SOM = 0.35  # fracao da amplitude maxima: som audivel e sem estouro
+ATAQUE_DO_SOM = 0.05  # fracao da nota gasta subindo do silencio, para nao estalar

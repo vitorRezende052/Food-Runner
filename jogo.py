@@ -19,6 +19,9 @@ class Jogo:
     Junta o corredor e o gerador de comida e cuida do que acontece quando os
     dois se encontram. ``aleatorio`` e repassado ao gerador: no jogo fica em
     ``None`` (sorteio normal) e nos testes recebe uma semente fixa.
+
+    ``eventos`` guarda, so pelo quadro atual, o que aconteceu de notavel — e
+    dai que o ``main`` tira os sons a tocar, sem a partida precisar do pygame.
     """
 
     def __init__(self, aleatorio=None):
@@ -33,6 +36,7 @@ class Jogo:
         self.tempo = 0.0
         self.distancia = 0.0
         self.bonus = 0
+        self.eventos = []
         self.acabou = False
 
     @property
@@ -44,6 +48,7 @@ class Jogo:
         """Avanca a partida em ``dt`` segundos. Depois do game over nada mais anda."""
         if self.acabou:
             return
+        self.eventos = []  # o que acontecer neste quadro, para o main sonorizar
         self.tempo += dt
         self.distancia += dificuldade.velocidade(self.tempo) * dt
         self.corredor.atualizar(dt)
@@ -73,9 +78,13 @@ class Jogo:
             self.peso = min(
                 self.peso + config.PESO_GANHO_COMIDA_RUIM, config.PESO_GAME_OVER
             )
+            self.eventos.append(config.SOM_IMPACTO)
             self.acabou = self.peso >= config.PESO_GAME_OVER
+            if self.acabou:
+                self.eventos.append(config.SOM_FIM)
         else:
             self.peso = max(
                 self.peso - config.PESO_PERDIDO_COMIDA_BOA, config.PESO_MINIMO
             )
             self.bonus += config.BONUS_COMIDA_BOA
+            self.eventos.append(config.SOM_COLETA)

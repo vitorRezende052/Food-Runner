@@ -4,11 +4,12 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 6 — áudio sintetizado** (Fases 0 a 5 concluídas: ambiente
-uv, estrada em perspectiva rolando, jogador trocando de pista, comida vindo do
-horizonte, a partida completa — peso, pontuação, HUD e game over —, a rampa de
-dificuldade que aperta a corrida ao longo de 3 minutos e o ciclo fechado de
-menu, pausa, game over e recorde em arquivo, com pytest verde).
+Status geral: **Fase 7 — polimento e balanceamento** (Fases 0 a 6 concluídas:
+ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
+vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
+rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
+de menu, pausa, game over e recorde em arquivo, e os quatro sons sintetizados
+com numpy, com pytest verde).
 
 ---
 
@@ -55,12 +56,13 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 [x] jogador.py     # pista atual e troca de pista
 [x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
-                   # test_jogo, test_dificuldade, test_recorde, test_telas
+                   # test_jogo, test_dificuldade, test_recorde, test_telas,
+                   # test_audio
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
 [x] telas.py       # menu inicial (com instruções), pausa e game over
-[ ] audio.py       # síntese dos sons com numpy
+[x] audio.py       # síntese dos sons com numpy
 [x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
@@ -72,10 +74,11 @@ dentro do `jogo.py`, mas ela é lógica pura sobre o tempo, do mesmo naipe da
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
 mudou-se para o `telas.py` na fase 5, junto do menu e da pausa; o `desenho.py`
 ficou com o cenário, o HUD e os utilitários de texto que as duas camadas usam
-(`fonte`, `com_separador`, `escrever_no_meio` e `escurecer`). Nada disso é
-definitivo: se um
-arquivo ficar pequeno demais ou grande demais no caminho, ele é fundido ou
-dividido — e a mudança é anotada aqui.
+(`fonte`, `com_separador`, `escrever_no_meio` e `escurecer`). O `audio.py` da
+fase 6 nasceu exatamente onde o plano previa, sem tocar em nenhum outro módulo
+além de três linhas no `main.py` e quatro no `jogo.py`. Nada disso é
+definitivo: se um arquivo ficar pequeno demais ou grande demais no caminho, ele
+é fundido ou dividido — e a mudança é anotada aqui.
 
 ---
 
@@ -187,10 +190,17 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   `JOGANDO` faz o tempo andar. 19 testes novos (`test_recorde.py` e
   `test_telas.py`): 80 no total.
 
-### [ ] Fase 6 — Áudio sintetizado
+### [x] Fase 6 — Áudio sintetizado
 - `audio.py` com numpy: som de coleta (boa), impacto (ruim), game over e confirmação do menu. Sem arquivos externos.
 - Falha de áudio (máquina sem dispositivo) não pode derrubar o jogo.
 - **Pronto quando:** cada evento tem seu som e o jogo continua rodando mesmo sem placa de som.
+- **Feito:** `audio.py` com `envelope`, `onda`, `sintetizar` (numpy puro) e o par
+  `iniciar`/`tocar` (a única parte que fala com o pygame). As quatro receitas são
+  uma tabela de notas: coleta sobe (senoide 660→880 Hz), impacto desce grave
+  (quadrada 180→110 Hz), game over desce mais fundo e mais devagar (quadrada
+  330→220→165 Hz) e a confirmação é um toque só (senoide 520 Hz). A `Jogo` ganhou
+  a lista `eventos`, esvaziada a cada quadro, e o `main` a drena tocando o que
+  vier. 18 testes novos: 98 no total.
 
 ### [ ] Fase 7 — Polimento e balanceamento
 - Jogar, ajustar os números do `config.py`, revisar nomes e comentários, garantir a suíte de testes verde.
@@ -240,3 +250,33 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-19** — `ler` e `salvar` recebem um **`caminho` opcional**, mesmo truque do `aleatorio=None` do `GeradorDeComida`: no jogo fica em `None` (o arquivo de verdade) e nos testes recebe o `tmp_path` do pytest, sem mock e sem escrever na máquina de quem roda a suíte. Quem grava é só o `main.py`, no único instante em que a partida acaba.
 - **2026-08-19** — A fonte padrão do pygame **não tem os glifos das setas**: `←` e `→` saem como quadradinhos vazios. O menu escreve "Setas ou A e D trocam de pista" — os controles continuam os mesmos, só o texto mudou. Se algum dia entrar uma fonte própria no projeto, dá para voltar às setas.
 - **2026-08-19** — O menu desenha a **estrada parada atrás de um véu mais leve** (`OPACIDADE_VEU_MENU = 130`, contra os 200 da pausa e do game over): custa uma linha, já que o cenário é uma função sem estado, e o menu deixa de ser um retângulo preto com texto.
+
+- **2026-08-19** — Os nomes dos quatro sons (`SOM_COLETA`, `SOM_IMPACTO`,
+  `SOM_FIM`, `SOM_CONFIRMACAO`) moram no **`config.py`**, não no `audio.py`. A
+  partida precisa dizer o que aconteceu e o áudio precisa saber o que tocar; se
+  o vocabulário morasse no `audio.py`, o `jogo.py` — lógica pura — teria de
+  importar pygame e numpy só para nomear um evento. O `config` já é o módulo que
+  todo mundo importa e que não importa ninguém, então é o lugar natural.
+- **2026-08-19** — A partida avisa por uma **lista `eventos`, esvaziada no início
+  de cada `atualizar`**, e quem toca é o `main`. A alternativa era o `jogo.py`
+  chamar o áudio direto, o que quebraria a regra de a lógica não conhecer pixel
+  nem placa de som e obrigaria os testes a lidar com o mixer. Do jeito que ficou,
+  `test_jogo.py` confere os avisos com um `assert` numa lista de strings.
+- **2026-08-19** — O som de confirmação toca em **toda troca de tela**, não só ao
+  começar a partida: são três linhas no `main` (`tratar_tecla` devolveu um estado
+  diferente → toca) e cobre começar, pausar, despausar, voltar ao menu e
+  recomeçar de uma vez.
+- **2026-08-19** — Timbre **misto**: senoide na coleta e na confirmação, onda
+  quadrada no impacto e no game over. Tudo em quadrada ficaria agressivo demais
+  no fim da rampa, quando a comida ruim aparece a cada 0,45 s; tudo em senoide
+  tiraria a punição do erro.
+- **2026-08-19** — Toda nota passa por um **envelope** (sobe em 5% da duração e
+  desce até zero). Sem ele a onda começa e termina cortada no meio e o
+  alto-falante estala — há teste conferindo que a nota começa e acaba no silêncio.
+- **2026-08-19** — O mixer é aberto com **`channels=1, allowedchanges=0`**. Sem o
+  `allowedchanges=0` o Windows abre em estéreo mesmo tendo sido pedido mono, e aí
+  o `make_sound` recusa o array de uma dimensão e o jogo fica mudo sem avisar —
+  foi o que aconteceu no primeiro teste da fase. Com a trava o SDL aceita o
+  formato pedido e converte por conta própria.
+- **2026-08-19** — Sem tecla de mudo: a fase não pede e o jogo é curto. Se fizer
+  falta, entra na fase 7 em poucas linhas.

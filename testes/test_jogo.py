@@ -183,3 +183,34 @@ def test_comida_ruim_engorda_mais_do_que_a_boa_emagrece():
     """A regra de balanceamento do plano: sem erro nenhum o jogo ainda aperta."""
     assert config.PESO_GANHO_COMIDA_RUIM > config.PESO_PERDIDO_COMIDA_BOA
     assert config.PESO_MINIMO < config.PESO_INICIAL < config.PESO_GAME_OVER
+
+
+def test_comer_comida_boa_avisa_o_som_de_coleta():
+    partida = partida_limpa()
+    por_na_estrada(partida, comida.BOA, partida.corredor.pista)
+    partida.atualizar(0)
+    assert partida.eventos == [config.SOM_COLETA]
+
+
+def test_comer_comida_ruim_avisa_o_som_de_impacto():
+    partida = partida_limpa()
+    por_na_estrada(partida, comida.RUIM, partida.corredor.pista)
+    partida.atualizar(0)
+    assert partida.eventos == [config.SOM_IMPACTO]
+
+
+def test_o_ultimo_ultraprocessado_avisa_impacto_e_fim():
+    partida = partida_limpa()
+    partida.peso = config.PESO_GAME_OVER - config.PESO_GANHO_COMIDA_RUIM
+    por_na_estrada(partida, comida.RUIM, partida.corredor.pista)
+    partida.atualizar(0)
+    assert partida.eventos == [config.SOM_IMPACTO, config.SOM_FIM]
+    assert partida.acabou
+
+
+def test_quadro_sem_colisao_nao_avisa_nada():
+    partida = partida_limpa()
+    por_na_estrada(partida, comida.BOA, partida.corredor.pista)
+    partida.atualizar(0)
+    partida.atualizar(0.1)
+    assert partida.eventos == []  # o aviso do quadro anterior nao fica ecoando
