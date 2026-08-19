@@ -57,6 +57,7 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
                    # test_jogo, test_dificuldade
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
+[x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
 [ ] telas.py       # menu inicial (com instruções), pausa e game over
 [ ] audio.py       # síntese dos sons com numpy
 [ ] recorde.py     # lê e grava a maior pontuação em arquivo local
@@ -66,11 +67,11 @@ Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Os
 desvios foram dois: o ponto de entrada, que virou `main.py`, e o
 `dificuldade.py`, arquivo novo que a fase 4 trouxe — o plano imaginava a rampa
 dentro do `jogo.py`, mas ela é lógica pura sobre o tempo, do mesmo naipe da
-`perspectiva.py`, e sozinha num arquivo dá para ler a curva inteira de uma vez. O aviso de game over da
-fase 3 nasceu dentro do `desenho.py`; na fase 5 ele se muda para o `telas.py`,
-junto do menu e da pausa. Nada disso é definitivo: se um arquivo ficar pequeno
-demais ou grande demais no caminho, ele é fundido ou dividido — e a mudança é
-anotada aqui.
+`perspectiva.py`, e sozinha num arquivo dá para ler a curva inteira de uma vez.
+O aviso de game over da fase 3 nasceu dentro do `desenho.py`; na fase 5 ele se
+muda para o `telas.py`, junto do menu e da pausa. Nada disso é definitivo: se um
+arquivo ficar pequeno demais ou grande demais no caminho, ele é fundido ou
+dividido — e a mudança é anotada aqui.
 
 ---
 
