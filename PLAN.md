@@ -4,7 +4,8 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 0 — ambiente** (nenhum código escrito ainda).
+Status geral: **Fase 1 — perspectiva e jogador** (Fase 0 concluída: ambiente uv,
+janela abrindo e pytest verde).
 
 ---
 
@@ -48,7 +49,7 @@ desenho.py        # desenha cenário, pistas, jogador, comidas e HUD
 telas.py          # menu inicial (com instruções), pausa e game over
 audio.py          # síntese dos sons com numpy
 recorde.py        # lê e grava a maior pontuação em arquivo local
-testes/           # test_perspectiva.py, test_jogador.py, test_comida.py, test_jogo.py, test_recorde.py
+testes/           # test_config.py, test_perspectiva.py, test_jogador.py, test_comida.py, test_jogo.py, test_recorde.py
 ```
 
 Nada disso é definitivo: se um arquivo ficar pequeno demais ou grande demais no
@@ -85,10 +86,12 @@ Cada fase deixa o jogo **rodando** (`uv run principal.py`), com os testes da
 lógica alterada passando, e termina em pelo menos um commit em português.
 Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da próxima.
 
-### [ ] Fase 0 — Ambiente
+### [x] Fase 0 — Ambiente
 - `uv init`, `uv add pygame-ce`, `uv add --dev pytest`, `.gitignore` (`.venv`, `__pycache__`, `dist`, `build`, `recorde.json`).
 - `config.py` com tela e cores; `principal.py` abrindo uma janela preta 960×720 que fecha no ESC/X.
 - **Pronto quando:** `uv run principal.py` abre a janela e `uv run pytest` roda.
+- **Feito:** pygame-ce 2.5.8 e pytest 9.1.1 no ambiente; `config.py` (janela + paleta),
+  `principal.py` (loop com `relogio.tick`, saída no ESC/X) e `testes/test_config.py`.
 
 ### [ ] Fase 1 — Perspectiva e jogador
 - `perspectiva.py` com a projeção descrita acima.
@@ -143,3 +146,6 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-18** — Perspectiva **pseudo-3D** escolhida no lugar do top-down 2D: fica mais perto da referência (Subway Surfers). Custo aceito: a projeção `(pista, z) → tela` fica isolada em `perspectiva.py` para a lógica seguir testável.
 - **2026-08-18** — Extras aprovados além do escopo original: recorde salvo em arquivo, pausa (ESC/P) e instruções no menu.
 - **2026-08-18** — `uv` 0.12.5 instalado via winget (não existia na máquina).
+- **2026-08-18** — Layout **achatado na raiz** em vez do `src/food_runner/` que o `uv init` criou: o alvo é um executável PyInstaller, não um pacote publicável, então `[project.scripts]` e `[build-system]` saíram do `pyproject.toml` e os módulos ficam na raiz (`uv run principal.py`, como o plano previa).
+- **2026-08-18** — Python **3.12** (`.python-version`) em vez do 3.14 do sistema: é a versão com suporte mais rodado em pygame-ce e PyInstaller, e a fase 8 depende dos dois.
+- **2026-08-18** — pytest configurado no `pyproject.toml` (`testpaths = ["testes"]`, `pythonpath = ["."]`) para os testes importarem os módulos da raiz sem gambiarra de `sys.path`.
