@@ -41,27 +41,31 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Sincronizar ambiente: `uv sync`
 - Rodar testes: `uv run pytest`
 - Build (confirmar flags): `uv run pyinstaller --onefile --windowed principal.py`
+- Conferir o desenho sem abrir janela: num script à parte, `SDL_VIDEODRIVER=dummy` + desenhar num `pygame.Surface` + `pygame.image.save` — bom para checar a perspectiva rápido, sem ficar abrindo o jogo.
 
-## Estrutura (planejada — ajuste conforme o jogo crescer)
-Você decide a arquitetura. O esboço abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
+## Estrutura
+Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
+
+`[x]` = já existe; o resto entra nas fases seguintes (o status por fase fica no `PLAN.md`).
 
 ```
-principal.py      # loop principal e troca de telas (ponto de entrada)
-config.py         # valores centralizados: cores, tamanhos, balanceamento, velocidades
-perspectiva.py    # projeta (pista, profundidade z) -> (x, y, escala) na tela
-jogador.py        # personagem e troca de pista
-comida.py         # spawn e tipos de comida
-jogo.py           # estado da partida, colisões, pontuação, peso, dificuldade
-desenho.py        # cenário, pistas, jogador, comidas e HUD
-telas.py          # menu inicial, pausa e game over
-audio.py          # síntese dos sons com numpy
-recorde.py        # lê e grava a maior pontuação
-testes/           # testes pytest da lógica pura
+[x] principal.py   # loop principal e troca de telas (ponto de entrada)
+[x] config.py      # valores centralizados: cores, tamanhos, balanceamento, velocidades
+[x] perspectiva.py # projeta (pista, profundidade z) -> (x, y, escala) na tela
+[x] jogador.py     # personagem e troca de pista
+[x] desenho.py     # cenário, pistas, jogador, comidas e HUD
+[x] testes/        # testes pytest da lógica pura
+[ ] comida.py      # spawn e tipos de comida
+[ ] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade
+[ ] telas.py       # menu inicial, pausa e game over
+[ ] audio.py       # síntese dos sons com numpy
+[ ] recorde.py     # lê e grava a maior pontuação
 ```
 
 ## Convenções
 - Modular: arquivos pequenos, uma responsabilidade cada.
 - **Tudo em pt-br:** nomes de variáveis, funções, classes e arquivos; comentários e docstrings; e todo o texto visível no jogo (menu, HUD, game over, mensagens). Nomes de arquivo sem acentos e sem cedilha.
+- **Acentos só no que o jogador lê:** dentro do código (nomes, comentários e docstrings) escrevemos sem acento e sem cedilha, como já está em `config.py` e `perspectiva.py`; o texto que aparece na tela vai acentuado normalmente.
 - Sem números mágicos: cores, tamanhos e balanceamento centralizados num módulo de configuração (não espalhados pelo código).
 - Commits pequenos, descritivos, **em português**, no modo imperativo (ex.: `adiciona troca de pista`).
 - Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica.

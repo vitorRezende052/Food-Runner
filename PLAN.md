@@ -24,11 +24,16 @@ Toda a lógica trabalha com dois valores por objeto: a **pista** (0, 1 ou 2) e a
 hora de desenhar isso vira pixel:
 
 ```
-fator  = 1 / (1 + z * PROFUNDIDADE)      # 1.0 na base, ~0 no horizonte
+fator  = 1 / (1 + z * PROFUNDIDADE)      # 1.0 na base, 0.1 no horizonte
 y_tela = HORIZONTE_Y + (BASE_Y - HORIZONTE_Y) * fator
 x_tela = MEIO_X + deslocamento_da_pista * fator
 escala = fator                            # tamanho do objeto na tela
 ```
+
+Com `PROFUNDIDADE = 9.0`, um objeto no horizonte aparece com 1/10 do tamanho que
+terá ao chegar no jogador. O `z` passa por `max(z, Z_MINIMO)` antes da conta: `z`
+negativo é legítimo (objeto passando pela câmera fica **maior** que 1.0) e a
+trava só evita o ponto em que a divisão explodiria.
 
 Vantagem: colisão, spawn e dificuldade são matemática pura sobre `pista` e `z`,
 sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolada em
@@ -36,23 +41,26 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 
 ---
 
-## Estrutura de arquivos planejada
+## Estrutura de arquivos
+
+`[x]` = já existe no repositório; o resto entra nas fases seguintes.
 
 ```
-principal.py      # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
-config.py         # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
-perspectiva.py    # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
-jogador.py        # pista atual e troca de pista
-comida.py         # tipos de comida, spawn e avanço em z
-jogo.py           # estado da partida: peso, pontuação, dificuldade, colisões
-desenho.py        # desenha cenário, pistas, jogador, comidas e HUD
-telas.py          # menu inicial (com instruções), pausa e game over
-audio.py          # síntese dos sons com numpy
-recorde.py        # lê e grava a maior pontuação em arquivo local
-testes/           # test_config.py, test_perspectiva.py, test_jogador.py, test_comida.py, test_jogo.py, test_recorde.py
+[x] principal.py   # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
+[x] config.py      # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
+[x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
+[x] jogador.py     # pista atual e troca de pista
+[x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
+[x] testes/        # test_config.py, test_perspectiva.py, test_jogador.py
+[ ] comida.py      # tipos de comida, spawn e avanço em z
+[ ] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
+[ ] telas.py       # menu inicial (com instruções), pausa e game over
+[ ] audio.py       # síntese dos sons com numpy
+[ ] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-Nada disso é definitivo: se um arquivo ficar pequeno demais ou grande demais no
+Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Nada
+disso é definitivo: se um arquivo ficar pequeno demais ou grande demais no
 caminho, ele é fundido ou dividido — e a mudança é anotada aqui.
 
 ---
@@ -153,8 +161,8 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-18** — `uv` 0.12.5 instalado via winget (não existia na máquina).
 - **2026-08-18** — Layout **achatado na raiz** em vez do `src/food_runner/` que o `uv init` criou: o alvo é um executável PyInstaller, não um pacote publicável, então `[project.scripts]` e `[build-system]` saíram do `pyproject.toml` e os módulos ficam na raiz (`uv run principal.py`, como o plano previa).
 - **2026-08-18** — Python **3.12** (`.python-version`) em vez do 3.14 do sistema: é a versão com suporte mais rodado em pygame-ce e PyInstaller, e a fase 8 depende dos dois.
+- **2026-08-18** — pytest configurado no `pyproject.toml` (`testpaths = ["testes"]`, `pythonpath = ["."]`) para os testes importarem os módulos da raiz sem gambiarra de `sys.path`.
 - **2026-08-19** — Constantes da perspectiva fechadas: `HORIZONTE_Y = 250`, `BASE_Y = 640` e `PROFUNDIDADE = 9.0` (com 9.0 o objeto no horizonte fica com 1/10 do tamanho). Pistas a 250 px de distância na base, o que deixa a estrada inteira dentro dos 960 px — há um teste garantindo isso.
 - **2026-08-19** — A estrada é desenhada até `Z_FUNDO_TELA = -0.03`, um pouco **além** do plano do jogador, para o asfalto sair pelo rodapé em vez de terminar nos pés dele. Como isso exige `z` negativo, `perspectiva.fator` aceita profundidade negativa (objeto passando pela câmera fica maior que 1.0) e trava em `Z_MINIMO = -0.05`, longe do ponto em que a divisão explodiria.
 - **2026-08-19** — Troca de pista com **duas posições**: `pista` (inteira, muda na hora, é a que vale para a colisão da fase 3) e `pista_visual` (quebrada, corre atrás em `DURACAO_TROCA_PISTA = 0,12 s`). Assim o desenho desliza sem que a lógica fique dependendo da animação.
 - **2026-08-19** — As linhas de chão são calculadas a partir do tempo de jogo (`_profundidades_das_linhas`), sem estado guardado: o cenário não precisa de objeto próprio.
-- **2026-08-18** — pytest configurado no `pyproject.toml` (`testpaths = ["testes"]`, `pythonpath = ["."]`) para os testes importarem os módulos da raiz sem gambiarra de `sys.path`.
