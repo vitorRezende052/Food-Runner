@@ -4,8 +4,8 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`) e as decisões que surgirem no caminho são registradas na seção "Decisões
 tomadas durante a execução". As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 1 — perspectiva e jogador** (Fase 0 concluída: ambiente uv,
-janela abrindo e pytest verde).
+Status geral: **Fase 2 — comida na pista** (Fases 0 e 1 concluídas: ambiente uv,
+estrada em perspectiva rolando e jogador trocando de pista, com pytest verde).
 
 ---
 
@@ -93,12 +93,17 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **Feito:** pygame-ce 2.5.8 e pytest 9.1.1 no ambiente; `config.py` (janela + paleta),
   `principal.py` (loop com `relogio.tick`, saída no ESC/X) e `testes/test_config.py`.
 
-### [ ] Fase 1 — Perspectiva e jogador
+### [x] Fase 1 — Perspectiva e jogador
 - `perspectiva.py` com a projeção descrita acima.
 - `desenho.py` desenhando o horizonte, as 3 pistas convergindo e linhas de chão rolando (sensação de velocidade).
 - `jogador.py`: pista central, troca com ← → e A/D, com uma interpolação curta entre pistas (movimento não teleporta).
 - Testes: projeção (horizonte menor que base, pistas na ordem certa) e troca de pista (não passa das bordas).
 - **Pronto quando:** dá para correr pela pista e trocar de faixa, sem obstáculos.
+- **Feito:** `perspectiva.py` (`fator`, `deslocamento_da_pista`, `projetar`),
+  `jogador.py` (pista lógica + `pista_visual` deslizando) e `desenho.py`
+  (estrada, linhas de chão rolando e o personagem). `principal.py` passou a
+  medir delta time e a tratar ← → e A/D. 20 testes verdes em
+  `testes/test_perspectiva.py` e `testes/test_jogador.py`.
 
 ### [ ] Fase 2 — Comida na pista
 - `comida.py`: tipos bons (maçã, brócolis, cenoura, carne grelhada) e ruins (hambúrguer, batata frita, refri, donut) como formas coloridas — verde = boa, vermelho = ruim.
@@ -148,4 +153,8 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 - **2026-08-18** — `uv` 0.12.5 instalado via winget (não existia na máquina).
 - **2026-08-18** — Layout **achatado na raiz** em vez do `src/food_runner/` que o `uv init` criou: o alvo é um executável PyInstaller, não um pacote publicável, então `[project.scripts]` e `[build-system]` saíram do `pyproject.toml` e os módulos ficam na raiz (`uv run principal.py`, como o plano previa).
 - **2026-08-18** — Python **3.12** (`.python-version`) em vez do 3.14 do sistema: é a versão com suporte mais rodado em pygame-ce e PyInstaller, e a fase 8 depende dos dois.
+- **2026-08-19** — Constantes da perspectiva fechadas: `HORIZONTE_Y = 250`, `BASE_Y = 640` e `PROFUNDIDADE = 9.0` (com 9.0 o objeto no horizonte fica com 1/10 do tamanho). Pistas a 250 px de distância na base, o que deixa a estrada inteira dentro dos 960 px — há um teste garantindo isso.
+- **2026-08-19** — A estrada é desenhada até `Z_FUNDO_TELA = -0.03`, um pouco **além** do plano do jogador, para o asfalto sair pelo rodapé em vez de terminar nos pés dele. Como isso exige `z` negativo, `perspectiva.fator` aceita profundidade negativa (objeto passando pela câmera fica maior que 1.0) e trava em `Z_MINIMO = -0.05`, longe do ponto em que a divisão explodiria.
+- **2026-08-19** — Troca de pista com **duas posições**: `pista` (inteira, muda na hora, é a que vale para a colisão da fase 3) e `pista_visual` (quebrada, corre atrás em `DURACAO_TROCA_PISTA = 0,12 s`). Assim o desenho desliza sem que a lógica fique dependendo da animação.
+- **2026-08-19** — As linhas de chão são calculadas a partir do tempo de jogo (`_profundidades_das_linhas`), sem estado guardado: o cenário não precisa de objeto próprio.
 - **2026-08-18** — pytest configurado no `pyproject.toml` (`testpaths = ["testes"]`, `pythonpath = ["."]`) para os testes importarem os módulos da raiz sem gambiarra de `sys.path`.

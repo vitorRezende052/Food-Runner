@@ -3,6 +3,11 @@
 import pygame
 
 import config
+import desenho
+import jogador
+
+TECLAS_ESQUERDA = (pygame.K_LEFT, pygame.K_a)
+TECLAS_DIREITA = (pygame.K_RIGHT, pygame.K_d)
 
 
 def executar():
@@ -12,17 +17,29 @@ def executar():
     pygame.display.set_caption(config.TITULO)
     relogio = pygame.time.Clock()
 
+    corredor = jogador.Jogador()
+    tempo = 0.0
+
     rodando = True
     while rodando:
-        relogio.tick(config.FPS)
+        dt = relogio.tick(config.FPS) / 1000.0
+        tempo += dt
 
         for evento in pygame.event.get():
-            fechou_janela = evento.type == pygame.QUIT
-            apertou_esc = evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE
-            if fechou_janela or apertou_esc:
+            if evento.type == pygame.QUIT:
                 rodando = False
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    rodando = False
+                elif evento.key in TECLAS_ESQUERDA:
+                    corredor.mover(jogador.ESQUERDA)
+                elif evento.key in TECLAS_DIREITA:
+                    corredor.mover(jogador.DIREITA)
 
-        tela.fill(config.COR_FUNDO)
+        corredor.atualizar(dt)
+
+        desenho.desenhar_cenario(tela, tempo)
+        desenho.desenhar_jogador(tela, corredor)
         pygame.display.flip()
 
     pygame.quit()
