@@ -25,6 +25,31 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Pausa com ESC/P durante a partida.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
+## Direção Visual
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`). Substitui a decisão travada
+"Arte: formas coloridas simples" — o "fácil de trocar por sprites depois" é agora.
+
+- **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
+  sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
+  Escolhido por dois motivos: combina com a estrada em perspectiva que já existe
+  e renderiza bem no Pygame, que desenha primitivas com anti-aliasing sem
+  esforço.
+- **Tudo desenhado em código** — sem `assets/`, sem imagens externas, sem
+  arquivos de sprite. Cada elemento é montado com primitivas do pygame a partir
+  da pista e do `z`, o que dá controle total sobre a perspectiva (a mesma escala
+  que já vale para a comida vale para prédios, postes e para o personagem) e
+  mantém o jogo autocontido, como já acontece com o áudio.
+- **Perspectiva / visto de trás (estilo Subway Surfers):** o personagem é visto
+  **de costas**, correndo para o fundo da tela. Os elementos de cenário nas
+  laterais respeitam a mesma perspectiva da estrada: nascem pequenos no
+  horizonte e crescem conforme se aproximam da câmera.
+- **Paleta harmônica e levemente dessaturada** — nada de cores puras como
+  `(255, 0, 0)` ou `(0, 255, 0)`. As cores ficam centralizadas no módulo de
+  configuração, como todas as outras constantes, e o par verde = boa /
+  vermelho = ruim continua valendo, só que em tons mais macios.
+- **Fonte e anti-aliasing:** manter a fonte custom e o anti-aliasing já usados no
+  HUD e nas telas — a tipografia atual já conversa com o estilo cartoon.
+
 ## Stack
 - Python + pygame-ce.
 - **uv para tudo** — nunca `pip`/`python` direto.

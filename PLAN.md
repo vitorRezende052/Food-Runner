@@ -4,13 +4,16 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 8 — executável** (Fases 0 a 7 concluídas:
+Status geral: **Fase 8 — redefinição visual** (Fases 0 a 7 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
 de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
 com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
-bem —, com 104 testes verdes e o `README.md` no ar).
+bem —, com 104 testes verdes e o `README.md` no ar). O jogo está completo em
+regras; o que vem pelas fases 8 a 12 é a redefinição visual descrita na
+**Direção Visual** do `CLAUDE.md`: cartoon, personagem de costas, comidas
+desenhadas em código, rua de cidade nas laterais e juice.
 
 ---
 
@@ -49,8 +52,10 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem; o que falta na fase 8 é empacotamento, não código novo. A fase 7 mexeu
-em cinco módulos e não criou nenhum.
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 8 a 12
+mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho
+do personagem, das comidas ou do cenário deixar o `desenho.py` grande demais,
+cada um vira um arquivo seu — e a mudança é anotada aqui.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -223,13 +228,72 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   cor por linha). `README.md` reescrito em português: o que é, como rodar, como
   jogar, como testar e o mapa dos arquivos. 6 testes novos: 104 no total.
 
-### [ ] Fase 8 — Executável
-- `uv add --dev pyinstaller` e build (flags a confirmar antes de rodar).
-- Testar o `.exe` gerado numa pasta limpa, inclusive o arquivo de recorde.
-- **Recorde no `--onefile`:** conferir que o `recorde.json` é gravado na pasta
-  do `.exe` (o `recorde.py` já usa `sys.frozen` para isso). Sem esse cuidado o
-  arquivo iria para a pasta temporária do PyInstaller e o recorde se perderia a
-  cada partida.
-- **Python 3.12** (`.python-version`) foi escolhido por causa desta fase: é a
-  versão com suporte mais rodado em pygame-ce e PyInstaller.
+### [ ] Fase 8 — Fundação Visual e Personagem
+**Objetivo:** estabelecer a base do novo visual cartoon e substituir o
+personagem-protótipo por um boneco de verdade visto de costas.
+- [ ] Definir uma paleta central de cores harmônicas (constantes no código) e
+  substituir todas as cores puras atuais por ela.
+- [ ] Criar céu/fundo com gradiente vertical no lugar do preto chapado,
+  mantendo a estrada em perspectiva já existente.
+- [ ] Substituir o personagem (círculo + retângulo) por um boneco cartoon visto
+  de costas, montado em partes separadas (cabeça, tronco, dois braços, duas
+  pernas) para permitir animação futura.
+- [ ] Adicionar sombra elíptica semi-transparente embaixo do personagem para dar
+  profundidade.
+- **Pronto quando:** o jogo roda com fundo em gradiente e um personagem de
+  costas reconhecível como boneco, com sombra, sem quebrar a jogabilidade atual.
 
+### [ ] Fase 9 — Animação e Game Feel do Personagem
+**Objetivo:** dar vida ao personagem com animação de corrida e resposta tátil
+aos controles.
+- [ ] Animar a corrida alternando pernas e braços em ciclo contínuo enquanto o
+  jogo roda.
+- [ ] Adicionar squash & stretch leve no pulo e/ou na troca de faixa.
+- [ ] Adicionar leve inclinação/lean do personagem ao mudar de faixa para dar
+  sensação de peso.
+- [ ] Sincronizar a velocidade da animação com a velocidade do jogo (correr mais
+  rápido = animar mais rápido).
+- **Pronto quando:** o personagem parece estar correndo de verdade e reage
+  visualmente às ações do jogador.
+
+### [ ] Fase 10 — Comidas Boas e Ruins
+**Objetivo:** substituir as comidas-protótipo (losango/triângulo) por sprites de
+comida desenhados em código, com leitura visual clara.
+- [ ] Desenhar em código um conjunto de comidas BOAS (ex.: maçã, banana,
+  brócolis) com identidade visual clara.
+- [ ] Desenhar em código um conjunto de comidas RUINS (ex.: hambúrguer, donut,
+  refrigerante) visualmente distintas das boas à primeira vista.
+- [ ] Fazer cada comida respeitar a perspectiva: surgir pequena no horizonte e
+  crescer ao se aproximar da câmera.
+- [ ] Adicionar sombra elíptica embaixo de cada comida, coerente com a do
+  personagem.
+- [ ] Garantir que a lógica de spawn atual continue funcionando com os novos
+  sprites.
+- **Pronto quando:** dá para distinguir comida boa de ruim num relance, e elas se
+  aproximam com perspectiva convincente.
+
+### [ ] Fase 11 — Cenário de Rua da Cidade
+**Objetivo:** preencher as laterais vazias transformando o vazio preto numa rua
+de cidade em perspectiva.
+- [ ] Adicionar prédios nas laterais que surgem pequenos no horizonte e crescem
+  ao se aproximar, respeitando a perspectiva da estrada.
+- [ ] Adicionar calçada entre a estrada e os prédios.
+- [ ] Adicionar elementos de rua recorrentes (ex.: postes, faixas, árvores) que
+  passam junto com o movimento.
+- [ ] Aplicar efeito de parallax de profundidade (elementos ao fundo se movem
+  mais devagar que os da frente).
+- [ ] Variar levemente cores/alturas dos prédios para não ficar repetitivo.
+- **Pronto quando:** as laterais parecem uma rua de cidade com sensação de
+  velocidade e profundidade, sem preto vazio.
+
+### [ ] Fase 12 — Juice e Polimento Final
+**Objetivo:** adicionar o feedback visual que separa protótipo de jogo
+finalizado.
+- [ ] Adicionar partículas ao coletar comida boa.
+- [ ] Adicionar flash/feedback visual (ex.: tela avermelhada) ao pegar comida
+  ruim.
+- [ ] Adicionar leve screen shake em impactos/coletas importantes.
+- [ ] Adicionar transições suaves (fade in/out) entre telas.
+- [ ] Revisar HUD ("kg" e "Pontos") para combinar com o novo estilo cartoon.
+- **Pronto quando:** o jogo tem resposta tátil e visual em todas as ações
+  principais e transições limpas entre telas.
