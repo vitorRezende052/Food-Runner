@@ -226,4 +226,10 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
 ### [ ] Fase 8 — Executável
 - `uv add --dev pyinstaller` e build (flags a confirmar antes de rodar).
 - Testar o `.exe` gerado numa pasta limpa, inclusive o arquivo de recorde.
+- **Recorde no `--onefile`:** conferir que o `recorde.json` é gravado na pasta
+  do `.exe` (o `recorde.py` já usa `sys.frozen` para isso). Sem esse cuidado o
+  arquivo iria para a pasta temporária do PyInstaller e o recorde se perderia a
+  cada partida.
+- **Python 3.12** (`.python-version`) foi escolhido por causa desta fase: é a
+  versão com suporte mais rodado em pygame-ce e PyInstaller.
 

@@ -86,6 +86,6 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 - **Pergunte antes de decisões grandes:** adicionar dependência ou alterar qualquer decisão travada.
 
 ## Plano
-O `PLAN.md` é o documento vivo do projeto: fases, estrutura de arquivos, balanceamento e decisões tomadas no caminho. **Mantenha-o atualizado** — marque a fase concluída, registre desvios do plano e anote decisões novas ali. Se uma decisão travada desta página mudar (com minha confirmação), atualize esta página também.
+O `PLAN.md` é o documento vivo do projeto: fases, estrutura de arquivos e balanceamento. **Mantenha-o atualizado** — marque a fase concluída e registre no bloco dela os desvios do plano. Se uma decisão travada desta página mudar (com minha confirmação), atualize esta página também.
 
 @PLAN.md
