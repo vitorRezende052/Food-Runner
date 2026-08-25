@@ -24,8 +24,8 @@ COR_TEXTO = (244, 244, 238)
 COR_SOMBRA_TEXTO = (34, 38, 46)  # contorno atras do texto: legivel no ceu claro e no veu
 COR_TITULO = (118, 194, 128)  # verde do titulo do menu, no tom da comida boa
 COR_ALERTA = (232, 138, 62)  # peso perto do limite e titulo do game over
-COR_COMIDA_BOA = (108, 186, 98)
-COR_COMIDA_RUIM = (204, 88, 74)
+COR_COMIDA_BOA = (132, 214, 116)  # a aureola de quem e saudavel
+COR_COMIDA_RUIM = (232, 110, 96)  # a aureola de quem e ultraprocessado
 COR_VEU = (14, 16, 22)  # escurece a corrida por tras do menu, da pausa e do game over
 COR_SOMBRA = (32, 38, 46)  # mancha no chao embaixo do que esta em pe
 
@@ -35,6 +35,25 @@ COR_CABELO = (62, 48, 44)
 COR_CAMISETA = (232, 124, 82)
 COR_SHORTS = (66, 96, 142)
 COR_TENIS = (240, 238, 230)
+
+# Alimentos: cada um na cor de verdade. Quem diz se a comida e boa ou ruim e a
+# aureola atras dela, e nao a cor do alimento (ver COR_COMIDA_BOA/RUIM).
+COR_MACA = (198, 74, 72)
+COR_CABO = (122, 92, 62)  # o cabinho da maca
+COR_FOLHA = (110, 168, 92)  # a folha da maca e a rama da cenoura
+COR_BROCOLIS = (74, 130, 66)
+COR_BROCOLIS_TALO = (176, 198, 142)
+COR_CENOURA = (222, 138, 66)
+COR_CARNE = (146, 92, 68)  # o bife da carne grelhada
+COR_GRELHA = (86, 54, 42)  # as marcas escuras que o bife traz da grelha
+COR_PAO = (214, 166, 104)
+COR_HAMBURGUER = (128, 82, 60)  # o disco de carne do lanche, mais escuro que o bife
+COR_ALFACE = (128, 176, 96)
+COR_BATATA = (232, 196, 104)
+COR_EMBALAGEM = (198, 84, 78)  # a caixinha da batata frita e o copo do refrigerante
+COR_TAMPA = (232, 230, 222)  # a tampa e o canudo do refrigerante
+COR_DONUT = (196, 148, 100)  # a massa
+COR_COBERTURA = (222, 132, 158)  # o glace por cima do donut
 
 # --- Pistas ---
 QTD_PISTAS = 3
@@ -114,9 +133,71 @@ CHANCE_COMIDA_RUIM_INICIAL = 0.60  # o resto sai comida boa
 CHANCE_COMIDA_RUIM_MAXIMA = 0.85  # no fim da rampa quase tudo e ultraprocessado
 COMIDAS_POR_SPAWN_INICIAL = 1  # na largada a estrada solta uma comida por vez
 COMIDAS_POR_SPAWN_MAXIMA = 2  # na metade da rampa passa a soltar duas, em pistas diferentes
-ESPESSURA_ROSQUINHA = 0.28  # largura do anel do donut, em fracao do tamanho dele
-LARGURA_GARRAFA = 0.45  # largura do refrigerante, em fracao do tamanho dele
-ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das comidas quadradas, em fracao
+ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das pecas retangulares, em fracao
+
+# A aureola e o disco translucido atras do alimento, verde se ele for bom e
+# vermelho se for ruim. E ela que da o aviso la do horizonte, onde a comida tem
+# menos de dez pixels e so a cor dominante chega aos olhos do jogador.
+AUREOLA_TAMANHO = 1.15  # diametro, em fracao do tamanho da comida
+OPACIDADE_AUREOLA = 105  # de 0 (invisivel) a 255 (disco solido)
+
+# Medidas de cada alimento, todas em fracao do lado da caixa dele: mudar
+# TAMANHO_COMIDA redimensiona os oito juntos, e a perspectiva so multiplica pela
+# escala. As verticais sao contadas do chao para cima, que e onde a comida se
+# apoia.
+COMIDA_MACA_RAIO = 0.40
+COMIDA_MACA_CABO_ALTURA = 0.18
+COMIDA_MACA_CABO_LARGURA = 0.07
+COMIDA_MACA_FOLHA_LARGURA = 0.30
+COMIDA_MACA_FOLHA_ALTURA = 0.15
+
+COMIDA_BROCOLIS_TALO_LARGURA = 0.24
+COMIDA_BROCOLIS_TALO_ALTURA = 0.36
+COMIDA_BROCOLIS_COPA_RAIO = 0.24
+COMIDA_BROCOLIS_COPA_AFASTAMENTO = 0.22  # do meio da copa ate o meio de cada bola
+COMIDA_BROCOLIS_COPA_CENTRO = 0.50  # do chao ate o meio da copa: o talo fica a mostra
+
+COMIDA_CENOURA_LARGURA = 0.46  # a raiz e um triangulo: essa e a largura do topo
+COMIDA_CENOURA_ALTURA = 0.68
+COMIDA_CENOURA_RAMA_ALTURA = 0.26  # as folhas espetadas no topo da raiz
+COMIDA_CENOURA_RAMA_FOLHA = 0.15  # largura de cada folha, e tambem o espaco entre elas
+COMIDA_CENOURA_FOLHAS = 3
+
+COMIDA_CARNE_ALTURA = 0.60  # o bife e uma elipse achatada, larga como a caixa
+COMIDA_CARNE_MARCAS = 3
+COMIDA_CARNE_MARCA_ESPESSURA = 0.07
+COMIDA_CARNE_MARCA_TAMANHO = 0.11  # metade do risco diagonal, na horizontal e na vertical
+COMIDA_CARNE_MARCA_ESPACO = 0.24  # de um risco da grelha para o vizinho
+
+# O lanche e uma pilha, montada de cima para baixo: cada camada tapa a de cima.
+COMIDA_HAMBURGUER_PAO = 0.50  # altura do domo do pao; a metade de baixo fica escondida
+COMIDA_HAMBURGUER_ALFACE = 0.12  # a folha e a unica camada tao larga quanto a caixa
+COMIDA_HAMBURGUER_CARNE = 0.20
+COMIDA_HAMBURGUER_BASE = 0.22  # o pao de baixo
+COMIDA_HAMBURGUER_LARGURA = 0.90  # das camadas que nao sao a alface
+
+COMIDA_BATATA_CAIXA_ALTURA = 0.50
+COMIDA_BATATA_CAIXA_TOPO = 0.86  # a caixinha e um trapezio: largura da boca
+COMIDA_BATATA_CAIXA_BASE = 0.62  # e largura do fundo
+COMIDA_BATATA_PALITO_LARGURA = 0.15
+COMIDA_BATATA_PALITO_ALTURA = 0.46
+COMIDA_BATATA_PALITO_MERGULHO = 0.08  # o quanto os palitos afundam na caixinha
+COMIDA_BATATA_PALITO_CURTO = 0.75  # os palitos das pontas sao mais baixos que o do meio
+COMIDA_BATATA_PALITO_ESPACO = 1.2  # de um palito ao vizinho, em fracao da largura deles
+
+COMIDA_REFRIGERANTE_COPO_ALTURA = 0.64
+COMIDA_REFRIGERANTE_TOPO = 0.62  # o copo tambem e um trapezio, de boca mais larga
+COMIDA_REFRIGERANTE_BASE = 0.44
+COMIDA_REFRIGERANTE_TAMPA_ALTURA = 0.10
+COMIDA_REFRIGERANTE_TAMPA_SOBRA = 1.10  # a tampa passa um pouco da boca do copo
+COMIDA_REFRIGERANTE_CANUDO_ALTURA = 0.22
+COMIDA_REFRIGERANTE_CANUDO_LARGURA = 0.09
+COMIDA_REFRIGERANTE_CANUDO_DESVIO = 0.14  # o canudo sai fora do meio da tampa
+
+COMIDA_DONUT_RAIO = 0.46
+COMIDA_DONUT_MASSA = 0.30  # espessura do anel de massa; o que sobra dentro e o furo
+COMIDA_DONUT_COBERTURA = 0.20  # espessura do anel de glace, por cima da massa
+COMIDA_DONUT_RECUO_COBERTURA = 0.05  # o quanto o glace para antes da borda da massa
 
 # --- Peso e pontuacao ---
 PESO_INICIAL = 45.0

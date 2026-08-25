@@ -5,6 +5,7 @@ import pygame
 import audio
 import config
 import desenho
+import desenho_comida
 import jogador
 import jogo
 import personagem
@@ -59,7 +60,7 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
         return
 
     desenho.desenhar_cenario(tela, partida.distancia)
-    desenho.desenhar_comidas(tela, partida.gerador.comidas)
+    desenho_comida.desenhar_comidas(tela, partida.gerador.comidas)
     personagem.desenhar(tela, partida.corredor, partida.distancia)
     desenho.desenhar_hud(tela, partida)
     if estado == telas.PAUSADO:

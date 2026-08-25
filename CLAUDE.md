@@ -26,10 +26,10 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, e
-a fase 9, a animação do corredor, já estão no ar). Substitui a decisão travada
-"Arte: formas coloridas simples" — o "fácil de trocar por sprites depois" é
-agora.
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; as fases 8 a 10 — a
+fundação, a animação do corredor e as comidas — já estão no ar). Substitui a
+decisão travada "Arte: formas coloridas simples" — o "fácil de trocar por
+sprites depois" é agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
   sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
@@ -48,19 +48,28 @@ agora.
 - **Paleta harmônica e levemente dessaturada** — nada de cores puras como
   `(255, 0, 0)` ou `(0, 255, 0)`. As cores ficam centralizadas no módulo de
   configuração, como todas as outras constantes, e o par verde = boa /
-  vermelho = ruim continua valendo, só que em tons mais macios.
+  vermelho = ruim continua valendo, só que em tons mais macios — desde a fase
+  10 ele mora na **auréola** atrás da comida, e não na cor do alimento (ver
+  abaixo).
 - **Fonte e anti-aliasing:** manter a tipografia que já está no HUD e nas telas —
   a fonte padrão do pygame (`pygame.font.Font(None, tamanho)`), desenhada com
   anti-aliasing e, desde a fase 8, com um sombreado escuro atrás para o texto
   ficar legível tanto sobre o céu claro quanto sobre o véu das telas.
 
-### Escolhas já feitas (fases 8 e 9)
+### Escolhas já feitas (fases 8 a 10)
 Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 - **Dia claro:** o céu vai do azul suave no topo ao branco-azulado no horizonte.
 - **Rua de cidade:** calçada dos dois lados do asfalto e grama além dela — é
   nesse terreno que os prédios da fase 11 sobem.
 - **O corredor** é um atleta cartoon de costas: camiseta coral, shorts azul,
   tênis claros e cabelo escuro, montado em peças separadas para a animação.
+- **A comida fica na cor de verdade e o tipo vai para a auréola.** Comida real
+  tem cor própria, e a maçã, que é saudável, é vermelha. Em vez de mentir na cor
+  do alimento, cada comida ganhou atrás um disco translúcido verde (boa) ou
+  vermelho (ruim): no horizonte, onde ela tem menos de dez pixels e só a cor
+  dominante se lê, é a auréola que avisa; de perto ela vira moldura e o desenho
+  do alimento fala por si. `COR_COMIDA_BOA` e `COR_COMIDA_RUIM` são as cores
+  dessa auréola.
 - **O que se move é puxado pela distância percorrida**, nunca por um cronômetro
   próprio: as linhas do asfalto já eram assim e a passada do corredor entrou no
   mesmo esquema na fase 9. Sai de graça a sincronia com a rampa de dificuldade
@@ -88,14 +97,15 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 ## Estrutura
 Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
 
-`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py`, que a fase 8 separou do `desenho.py` (o status por fase fica no `PLAN.md`).
+`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py` e o `desenho_comida.py`, que as fases 8 e 10 separaram do `desenho.py` (o status por fase fica no `PLAN.md`).
 
 ```
 [x] main.py        # loop principal e troca de telas (ponto de entrada)
 [x] config.py      # valores centralizados: cores, tamanhos, balanceamento, velocidades
 [x] perspectiva.py # projeta (pista, profundidade z) -> (x, y, escala) na tela
 [x] jogador.py     # personagem, troca de pista e inclinacao
-[x] desenho.py     # cenário, pistas, comidas e HUD
+[x] desenho.py     # cenário, pistas, HUD e utilitários de texto
+[x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado em peças e animado
 [x] testes/        # testes pytest da lógica pura
 [x] comida.py      # spawn e tipos de comida

@@ -20,7 +20,7 @@ def partida_limpa():
 
 def por_na_estrada(partida, tipo, pista, z=config.Z_JOGADOR):
     """Coloca uma comida do tipo pedido na pista e profundidade dadas."""
-    alimento = comida.Comida(pista, tipo, "teste", comida.CIRCULO, z)
+    alimento = comida.Comida(pista, tipo, comida.MACA, z)
     partida.gerador.comidas.append(alimento)
     return alimento
 

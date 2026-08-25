@@ -4,7 +4,7 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 10 — comidas desenhadas em código** (Fases 0 a 9 concluídas:
+Status geral: **Fase 11 — cenário de rua da cidade** (Fases 0 a 10 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
@@ -12,10 +12,11 @@ de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
 com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
 bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
 gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
-e o corredor animado, com a passada puxada pela distância, com 129 testes
-verdes). O jogo está completo em regras; o que falta das fases 10 a 12 é o resto
-da redefinição visual descrita na **Direção Visual** do `CLAUDE.md`: comidas
-desenhadas em código, prédios nas laterais e juice.
+o corredor animado, com a passada puxada pela distância, e os oito alimentos
+desenhados em código, cada um na cor de verdade com uma auréola verde ou
+vermelha atrás dizendo o tipo, com 134 testes verdes). O jogo está completo em
+regras; o que falta das fases 11 e 12 é o resto da redefinição visual descrita
+na **Direção Visual** do `CLAUDE.md`: prédios nas laterais e juice.
 
 ---
 
@@ -60,19 +61,21 @@ a mesma receita.
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 10 a 12
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 11 e 12
 mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho do
 personagem, das comidas ou do cenário deixar o `desenho.py` grande demais, cada
-um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu com o
-corredor na fase 8, que saiu para o `personagem.py`; as comidas da fase 10 e os
-prédios da fase 11 podem seguir o mesmo caminho se pedirem.
+um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu duas
+vezes: com o corredor na fase 8, que saiu para o `personagem.py`, e com as
+comidas na fase 10, que saíram para o `desenho_comida.py`. Os prédios da fase 11
+podem seguir o mesmo caminho se pedirem.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
 [x] config.py      # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual, troca de pista e inclinacao na troca
-[x] desenho.py     # desenha céu, chão, rua, comidas e HUD
+[x] desenho.py     # desenha céu, chão, rua, o HUD e os utilitários de texto
+[x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado peça por peça e animado
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
@@ -85,17 +88,19 @@ prédios da fase 11 podem seguir o mesmo caminho se pedirem.
 [x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-A estrutura real ficou bem perto da planejada. São três os desvios: o ponto de
+A estrutura real ficou bem perto da planejada. São quatro os desvios: o ponto de
 entrada, que virou `main.py`; o `dificuldade.py`, arquivo novo que a fase 4
 trouxe — o plano imaginava a rampa dentro do `jogo.py`, mas ela é lógica pura
 sobre o tempo, do mesmo naipe da `perspectiva.py`, e sozinha num arquivo dá para
-ler a curva inteira de uma vez; e o `personagem.py`, a única divisão até agora,
-que a fase 8 tirou do `desenho.py` porque o corredor é a peça mais detalhada do
-jogo — e a fase 9 o engordou mesmo, com o ciclo da passada.
+ler a curva inteira de uma vez; o `personagem.py`, que a fase 8 tirou do
+`desenho.py` porque o corredor é a peça mais detalhada do jogo — e a fase 9 o
+engordou mesmo, com o ciclo da passada; e o `desenho_comida.py`, que a fase 10
+tirou do mesmo lugar pelo mesmo motivo, já que oito alimentos desenhados peça a
+peça pesam mais do que o cenário inteiro.
 
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
 mudou-se para o `telas.py` na fase 5, junto do menu e da pausa. O `desenho.py`
-ficou com o cenário (céu, chão, calçadas, estrada), as comidas, o HUD e os
+ficou com o cenário (céu, chão, calçadas, estrada), o HUD e os
 utilitários que as outras camadas usam: os de texto (`fonte`, `com_separador`,
 `escrever_no_meio`, `escurecer`) e, desde a fase 8, a `desenhar_sombra` e a
 `misturar_cores`. O `audio.py` da fase 6 nasceu exatamente onde o plano previa,
@@ -326,22 +331,63 @@ aos controles.
   os da inclinação em `test_jogador.py`): 129 no total. As poses foram
   conferidas em PNG com `SDL_VIDEODRIVER=dummy`, sem abrir o jogo.
 
-### [ ] Fase 10 — Comidas Boas e Ruins
+### [x] Fase 10 — Comidas Boas e Ruins
 **Objetivo:** substituir as comidas-protótipo (formas geométricas chapadas:
 círculo, triângulo, losango, quadrado, garrafa e rosquinha) por comidas
 desenhadas em código, com leitura visual clara.
-- [ ] Desenhar em código um conjunto de comidas BOAS (ex.: maçã, banana,
+- [x] Desenhar em código um conjunto de comidas BOAS (ex.: maçã, banana,
   brócolis) com identidade visual clara.
-- [ ] Desenhar em código um conjunto de comidas RUINS (ex.: hambúrguer, donut,
+- [x] Desenhar em código um conjunto de comidas RUINS (ex.: hambúrguer, donut,
   refrigerante) visualmente distintas das boas à primeira vista.
-- [ ] Fazer cada comida respeitar a perspectiva: surgir pequena no horizonte e
+- [x] Fazer cada comida respeitar a perspectiva: surgir pequena no horizonte e
   crescer ao se aproximar da câmera.
-- [ ] Adicionar sombra elíptica embaixo de cada comida, coerente com a do
+- [x] Adicionar sombra elíptica embaixo de cada comida, coerente com a do
   personagem — a `desenho.desenhar_sombra` da fase 8 já serve, é só chamá-la.
-- [ ] Garantir que a lógica de spawn atual continue funcionando com os novos
+- [x] Garantir que a lógica de spawn atual continue funcionando com os novos
   desenhos.
 - **Pronto quando:** dá para distinguir comida boa de ruim num relance, e elas se
   aproximam com perspectiva convincente.
+- **Feito:** os oito alimentos do cardápio agora são desenhados um a um, cada um
+  **na cor de verdade**: a maçã é vermelha com cabinho e folha, o brócolis é um
+  talo claro segurando três bolas verdes, a cenoura é um triângulo laranja com a
+  rama espetada, o bife tem as marcas escuras da grelha, o hambúrguer é uma
+  pilha (domo de pão, alface, carne e o pão de baixo), a batata frita são
+  palitos numa caixinha vermelha, o refrigerante é um copo de fast food com
+  tampa e canudo, e o donut é um anel com glacê e furo de verdade. Cada um é
+  montado dentro de uma **caixa quadrada apoiada no asfalto**, cujo lado já vem
+  multiplicado pela escala da perspectiva — por isso nenhuma medida do desenho
+  precisa saber a que distância a comida está, e a sombra elíptica da fase 8
+  entrou sem uma linha de mudança.
+- **A auréola resolveu a tensão entre cor real e regra travada.** O `CLAUDE.md`
+  trava "verde = boa, vermelho = ruim", mas comida de verdade tem cor própria — e
+  a maçã, que é saudável, é vermelha. A saída foi separar as duas informações:
+  o alimento fica na cor dele e ganha atrás um **disco translúcido** verde ou
+  vermelho. No horizonte, onde a comida tem menos de dez pixels e só a cor
+  dominante chega aos olhos, é a auréola que se vê; de perto ela vira moldura e
+  o desenho do alimento fala por si. As `COR_COMIDA_BOA` e `COR_COMIDA_RUIM`
+  passaram a ser exatamente as cores dessa auréola, em tons mais claros, para
+  contrastarem com o asfalto escuro por trás e com o alimento por cima.
+- **O cardápio não mudou:** os mesmos oito alimentos. A carne grelhada ficou
+  porque é a única proteína magra do tema, e a semelhança dela com o hambúrguer
+  morreu na silhueta — um é elipse achatada com riscos de grelha, o outro é uma
+  pilha de camadas.
+- **Desvios:** dois. **(1)** As comidas saíram do `desenho.py` para um
+  `desenho_comida.py` novo, pelo mesmo motivo que o corredor saiu na fase 8 —
+  oito alimentos montados peça a peça pesam mais do que o cenário inteiro. O
+  `desenho.py` ficou só com cenário, HUD e utilitários, e perdeu o `import
+  comida`; o `main.py` mudou uma linha. **(2)** A `Comida` perdeu um campo: com
+  um desenho próprio por alimento, o `nome` e a `forma` viraram a mesma coisa, e
+  as seis formas geométricas compartilhadas deram lugar a oito constantes de
+  alimento no `comida.py`.
+- **Testes:** 5 novos (134 no total). O que mais vale é o que cobra que **todo
+  alimento do cardápio tenha um desenho registrado** — sem ele, um alimento novo
+  derrubaria o jogo com `KeyError` no meio de uma partida, e nenhum outro teste
+  pegaria isso. Os outros guardam invariantes do desenho que não tocam pixel: a
+  pilha do hambúrguer cabe na caixa dele, o anel do donut é mais fino que o raio
+  (senão não sobra furo) e a auréola sobra para fora da comida (senão não é
+  moldura). As poses foram conferidas em PNG com `SDL_VIDEODRIVER=dummy`, sem
+  abrir o jogo, e uma partida inteira de 200 s rodou sem janela para garantir
+  que os oito alimentos são desenhados de verdade.
 
 ### [ ] Fase 11 — Cenário de Rua da Cidade
 **Objetivo:** preencher as laterais transformando as faixas de grama vazias numa

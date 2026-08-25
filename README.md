@@ -66,7 +66,8 @@ spawn, peso, pontuação, rampa de dificuldade, telas, recorde e síntese de áu
 | `comida.py` | cardápio, sorteio do spawn e avanço dos alimentos |
 | `dificuldade.py` | a rampa: velocidade, spawn, chance de comida ruim e rajada |
 | `jogo.py` | o estado da partida: peso, pontuação, colisões e fim de jogo |
-| `desenho.py` | cenário em perspectiva (céu, chão, rua), comidas e HUD |
+| `desenho.py` | cenário em perspectiva (céu, chão, rua), HUD e utilitários de texto |
+| `desenho_comida.py` | os oito alimentos desenhados em código, com a auréola do tipo |
 | `personagem.py` | o corredor visto de costas, montado peça por peça e animado |
 | `telas.py` | menu, pausa e game over |
 | `audio.py` | os quatro sons, sintetizados com numpy — sem arquivo externo |

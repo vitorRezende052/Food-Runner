@@ -4,6 +4,7 @@ import random
 
 import comida
 import config
+import desenho_comida
 import dificuldade
 import perspectiva
 
@@ -36,12 +37,17 @@ def contar_spawns(gerador, tempo, duracao):
     return spawns
 
 
-def test_todo_alimento_do_cardapio_tem_nome_e_forma():
-    for cardapio in (comida.COMIDAS_BOAS, comida.COMIDAS_RUINS):
-        assert cardapio
-        for nome, forma in cardapio:
-            assert nome
-            assert forma
+def test_o_cardapio_nao_repete_alimento():
+    """Nenhum alimento aparece duas vezes, nem cruza de um cardapio para o outro."""
+    cardapio = comida.COMIDAS_BOAS + comida.COMIDAS_RUINS
+    assert cardapio
+    assert len(set(cardapio)) == len(cardapio)
+
+
+def test_todo_alimento_do_cardapio_sabe_ser_desenhado():
+    """Sem desenho registrado, o sorteio derrubaria o jogo no meio da partida."""
+    cardapio = comida.COMIDAS_BOAS + comida.COMIDAS_RUINS
+    assert set(desenho_comida.DESENHOS) == set(cardapio)
 
 
 def test_comida_nasce_no_horizonte():
@@ -76,7 +82,7 @@ def test_tipo_sorteado_combina_com_o_cardapio():
         cardapio = (
             comida.COMIDAS_RUINS if sorteada.tipo == comida.RUIM else comida.COMIDAS_BOAS
         )
-        assert (sorteada.nome, sorteada.forma) in cardapio
+        assert sorteada.nome in cardapio
 
 
 def test_comida_ruim_e_mais_comum_que_a_boa():
@@ -106,7 +112,7 @@ def test_ultraprocessado_fica_ainda_mais_comum_no_fim_da_partida():
 
 
 def test_comida_se_aproxima_do_jogador():
-    alimento = comida.Comida(0, comida.BOA, "maca", comida.CIRCULO)
+    alimento = comida.Comida(0, comida.BOA, comida.MACA)
     alimento.avancar(1.0, config.VELOCIDADE_INICIAL)
     assert alimento.z == config.Z_SPAWN - config.VELOCIDADE_INICIAL
 
@@ -116,14 +122,14 @@ def test_comida_anda_mais_no_fim_da_partida_do_que_na_largada():
     devagar = gerador_com_sorte_fixa()
     depressa = gerador_com_sorte_fixa()
     for gerador in (devagar, depressa):
-        gerador.comidas = [comida.Comida(0, comida.BOA, "maca", comida.CIRCULO)]
+        gerador.comidas = [comida.Comida(0, comida.BOA, comida.MACA)]
     devagar.atualizar(1.0, LARGADA)
     depressa.atualizar(1.0, FIM_DA_RAMPA)
     assert depressa.comidas[0].z < devagar.comidas[0].z
 
 
 def test_comida_so_some_depois_de_passar_pelo_jogador():
-    alimento = comida.Comida(0, comida.RUIM, "donut", comida.ROSQUINHA)
+    alimento = comida.Comida(0, comida.RUIM, comida.DONUT)
     assert not alimento.passou()
     alimento.z = config.Z_JOGADOR
     assert not alimento.passou()

@@ -60,6 +60,42 @@ def test_boneco_cabe_na_altura_dele():
     assert round(empilhado, 6) <= 1.0
 
 
+def test_medidas_das_comidas_sao_positivas():
+    """Cada alimento e montado com fracoes do lado da caixa dele: zero nao desenha nada."""
+    medidas = [
+        (nome, valor)
+        for nome, valor in vars(config).items()
+        if nome.startswith("COMIDA_")
+    ]
+    assert medidas
+    for nome, valor in medidas:
+        assert valor > 0, f"{nome} nao desenharia nada"
+
+
+def test_aureola_sobra_para_fora_da_comida():
+    """Menor que o alimento, o disco deixaria de ser moldura e sumiria atras dele."""
+    assert config.AUREOLA_TAMANHO > 1
+
+
+def test_o_donut_tem_furo():
+    """Anel de massa tao grosso quanto o raio fecharia o meio: viraria bolacha."""
+    assert config.COMIDA_DONUT_MASSA < config.COMIDA_DONUT_RAIO
+
+
+def test_o_lanche_cabe_na_caixa_dele():
+    """A pilha do hamburguer nao passa do alto da caixa.
+
+    A alface nao entra na conta: ela tapa justamente a metade de baixo do domo
+    do pao, entao o que o domo acrescenta a pilha ja e a altura dele inteira.
+    """
+    empilhado = (
+        config.COMIDA_HAMBURGUER_BASE
+        + config.COMIDA_HAMBURGUER_CARNE
+        + config.COMIDA_HAMBURGUER_PAO
+    )
+    assert round(empilhado, 6) <= 1.0
+
+
 def test_opacidades_cabem_em_um_byte():
     for nome, valor in vars(config).items():
         if nome.startswith("OPACIDADE_"):

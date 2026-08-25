@@ -17,38 +17,30 @@ import dificuldade
 BOA = "boa"
 RUIM = "ruim"
 
-# Formas geometricas do desenho. A cor ja diz se a comida e boa ou ruim; a forma
-# so serve para o jogador diferenciar um alimento do outro de longe.
-CIRCULO = "circulo"
-TRIANGULO = "triangulo"
-QUADRADO = "quadrado"
-LOSANGO = "losango"
-GARRAFA = "garrafa"
-ROSQUINHA = "rosquinha"
+# Os oito alimentos do jogo. Cada um tem o seu desenho, entao o nome e toda a
+# identidade de que a comida precisa: e por ele que o ``desenho_comida`` sabe o
+# que pintar.
+MACA = "maca"
+BROCOLIS = "brocolis"
+CENOURA = "cenoura"
+CARNE_GRELHADA = "carne grelhada"
+HAMBURGUER = "hamburguer"
+BATATA_FRITA = "batata frita"
+REFRIGERANTE = "refrigerante"
+DONUT = "donut"
 
-# Cardapio: (nome, forma) de cada alimento.
-COMIDAS_BOAS = (
-    ("maca", CIRCULO),
-    ("brocolis", TRIANGULO),
-    ("cenoura", LOSANGO),
-    ("carne grelhada", QUADRADO),
-)
-COMIDAS_RUINS = (
-    ("hamburguer", QUADRADO),
-    ("batata frita", TRIANGULO),
-    ("refrigerante", GARRAFA),
-    ("donut", ROSQUINHA),
-)
+# Cardapio: os saudaveis de um lado, os ultraprocessados do outro.
+COMIDAS_BOAS = (MACA, BROCOLIS, CENOURA, CARNE_GRELHADA)
+COMIDAS_RUINS = (HAMBURGUER, BATATA_FRITA, REFRIGERANTE, DONUT)
 
 
 class Comida:
     """Um alimento numa pista, caminhando do horizonte ate o jogador."""
 
-    def __init__(self, pista, tipo, nome, forma, z=config.Z_SPAWN):
+    def __init__(self, pista, tipo, nome, z=config.Z_SPAWN):
         self.pista = pista
         self.tipo = tipo
         self.nome = nome
-        self.forma = forma
         self.z = z
 
     def avancar(self, dt, velocidade):
@@ -66,8 +58,7 @@ def sortear(aleatorio, chance_de_ruim, pista):
         tipo, cardapio = RUIM, COMIDAS_RUINS
     else:
         tipo, cardapio = BOA, COMIDAS_BOAS
-    nome, forma = aleatorio.choice(cardapio)
-    return Comida(pista, tipo, nome, forma)
+    return Comida(pista, tipo, aleatorio.choice(cardapio))
 
 
 def sortear_pistas(aleatorio, quantidade):
