@@ -10,19 +10,31 @@ ALTURA = 720
 FPS = 60
 TITULO = "Food Runner"
 
-# --- Cores (R, G, B) ---
-COR_FUNDO = (18, 18, 24)
-COR_TEXTO = (240, 240, 240)
-COR_TITULO = (108, 208, 122)  # verde do titulo do menu, no tom da comida boa
+# --- Paleta (R, G, B) ---
+# Cartoon de dia claro: tons macios, nenhuma cor pura. Todo desenho do jogo tira
+# a cor daqui.
+COR_CEU_TOPO = (92, 158, 216)  # o azul mais forte, la em cima
+COR_CEU_HORIZONTE = (206, 230, 242)  # o ceu clareia ate encostar na linha do horizonte
+COR_GRAMA = (122, 168, 104)  # o chao de fora da cidade, alem da calcada
+COR_CALCADA = (198, 194, 182)  # a faixa de concreto que ladeia o asfalto
+COR_PISTA = (84, 86, 96)  # asfalto
+COR_FAIXA = (236, 234, 224)  # divisorias pintadas entre as pistas
+COR_LINHA_CHAO = (148, 148, 156)  # riscos que atravessam o asfalto e dao velocidade
+COR_TEXTO = (244, 244, 238)
+COR_SOMBRA_TEXTO = (34, 38, 46)  # contorno atras do texto: legivel no ceu claro e no veu
+COR_TITULO = (118, 194, 128)  # verde do titulo do menu, no tom da comida boa
 COR_ALERTA = (232, 138, 62)  # peso perto do limite e titulo do game over
-COR_PISTA = (58, 58, 68)
-COR_FAIXA = (232, 232, 240)
-COR_COMIDA_BOA = (72, 190, 90)
-COR_COMIDA_RUIM = (206, 62, 52)
-COR_LINHA_CHAO = (96, 96, 112)
-COR_JOGADOR = (86, 156, 214)
-COR_CABECA_JOGADOR = (226, 186, 148)
-COR_VEU = (10, 10, 14)  # escurece a corrida por tras do menu, da pausa e do game over
+COR_COMIDA_BOA = (108, 186, 98)
+COR_COMIDA_RUIM = (204, 88, 74)
+COR_VEU = (14, 16, 22)  # escurece a corrida por tras do menu, da pausa e do game over
+COR_SOMBRA = (32, 38, 46)  # mancha no chao embaixo do que esta em pe
+
+# Corredor: cores separadas por peca, para o boneco ser montado em partes.
+COR_PELE = (226, 178, 138)
+COR_CABELO = (62, 48, 44)
+COR_CAMISETA = (232, 124, 82)
+COR_SHORTS = (66, 96, 142)
+COR_TENIS = (240, 238, 230)
 
 # --- Pistas ---
 QTD_PISTAS = 3
@@ -51,12 +63,36 @@ VELOCIDADE_MAXIMA = 1.0  # no fim da rampa a corrida esta duas vezes mais rapida
 QTD_LINHAS_CHAO = 14
 ESPESSURA_LINHA_CHAO = 5  # em pixels, na base; encolhe junto com a perspectiva
 ESPESSURA_DIVISORIA = 2  # em pixels, das linhas que separam as pistas
+LARGURA_CALCADA = 0.7  # em fracao da distancia entre pistas, de cada lado do asfalto
+
+# --- Sombra no chao ---
+SOMBRA_LARGURA = 1.25  # em fracao da largura do objeto que faz a sombra
+SOMBRA_ALTURA = 0.22  # em fracao da largura da propria sombra: uma elipse achatada
+OPACIDADE_SOMBRA = 100  # de 0 (invisivel) a 255 (mancha solida)
 
 # --- Jogador ---
-LARGURA_JOGADOR = 130
-ALTURA_JOGADOR = 150
-RAIO_CABECA_JOGADOR = 46
-ARREDONDAMENTO_JOGADOR = 32  # canto arredondado do corpo, em pixels
+# O boneco e visto de costas e montado em pecas. Cada medida abaixo e uma fracao
+# da altura (as verticais) ou da largura (as horizontais) do personagem inteiro,
+# entao mudar ALTURA_JOGADOR ou LARGURA_JOGADOR redimensiona tudo junto.
+ALTURA_JOGADOR = 185  # do chao ao alto da cabeca, em pixels, na altura do jogador
+LARGURA_JOGADOR = 88  # largura dos ombros
+JOGADOR_ALTURA_PERNA = 0.38
+JOGADOR_LARGURA_PERNA = 0.28
+JOGADOR_AFASTAMENTO_PERNAS = 0.19  # do meio do corpo ate o meio de cada perna
+JOGADOR_ALTURA_TENIS = 0.06
+JOGADOR_LARGURA_TENIS = 1.25  # em fracao da largura da perna: o pe e mais largo
+JOGADOR_ALTURA_TRONCO = 0.38
+JOGADOR_ALTURA_SHORTS = 0.20
+JOGADOR_SOBREPOSICAO_SHORTS = 0.05  # o quanto o shorts desce por cima das pernas
+JOGADOR_ALTURA_BRACO = 0.36
+JOGADOR_LARGURA_BRACO = 0.20
+JOGADOR_AFASTAMENTO_BRACOS = 0.48  # do meio do corpo ate o meio de cada braco
+JOGADOR_ALTURA_MANGA = 0.09  # a manga da camiseta cobrindo o alto do braco
+JOGADOR_OMBRO = 0.03  # o quanto os bracos comecam abaixo do alto do tronco
+JOGADOR_RAIO_CABECA = 0.13
+JOGADOR_PESCOCO = 0.02  # o quanto a cabeca encosta dentro do tronco
+JOGADOR_DESLOCAMENTO_CABELO = 0.30  # em fracao do raio: sobra nuca aparecendo embaixo
+JOGADOR_ARREDONDAMENTO = 0.35  # cantos das pecas, em fracao da largura de cada uma
 DURACAO_TROCA_PISTA = 0.12  # segundos para deslizar de uma pista para a vizinha
 
 # --- Comida ---
@@ -89,6 +125,7 @@ TAMANHO_FONTE_HUD = 40
 TAMANHO_FONTE_TITULO = 76
 TAMANHO_FONTE_AVISO = 36
 MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
+DESLOCAMENTO_SOMBRA_TEXTO = 3  # em pixels, o quanto a sombra do texto sai por tras dele
 ESPACO_ENTRE_LINHAS = 40  # separacao entre as linhas de texto das telas
 OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)
 OPACIDADE_VEU_MENU = 130  # no menu o veu e mais leve: a estrada fica a vista

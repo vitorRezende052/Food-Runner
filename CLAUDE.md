@@ -78,7 +78,8 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] config.py      # valores centralizados: cores, tamanhos, balanceamento, velocidades
 [x] perspectiva.py # projeta (pista, profundidade z) -> (x, y, escala) na tela
 [x] jogador.py     # personagem e troca de pista
-[x] desenho.py     # cenário, pistas, jogador, comidas e HUD
+[x] desenho.py     # cenário, pistas, comidas e HUD
+[x] personagem.py  # o corredor visto de costas, montado em peças
 [x] testes/        # testes pytest da lógica pura
 [x] comida.py      # spawn e tipos de comida
 [x] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade

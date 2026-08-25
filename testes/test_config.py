@@ -25,3 +25,42 @@ def test_toda_cor_e_um_rgb_valido():
         assert len(cor) == 3, f"{nome} deveria ter 3 componentes"
         for componente in cor:
             assert 0 <= componente <= 255, f"{nome} tem componente fora de 0-255"
+
+
+def test_nenhuma_cor_e_pura():
+    """A direcao visual pede tons macios: nada de (255, 0, 0) ou (0, 255, 0)."""
+    for nome, cor in cores_configuradas():
+        assert not (255 in cor and 0 in cor), f"{nome} e uma cor pura"
+
+
+def test_ceu_vai_de_um_tom_a_outro():
+    assert config.COR_CEU_TOPO != config.COR_CEU_HORIZONTE
+
+
+def test_medidas_do_boneco_sao_fracoes_positivas():
+    """Cada peca do corredor e uma fracao da altura ou da largura dele."""
+    medidas = [
+        (nome, valor)
+        for nome, valor in vars(config).items()
+        if nome.startswith("JOGADOR_")
+    ]
+    assert medidas
+    for nome, valor in medidas:
+        assert 0 < valor <= 1.5, f"{nome} nao parece uma fracao do personagem"
+
+
+def test_boneco_cabe_na_altura_dele():
+    """Pernas, tronco e cabeca empilhados nao passam do alto do personagem."""
+    empilhado = (
+        config.JOGADOR_ALTURA_PERNA
+        + config.JOGADOR_ALTURA_TRONCO
+        + 2 * config.JOGADOR_RAIO_CABECA
+        - config.JOGADOR_PESCOCO  # a cabeca encaixa um pouco para dentro do tronco
+    )
+    assert round(empilhado, 6) <= 1.0
+
+
+def test_opacidades_cabem_em_um_byte():
+    for nome, valor in vars(config).items():
+        if nome.startswith("OPACIDADE_"):
+            assert 0 <= valor <= 255, f"{nome} tem opacidade fora de 0-255"

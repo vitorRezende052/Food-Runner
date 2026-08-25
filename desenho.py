@@ -12,12 +12,14 @@ import perspectiva
 
 
 def desenhar_cenario(tela, distancia):
-    """Pinta o fundo, a estrada, as linhas de chao rolando e as divisorias das pistas.
+    """Pinta o ceu, o chao, a estrada, as linhas rolando e as divisorias das pistas.
 
     ``distancia`` e o quanto a partida ja andou em z: e so ela que faz o chao
     rolar, entao o asfalto acompanha qualquer mudanca de velocidade.
     """
-    tela.fill(config.COR_FUNDO)
+    _desenhar_ceu(tela)
+    _desenhar_chao(tela)
+    _desenhar_calcadas(tela)
     _desenhar_estrada(tela)
     _desenhar_linhas_de_chao(tela, distancia)
     _desenhar_divisorias(tela)
@@ -33,31 +35,31 @@ def desenhar_comidas(tela, comidas):
         _desenhar_comida(tela, alimento)
 
 
-def desenhar_jogador(tela, jogador):
-    """Desenha o personagem em pe na pista onde ele esta deslizando."""
-    x, y, escala = perspectiva.projetar(jogador.pista_visual, config.Z_JOGADOR)
-    largura = config.LARGURA_JOGADOR * escala
-    altura = config.ALTURA_JOGADOR * escala
+def desenhar_sombra(tela, x, y, largura):
+    """Mancha elipsoide translucida no chao, para o objeto nao parecer flutuando.
 
-    corpo = pygame.Rect(0, 0, largura, altura)
-    corpo.midbottom = (x, y)
-    arredondamento = round(config.ARREDONDAMENTO_JOGADOR * escala)
-    pygame.draw.rect(tela, config.COR_JOGADOR, corpo, border_radius=arredondamento)
-
-    raio = config.RAIO_CABECA_JOGADOR * escala
-    pygame.draw.circle(tela, config.COR_CABECA_JOGADOR, (x, corpo.top - raio), raio)
+    ``x`` e ``y`` sao o ponto em que o objeto toca o chao e ``largura`` e a
+    largura dele ja em pixels, com a escala da perspectiva aplicada.
+    """
+    largura_sombra = max(2, round(largura * config.SOMBRA_LARGURA))
+    altura_sombra = max(2, round(largura_sombra * config.SOMBRA_ALTURA))
+    mancha = pygame.Surface((largura_sombra, altura_sombra), pygame.SRCALPHA)
+    pygame.draw.ellipse(
+        mancha, (*config.COR_SOMBRA, config.OPACIDADE_SOMBRA), mancha.get_rect()
+    )
+    tela.blit(mancha, mancha.get_rect(center=(round(x), round(y))))
 
 
 def desenhar_hud(tela, partida):
     """Escreve o peso num canto de cima e a pontuacao no outro."""
     letra = fonte(config.TAMANHO_FONTE_HUD)
-    peso = letra.render(
+    peso = _com_sombra(
+        letra,
         f"{round(partida.peso)} / {round(config.PESO_GAME_OVER)} kg",
-        True,
         _cor_do_peso(partida.peso),
     )
-    pontos = letra.render(
-        f"Pontos: {com_separador(partida.pontuacao)}", True, config.COR_TEXTO
+    pontos = _com_sombra(
+        letra, f"Pontos: {com_separador(partida.pontuacao)}", config.COR_TEXTO
     )
     tela.blit(peso, (config.MARGEM_HUD, config.MARGEM_HUD))
     largura_pontos = pontos.get_width()
@@ -96,6 +98,32 @@ def com_separador(numero):
     return f"{numero:,}".replace(",", ".")
 
 
+def misturar_cores(inicial, final, fracao):
+    """Cor no meio do caminho entre duas outras: 0.0 devolve a primeira, 1.0 a segunda."""
+    passo = min(max(fracao, 0.0), 1.0)
+    return tuple(
+        round(componente_inicial + (componente_final - componente_inicial) * passo)
+        for componente_inicial, componente_final in zip(inicial, final)
+    )
+
+
+def _com_sombra(letra, texto, cor):
+    """Escreve o texto com um sombreado escuro atras.
+
+    O ceu do jogo e claro e o veu das telas e escuro; com a sombra o mesmo texto
+    continua legivel nos dois.
+    """
+    frente = letra.render(texto, True, cor)
+    fundo = letra.render(texto, True, config.COR_SOMBRA_TEXTO)
+    recuo = config.DESLOCAMENTO_SOMBRA_TEXTO
+    imagem = pygame.Surface(
+        (frente.get_width() + recuo, frente.get_height() + recuo), pygame.SRCALPHA
+    )
+    imagem.blit(fundo, (recuo, recuo))
+    imagem.blit(frente, (0, 0))
+    return imagem
+
+
 def escrever_no_meio(tela, linhas):
     """Empilha as linhas centralizadas na tela.
 
@@ -103,7 +131,7 @@ def escrever_no_meio(tela, linhas):
     padrao, ``(tamanho da fonte, texto, cor)``.
     """
     imagens = [
-        fonte(tamanho).render(texto, True, cor)
+        _com_sombra(fonte(tamanho), texto, cor)
         for tamanho, texto, cor in map(_com_cor, linhas)
     ]
     alturas = sum(imagem.get_height() for imagem in imagens)
@@ -131,6 +159,53 @@ def _ponto(pista, z):
     """Coordenada (x, y) na tela, sem a escala, do jeito que o pygame quer."""
     x, y, _ = perspectiva.projetar(pista, z)
     return x, y
+
+
+_ceu = None
+
+
+def _desenhar_ceu(tela):
+    """Cobre a metade de cima da tela com o gradiente do ceu.
+
+    O gradiente e pintado linha a linha uma unica vez e fica guardado: e sempre o
+    mesmo desenho, nao vale refaze-lo sessenta vezes por segundo.
+    """
+    global _ceu
+    if _ceu is None:
+        _ceu = pygame.Surface((config.LARGURA, config.HORIZONTE_Y))
+        ultima_linha = config.HORIZONTE_Y - 1
+        for y in range(config.HORIZONTE_Y):
+            cor = misturar_cores(
+                config.COR_CEU_TOPO, config.COR_CEU_HORIZONTE, y / ultima_linha
+            )
+            pygame.draw.line(_ceu, cor, (0, y), (config.LARGURA, y))
+    tela.blit(_ceu, (0, 0))
+
+
+def _desenhar_chao(tela):
+    """Pinta de grama tudo o que fica abaixo da linha do horizonte."""
+    chao = pygame.Rect(
+        0, config.HORIZONTE_Y, config.LARGURA, config.ALTURA - config.HORIZONTE_Y
+    )
+    pygame.draw.rect(tela, config.COR_GRAMA, chao)
+
+
+def _desenhar_calcadas(tela):
+    """Faixa de concreto de cada lado do asfalto, na mesma perspectiva da estrada.
+
+    A calcada e medida em pistas, entao ela converge para o horizonte junto com o
+    resto da rua sem precisar de conta propria.
+    """
+    esquerda, direita = _bordas_da_estrada()
+    for borda, lado in ((esquerda, -1), (direita, 1)):
+        fora = borda + lado * config.LARGURA_CALCADA
+        cantos = [
+            _ponto(borda, config.Z_HORIZONTE),
+            _ponto(fora, config.Z_HORIZONTE),
+            _ponto(fora, config.Z_FUNDO_TELA),
+            _ponto(borda, config.Z_FUNDO_TELA),
+        ]
+        pygame.draw.polygon(tela, config.COR_CALCADA, cantos)
 
 
 def _desenhar_estrada(tela):

@@ -66,7 +66,8 @@ janela nenhuma. A camada gráfica não é testada de propósito.
 | `comida.py` | cardápio, sorteio do spawn e avanço dos alimentos |
 | `dificuldade.py` | a rampa: velocidade, spawn, chance de comida ruim e rajada |
 | `jogo.py` | o estado da partida: peso, pontuação, colisões e fim de jogo |
-| `desenho.py` | cenário em perspectiva, comidas, personagem e HUD |
+| `desenho.py` | cenário em perspectiva (céu, chão, rua), comidas e HUD |
+| `personagem.py` | o corredor visto de costas, montado peça por peça |
 | `telas.py` | menu, pausa e game over |
 | `audio.py` | os quatro sons, sintetizados com numpy — sem arquivo externo |
 | `recorde.py` | lê e grava a maior pontuação |

@@ -4,16 +4,17 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 8 — redefinição visual** (Fases 0 a 7 concluídas:
+Status geral: **Fase 9 — animação do personagem** (Fases 0 a 8 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
 de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
 com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
-bem —, com 104 testes verdes e o `README.md` no ar). O jogo está completo em
-regras; o que vem pelas fases 8 a 12 é a redefinição visual descrita na
-**Direção Visual** do `CLAUDE.md`: cartoon, personagem de costas, comidas
-desenhadas em código, rua de cidade nas laterais e juice.
+bem —, com o `README.md` no ar, e a fundação do visual cartoon: céu em
+gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra,
+com 114 testes verdes). O jogo está completo em regras; o que falta das fases 9 a
+12 é o resto da redefinição visual descrita na **Direção Visual** do `CLAUDE.md`:
+animação do corredor, comidas desenhadas em código, prédios nas laterais e juice.
 
 ---
 
@@ -55,17 +56,19 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 8 a 12
 mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho
 do personagem, das comidas ou do cenário deixar o `desenho.py` grande demais,
-cada um vira um arquivo seu — e a mudança é anotada aqui.
+cada um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu
+com o corredor na fase 8: ele saiu para o `personagem.py`.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
 [x] config.py      # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
 [x] jogador.py     # pista atual e troca de pista
-[x] desenho.py     # desenha cenário, pistas, jogador, comidas e HUD
+[x] desenho.py     # desenha céu, chão, rua, comidas e HUD
+[x] personagem.py  # o corredor visto de costas, montado peça por peça
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio
+                   # test_audio, test_desenho
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -228,20 +231,46 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   cor por linha). `README.md` reescrito em português: o que é, como rodar, como
   jogar, como testar e o mapa dos arquivos. 6 testes novos: 104 no total.
 
-### [ ] Fase 8 — Fundação Visual e Personagem
+### [x] Fase 8 — Fundação Visual e Personagem
 **Objetivo:** estabelecer a base do novo visual cartoon e substituir o
 personagem-protótipo por um boneco de verdade visto de costas.
-- [ ] Definir uma paleta central de cores harmônicas (constantes no código) e
+- [x] Definir uma paleta central de cores harmônicas (constantes no código) e
   substituir todas as cores puras atuais por ela.
-- [ ] Criar céu/fundo com gradiente vertical no lugar do preto chapado,
+- [x] Criar céu/fundo com gradiente vertical no lugar do preto chapado,
   mantendo a estrada em perspectiva já existente.
-- [ ] Substituir o personagem (círculo + retângulo) por um boneco cartoon visto
+- [x] Substituir o personagem (círculo + retângulo) por um boneco cartoon visto
   de costas, montado em partes separadas (cabeça, tronco, dois braços, duas
   pernas) para permitir animação futura.
-- [ ] Adicionar sombra elíptica semi-transparente embaixo do personagem para dar
+- [x] Adicionar sombra elíptica semi-transparente embaixo do personagem para dar
   profundidade.
 - **Pronto quando:** o jogo roda com fundo em gradiente e um personagem de
   costas reconhecível como boneco, com sombra, sem quebrar a jogabilidade atual.
+- **Feito:** a hora do dia escolhida foi **dia claro** — o céu vai de um azul
+  suave no topo ao branco-azulado do horizonte, pintado linha a linha uma vez só
+  e guardado numa `Surface` (é sempre o mesmo desenho, não vale refazê-lo 60
+  vezes por segundo). Abaixo do horizonte entrou grama e, dos dois lados do
+  asfalto, uma **calçada** medida em pistas (`LARGURA_CALCADA`), o que a faz
+  convergir para o horizonte de graça, na mesma projeção da estrada — é o
+  terreno em que os prédios da fase 11 vão subir. A paleta inteira foi
+  redesenhada em tons macios (nenhuma cor pura, e há um teste garantindo isso),
+  e o asfalto clareou para conversar com o céu de dia.
+- **Desvios:** dois. **(1)** O corredor saiu do `desenho.py` para um
+  `personagem.py` novo — ele já é a peça mais detalhada do jogo e a fase 9 vai
+  engordá-lo com a animação; o `desenho.py` ficou com o cenário, o HUD, os
+  utilitários de texto e a `desenhar_sombra`, que a fase 10 reaproveita nas
+  comidas. O `main.py` mudou uma linha, chamando `personagem.desenhar`. **(2)**
+  O céu claro deixaria o HUD branco ilegível, e trocar a cor do texto quebraria
+  as telas, que são escritas por cima de um véu escuro. Em vez de duas cores de
+  texto, o `_com_sombra` desenha o texto duas vezes (um sombreado escuro atrás,
+  a cor por cima) — legível no céu e no véu, e de quebra combina com o cartoon.
+  Vale para o HUD e para as telas.
+- O boneco é montado em peças (pernas, tênis, tronco, shorts, braços com manga e
+  cabeça com cabelo) e cada medida no `config.py` é uma **fração** da altura ou
+  da largura do personagem: mudar `ALTURA_JOGADOR` redimensiona tudo junto, e a
+  perspectiva só multiplica pela escala. As proporções foram afinadas olhando
+  quadros salvos em PNG com `SDL_VIDEODRIVER=dummy`, sem abrir o jogo. 10 testes
+  novos (paleta sem cor pura, frações do boneco, gradiente do céu e a
+  `misturar_cores` em `test_desenho.py`): 114 no total.
 
 ### [ ] Fase 9 — Animação e Game Feel do Personagem
 **Objetivo:** dar vida ao personagem com animação de corrida e resposta tátil

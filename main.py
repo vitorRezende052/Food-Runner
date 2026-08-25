@@ -7,6 +7,7 @@ import config
 import desenho
 import jogador
 import jogo
+import personagem
 import recorde
 import telas
 
@@ -59,7 +60,7 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
 
     desenho.desenhar_cenario(tela, partida.distancia)
     desenho.desenhar_comidas(tela, partida.gerador.comidas)
-    desenho.desenhar_jogador(tela, partida.corredor)
+    personagem.desenhar(tela, partida.corredor)
     desenho.desenhar_hud(tela, partida)
     if estado == telas.PAUSADO:
         telas.desenhar_pausa(tela)
