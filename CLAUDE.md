@@ -19,15 +19,16 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Perspectiva **pseudo-3D**: as 3 pistas convergem para um horizonte, o jogador fica fixo na base e a comida nasce pequena no fundo e cresce ao se aproximar.
 - Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo.
 - Comida boa reduz peso E dá pontos.
-- Arte: formas coloridas simples (verde = boa, vermelho = ruim), fácil de trocar por sprites depois.
+- Arte: cartoon desenhado em código (verde = boa, vermelho = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
 - Áudio: sons sintéticos gerados por código (numpy), sem arquivos externos — jogo autocontido.
 - Tela de menu inicial (com instruções de controle) e tela de game over com a pontuação final.
 - Pausa com ESC/P durante a partida.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`). Substitui a decisão travada
-"Arte: formas coloridas simples" — o "fácil de trocar por sprites depois" é agora.
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, já
+está no ar). Substitui a decisão travada "Arte: formas coloridas simples" — o
+"fácil de trocar por sprites depois" é agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
   sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
@@ -47,8 +48,18 @@ Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`). Substitui a decisão t
   `(255, 0, 0)` ou `(0, 255, 0)`. As cores ficam centralizadas no módulo de
   configuração, como todas as outras constantes, e o par verde = boa /
   vermelho = ruim continua valendo, só que em tons mais macios.
-- **Fonte e anti-aliasing:** manter a fonte custom e o anti-aliasing já usados no
-  HUD e nas telas — a tipografia atual já conversa com o estilo cartoon.
+- **Fonte e anti-aliasing:** manter a tipografia que já está no HUD e nas telas —
+  a fonte padrão do pygame (`pygame.font.Font(None, tamanho)`), desenhada com
+  anti-aliasing e, desde a fase 8, com um sombreado escuro atrás para o texto
+  ficar legível tanto sobre o céu claro quanto sobre o véu das telas.
+
+### Escolhas já feitas (fase 8)
+Valem para as fases seguintes, para o visual não brigar consigo mesmo:
+- **Dia claro:** o céu vai do azul suave no topo ao branco-azulado no horizonte.
+- **Rua de cidade:** calçada dos dois lados do asfalto e grama além dela — é
+  nesse terreno que os prédios da fase 11 sobem.
+- **O corredor** é um atleta cartoon de costas: camiseta coral, shorts azul,
+  tênis claros e cabelo escuro, montado em peças separadas para a animação.
 
 ## Stack
 - Python + pygame-ce.
@@ -71,7 +82,7 @@ Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`). Substitui a decisão t
 ## Estrutura
 Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
 
-`[x]` = já existe. Todos os módulos previstos existem desde a fase 6 (o status por fase fica no `PLAN.md`).
+`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py`, que a fase 8 separou do `desenho.py` (o status por fase fica no `PLAN.md`).
 
 ```
 [x] main.py        # loop principal e troca de telas (ponto de entrada)
@@ -95,7 +106,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 - **Acentos só no que o jogador lê:** dentro do código (nomes, comentários e docstrings) escrevemos sem acento e sem cedilha, como já está em `config.py` e `perspectiva.py`; o texto que aparece na tela vai acentuado normalmente.
 - Sem números mágicos: cores, tamanhos e balanceamento centralizados num módulo de configuração (não espalhados pelo código).
 - Commits pequenos, descritivos, **em português**, no modo imperativo (ex.: `adiciona troca de pista`).
-- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica.
+- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica. Conta que não toca pixel vale teste mesmo morando num módulo gráfico — é o caso da `desenho.misturar_cores` e das constantes da paleta.
 
 ## Git
 - **Você roda os comandos git neste repositório** (`add`, `commit`, `status`, `log`) sem precisar pedir permissão a cada vez.

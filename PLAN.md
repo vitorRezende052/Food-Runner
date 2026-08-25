@@ -48,16 +48,23 @@ Vantagem: colisão, spawn e dificuldade são matemática pura sobre `pista` e `z
 sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolada em
 `perspectiva.py` e é a única parte que conhece pixels.
 
+A `pista` aceita valor quebrado e fora do intervalo 0–2, e é assim que o cenário
+é desenhado: as bordas do asfalto são as pistas `-0.5` e `2.5`, e a calçada da
+fase 8 vai de cada borda até `LARGURA_CALCADA` de pista mais para fora. Quem
+mede em pistas converge para o horizonte de graça — os prédios da fase 11 seguem
+a mesma receita.
+
 ---
 
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 8 a 12
-mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho
-do personagem, das comidas ou do cenário deixar o `desenho.py` grande demais,
-cada um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu
-com o corredor na fase 8: ele saiu para o `personagem.py`.
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 8 a 12 mexem
+sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho do
+personagem, das comidas ou do cenário deixar o `desenho.py` grande demais, cada
+um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu com o
+corredor na fase 8, que saiu para o `personagem.py`; as comidas da fase 10 e os
+prédios da fase 11 podem seguir o mesmo caminho se pedirem.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -77,26 +84,31 @@ com o corredor na fase 8: ele saiu para o `personagem.py`.
 [x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-Até aqui a estrutura real bateu com a planejada, sem fusões nem divisões. Os
-desvios foram dois: o ponto de entrada, que virou `main.py`, e o
-`dificuldade.py`, arquivo novo que a fase 4 trouxe — o plano imaginava a rampa
-dentro do `jogo.py`, mas ela é lógica pura sobre o tempo, do mesmo naipe da
-`perspectiva.py`, e sozinha num arquivo dá para ler a curva inteira de uma vez.
+A estrutura real ficou bem perto da planejada. São três os desvios: o ponto de
+entrada, que virou `main.py`; o `dificuldade.py`, arquivo novo que a fase 4
+trouxe — o plano imaginava a rampa dentro do `jogo.py`, mas ela é lógica pura
+sobre o tempo, do mesmo naipe da `perspectiva.py`, e sozinha num arquivo dá para
+ler a curva inteira de uma vez; e o `personagem.py`, a única divisão até agora,
+que a fase 8 tirou do `desenho.py` porque o corredor é a peça mais detalhada do
+jogo e a fase 9 ainda vai engordá-lo com a animação.
+
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
-mudou-se para o `telas.py` na fase 5, junto do menu e da pausa; o `desenho.py`
-ficou com o cenário, o HUD e os utilitários de texto que as duas camadas usam
-(`fonte`, `com_separador`, `escrever_no_meio` e `escurecer`). O `audio.py` da
-fase 6 nasceu exatamente onde o plano previa, sem tocar em nenhum outro módulo
-além de sete linhas no `main.py` e seis no `jogo.py`. Nada disso é
-definitivo: se um arquivo ficar pequeno demais ou grande demais no caminho, ele
-é fundido ou dividido — e a mudança é anotada aqui.
+mudou-se para o `telas.py` na fase 5, junto do menu e da pausa. O `desenho.py`
+ficou com o cenário (céu, chão, calçadas, estrada), as comidas, o HUD e os
+utilitários que as outras camadas usam: os de texto (`fonte`, `com_separador`,
+`escrever_no_meio`, `escurecer`) e, desde a fase 8, a `desenhar_sombra` e a
+`misturar_cores`. O `audio.py` da fase 6 nasceu exatamente onde o plano previa,
+sem tocar em nenhum outro módulo além de sete linhas no `main.py` e seis no
+`jogo.py`. Nada disso é definitivo: se um arquivo ficar pequeno demais ou grande
+demais no caminho, ele é fundido ou dividido — e a mudança é anotada aqui.
 
 ---
 
-## Balanceamento inicial proposto
+## Balanceamento
 
-Números de partida para `config.py`; serão ajustados jogando (a fase 7 é para
-isso). Ficam todos centralizados, nenhum espalhado pelo código.
+A tabela abaixo é a proposta original, já confirmada jogando na fase 7 (que
+mexeu em dois números; o resto sobreviveu). Todos ficam centralizados no
+`config.py`, nenhum espalhado pelo código.
 
 | Item | Valor inicial |
 |---|---|
@@ -264,7 +276,7 @@ personagem-protótipo por um boneco de verdade visto de costas.
   texto, o `_com_sombra` desenha o texto duas vezes (um sombreado escuro atrás,
   a cor por cima) — legível no céu e no véu, e de quebra combina com o cartoon.
   Vale para o HUD e para as telas.
-- O boneco é montado em peças (pernas, tênis, tronco, shorts, braços com manga e
+- **O boneco** é montado em peças (pernas, tênis, tronco, shorts, braços com manga e
   cabeça com cabelo) e cada medida no `config.py` é uma **fração** da altura ou
   da largura do personagem: mudar `ALTURA_JOGADOR` redimensiona tudo junto, e a
   perspectiva só multiplica pela escala. As proporções foram afinadas olhando
@@ -286,8 +298,9 @@ aos controles.
   visualmente às ações do jogador.
 
 ### [ ] Fase 10 — Comidas Boas e Ruins
-**Objetivo:** substituir as comidas-protótipo (losango/triângulo) por sprites de
-comida desenhados em código, com leitura visual clara.
+**Objetivo:** substituir as comidas-protótipo (formas geométricas chapadas:
+círculo, triângulo, losango, quadrado, garrafa e rosquinha) por comidas
+desenhadas em código, com leitura visual clara.
 - [ ] Desenhar em código um conjunto de comidas BOAS (ex.: maçã, banana,
   brócolis) com identidade visual clara.
 - [ ] Desenhar em código um conjunto de comidas RUINS (ex.: hambúrguer, donut,
@@ -295,25 +308,27 @@ comida desenhados em código, com leitura visual clara.
 - [ ] Fazer cada comida respeitar a perspectiva: surgir pequena no horizonte e
   crescer ao se aproximar da câmera.
 - [ ] Adicionar sombra elíptica embaixo de cada comida, coerente com a do
-  personagem.
+  personagem — a `desenho.desenhar_sombra` da fase 8 já serve, é só chamá-la.
 - [ ] Garantir que a lógica de spawn atual continue funcionando com os novos
-  sprites.
+  desenhos.
 - **Pronto quando:** dá para distinguir comida boa de ruim num relance, e elas se
   aproximam com perspectiva convincente.
 
 ### [ ] Fase 11 — Cenário de Rua da Cidade
-**Objetivo:** preencher as laterais vazias transformando o vazio preto numa rua
-de cidade em perspectiva.
+**Objetivo:** preencher as laterais transformando as faixas de grama vazias numa
+rua de cidade em perspectiva.
 - [ ] Adicionar prédios nas laterais que surgem pequenos no horizonte e crescem
   ao se aproximar, respeitando a perspectiva da estrada.
-- [ ] Adicionar calçada entre a estrada e os prédios.
+- [x] Adicionar calçada entre a estrada e os prédios. *(adiantado na fase 8: ela
+  já ladeia o asfalto, medida em pistas, e é o terreno em que os prédios sobem.)*
 - [ ] Adicionar elementos de rua recorrentes (ex.: postes, faixas, árvores) que
   passam junto com o movimento.
 - [ ] Aplicar efeito de parallax de profundidade (elementos ao fundo se movem
   mais devagar que os da frente).
-- [ ] Variar levemente cores/alturas dos prédios para não ficar repetitivo.
+- [ ] Variar levemente cores/alturas dos prédios para não ficar repetitivo — a
+  `desenho.misturar_cores` da fase 8 serve para isso.
 - **Pronto quando:** as laterais parecem uma rua de cidade com sensação de
-  velocidade e profundidade, sem preto vazio.
+  velocidade e profundidade, sem faixas vazias.
 
 ### [ ] Fase 12 — Juice e Polimento Final
 **Objetivo:** adicionar o feedback visual que separa protótipo de jogo
