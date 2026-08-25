@@ -26,9 +26,10 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, e a
-fase 9, a animação do corredor, já estão no ar). Substitui a decisão travada "Arte: formas coloridas simples" — o
-"fácil de trocar por sprites depois" é agora.
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, e
+a fase 9, a animação do corredor, já estão no ar). Substitui a decisão travada
+"Arte: formas coloridas simples" — o "fácil de trocar por sprites depois" é
+agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
   sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
@@ -53,13 +54,18 @@ fase 9, a animação do corredor, já estão no ar). Substitui a decisão travad
   anti-aliasing e, desde a fase 8, com um sombreado escuro atrás para o texto
   ficar legível tanto sobre o céu claro quanto sobre o véu das telas.
 
-### Escolhas já feitas (fase 8)
+### Escolhas já feitas (fases 8 e 9)
 Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 - **Dia claro:** o céu vai do azul suave no topo ao branco-azulado no horizonte.
 - **Rua de cidade:** calçada dos dois lados do asfalto e grama além dela — é
   nesse terreno que os prédios da fase 11 sobem.
 - **O corredor** é um atleta cartoon de costas: camiseta coral, shorts azul,
   tênis claros e cabelo escuro, montado em peças separadas para a animação.
+- **O que se move é puxado pela distância percorrida**, nunca por um cronômetro
+  próprio: as linhas do asfalto já eram assim e a passada do corredor entrou no
+  mesmo esquema na fase 9. Sai de graça a sincronia com a rampa de dificuldade
+  (a corrida acelera, tudo acelera junto) e o congelamento na pausa. Os postes,
+  as árvores e o parallax da fase 11 seguem a mesma receita.
 
 ## Stack
 - Python + pygame-ce.
@@ -88,9 +94,9 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] main.py        # loop principal e troca de telas (ponto de entrada)
 [x] config.py      # valores centralizados: cores, tamanhos, balanceamento, velocidades
 [x] perspectiva.py # projeta (pista, profundidade z) -> (x, y, escala) na tela
-[x] jogador.py     # personagem e troca de pista
+[x] jogador.py     # personagem, troca de pista e inclinacao
 [x] desenho.py     # cenário, pistas, comidas e HUD
-[x] personagem.py  # o corredor visto de costas, montado em peças
+[x] personagem.py  # o corredor visto de costas, montado em peças e animado
 [x] testes/        # testes pytest da lógica pura
 [x] comida.py      # spawn e tipos de comida
 [x] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade

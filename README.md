@@ -51,9 +51,9 @@ menu e na tela de game over.
 uv run pytest
 ```
 
-A suíte cobre a lógica pura — perspectiva, troca de pista, spawn, peso,
-pontuação, rampa de dificuldade, telas, recorde e síntese de áudio — sem abrir
-janela nenhuma. A camada gráfica não é testada de propósito.
+A suíte cobre a lógica pura — perspectiva, troca de pista, ciclo da passada,
+spawn, peso, pontuação, rampa de dificuldade, telas, recorde e síntese de áudio
+— sem abrir janela nenhuma. A camada gráfica não é testada de propósito.
 
 ## Como está organizado
 
@@ -62,12 +62,12 @@ janela nenhuma. A camada gráfica não é testada de propósito.
 | `main.py` | ponto de entrada: loop, teclado e troca entre as telas |
 | `config.py` | todas as constantes: tela, cores, balanceamento, áudio |
 | `perspectiva.py` | projeta `(pista, profundidade)` em pixels de tela |
-| `jogador.py` | pista atual e o deslize até a pista vizinha |
+| `jogador.py` | pista atual, o deslize até a pista vizinha e a inclinação na troca |
 | `comida.py` | cardápio, sorteio do spawn e avanço dos alimentos |
 | `dificuldade.py` | a rampa: velocidade, spawn, chance de comida ruim e rajada |
 | `jogo.py` | o estado da partida: peso, pontuação, colisões e fim de jogo |
 | `desenho.py` | cenário em perspectiva (céu, chão, rua), comidas e HUD |
-| `personagem.py` | o corredor visto de costas, montado peça por peça |
+| `personagem.py` | o corredor visto de costas, montado peça por peça e animado |
 | `telas.py` | menu, pausa e game over |
 | `audio.py` | os quatro sons, sintetizados com numpy — sem arquivo externo |
 | `recorde.py` | lê e grava a maior pontuação |

@@ -60,8 +60,8 @@ a mesma receita.
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 8 a 12 mexem
-sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho do
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 10 a 12
+mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho do
 personagem, das comidas ou do cenário deixar o `desenho.py` grande demais, cada
 um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu com o
 corredor na fase 8, que saiu para o `personagem.py`; as comidas da fase 10 e os
@@ -71,9 +71,9 @@ prédios da fase 11 podem seguir o mesmo caminho se pedirem.
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
 [x] config.py      # todas as constantes: tela, cores, pistas, perspectiva, balanceamento
 [x] perspectiva.py # projeta (pista, z) -> (x, y, escala). Lógica pura, testável
-[x] jogador.py     # pista atual e troca de pista
+[x] jogador.py     # pista atual, troca de pista e inclinacao na troca
 [x] desenho.py     # desenha céu, chão, rua, comidas e HUD
-[x] personagem.py  # o corredor visto de costas, montado peça por peça
+[x] personagem.py  # o corredor visto de costas, montado peça por peça e animado
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
                    # test_audio, test_desenho, test_personagem
@@ -91,7 +91,7 @@ trouxe — o plano imaginava a rampa dentro do `jogo.py`, mas ela é lógica pur
 sobre o tempo, do mesmo naipe da `perspectiva.py`, e sozinha num arquivo dá para
 ler a curva inteira de uma vez; e o `personagem.py`, a única divisão até agora,
 que a fase 8 tirou do `desenho.py` porque o corredor é a peça mais detalhada do
-jogo e a fase 9 ainda vai engordá-lo com a animação.
+jogo — e a fase 9 o engordou mesmo, com o ciclo da passada.
 
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
 mudou-se para o `telas.py` na fase 5, junto do menu e da pausa. O `desenho.py`
