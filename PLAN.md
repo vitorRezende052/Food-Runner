@@ -4,17 +4,18 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 9 — animação do personagem** (Fases 0 a 8 concluídas:
+Status geral: **Fase 10 — comidas desenhadas em código** (Fases 0 a 9 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
 de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
 com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
-bem —, com o `README.md` no ar, e a fundação do visual cartoon: céu em
-gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra,
-com 114 testes verdes). O jogo está completo em regras; o que falta das fases 9 a
-12 é o resto da redefinição visual descrita na **Direção Visual** do `CLAUDE.md`:
-animação do corredor, comidas desenhadas em código, prédios nas laterais e juice.
+bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
+gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
+e o corredor animado, com a passada puxada pela distância, com 129 testes
+verdes). O jogo está completo em regras; o que falta das fases 10 a 12 é o resto
+da redefinição visual descrita na **Direção Visual** do `CLAUDE.md`: comidas
+desenhadas em código, prédios nas laterais e juice.
 
 ---
 
@@ -75,7 +76,7 @@ prédios da fase 11 podem seguir o mesmo caminho se pedirem.
 [x] personagem.py  # o corredor visto de costas, montado peça por peça
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio, test_desenho
+                   # test_audio, test_desenho, test_personagem
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -284,18 +285,46 @@ personagem-protótipo por um boneco de verdade visto de costas.
   novos (paleta sem cor pura, frações do boneco, gradiente do céu e a
   `misturar_cores` em `test_desenho.py`): 114 no total.
 
-### [ ] Fase 9 — Animação e Game Feel do Personagem
+### [x] Fase 9 — Animação e Game Feel do Personagem
 **Objetivo:** dar vida ao personagem com animação de corrida e resposta tátil
 aos controles.
-- [ ] Animar a corrida alternando pernas e braços em ciclo contínuo enquanto o
+- [x] Animar a corrida alternando pernas e braços em ciclo contínuo enquanto o
   jogo roda.
-- [ ] Adicionar squash & stretch leve no pulo e/ou na troca de faixa.
-- [ ] Adicionar leve inclinação/lean do personagem ao mudar de faixa para dar
+- [x] Adicionar squash & stretch leve no pulo e/ou na troca de faixa.
+- [x] Adicionar leve inclinação/lean do personagem ao mudar de faixa para dar
   sensação de peso.
-- [ ] Sincronizar a velocidade da animação com a velocidade do jogo (correr mais
+- [x] Sincronizar a velocidade da animação com a velocidade do jogo (correr mais
   rápido = animar mais rápido).
 - **Pronto quando:** o personagem parece estar correndo de verdade e reage
   visualmente às ações do jogador.
+- **Feito:** a animação inteira sai de uma **fase da passada** — um número de 0
+  a 1 dizendo em que ponto do ciclo o corredor está — e de quatro contas puras
+  sobre ela, no topo do `personagem.py`: `balanco` (seno, uma volta por passada)
+  alterna os dois lados do corpo, `elevacao` (cosseno, duas voltas por passada,
+  porque são duas pisadas) faz o corpo quicar e `esticamento` pendura o squash &
+  stretch nessa mesma elevação — o boneco comprime quando o pé bate no chão e
+  estica quando o quique o joga para cima, alargando na mesma medida em que
+  encolhe. A perna que levanta é desenhada mais curta, com o tênis subindo
+  junto; os braços balançam ao contrário da perna do mesmo lado, como se corre
+  de verdade; e a sombra fica parada no chão, que é o que dá o contraste do
+  quique.
+- **A fase vem da distância percorrida**, não de um cronômetro próprio:
+  `(distancia * PASSADAS_POR_Z) % 1.0`. É o mesmo truque das linhas do asfalto
+  (`desenho._profundidades_das_linhas`), e ele resolve de graça o quarto item da
+  fase: quando a rampa de dificuldade acelera a corrida, a passada acelera
+  junto, sem uma linha de código a mais. De quebra, nenhum estado novo — nada de
+  acumular `dt` — e a animação congela sozinha na pausa e no game over.
+- **A inclinação também não é conta de tempo:** é `pista - pista_visual`, o que
+  falta da deslizada, travado entre -1 e 1 numa propriedade do `Jogador`. Vale
+  quase 1 no começo da troca e se desfaz sozinha quando o boneco chega na faixa.
+  No desenho ela vira um desvio horizontal do tronco, dos braços e da cabeça,
+  com as pernas ficando no lugar: o pivô na cintura lê como *lean*.
+- **Desvios:** nenhum. O `personagem.desenhar` passou a receber a distância
+  (uma linha no `main.py`) e o `config.py` ganhou seis constantes no bloco do
+  Jogador — cinco delas frações, já cobertas pelo teste que varre os
+  `JOGADOR_*`. 15 testes novos (`testes/test_personagem.py`, com o ciclo, mais
+  os da inclinação em `test_jogador.py`): 129 no total. As poses foram
+  conferidas em PNG com `SDL_VIDEODRIVER=dummy`, sem abrir o jogo.
 
 ### [ ] Fase 10 — Comidas Boas e Ruins
 **Objetivo:** substituir as comidas-protótipo (formas geométricas chapadas:

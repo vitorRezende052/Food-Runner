@@ -95,6 +95,15 @@ JOGADOR_DESLOCAMENTO_CABELO = 0.30  # em fracao do raio: sobra nuca aparecendo e
 JOGADOR_ARREDONDAMENTO = 0.35  # cantos das pecas, em fracao da largura de cada uma
 DURACAO_TROCA_PISTA = 0.12  # segundos para deslizar de uma pista para a vizinha
 
+# Animacao da corrida. A fase da passada vem da distancia percorrida, e nao de um
+# cronometro proprio: quando a rampa acelera a corrida, a passada acelera junto.
+PASSADAS_POR_Z = 3.0  # ciclos completos de passada a cada unidade de z andada
+JOGADOR_LEVANTAR_PE = 0.12  # em fracao da altura: o quanto o pe sobe do chao no passo
+JOGADOR_ELEVACAO = 0.05  # em fracao da altura: o quique do corpo entre uma pisada e outra
+JOGADOR_BALANCO_BRACO = 0.05  # em fracao da altura: o vaivem do braco, contrario ao da perna
+JOGADOR_ESTICAMENTO = 0.05  # squash & stretch: altura ganha no ar e perdida na pisada
+JOGADOR_INCLINACAO = 0.22  # em fracao da largura: o quanto o tronco se joga na troca de pista
+
 # --- Comida ---
 Z_SPAWN = Z_HORIZONTE  # toda comida nasce no fundo da estrada
 Z_SUMICO = Z_MINIMO  # ja saiu pelo rodape: e o piso da projecao, nao adianta ir alem

@@ -17,6 +17,15 @@ class Jogador:
         self.pista = config.PISTA_INICIAL
         self.pista_visual = float(config.PISTA_INICIAL)
 
+    @property
+    def inclinacao(self):
+        """De -1 a 1: para que lado o corredor esta se jogando; zero parado numa pista.
+
+        E o que falta da deslizada: no comeco da troca vale quase 1 e vai se
+        desfazendo enquanto o boneco chega na faixa nova.
+        """
+        return min(max(self.pista - self.pista_visual, -1.0), 1.0)
+
     def mover(self, direcao):
         """Troca de pista na direcao dada (ESQUERDA ou DIREITA), sem sair da estrada."""
         ultima_pista = config.QTD_PISTAS - 1

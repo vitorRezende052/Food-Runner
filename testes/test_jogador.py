@@ -53,3 +53,32 @@ def test_deslizada_nao_passa_do_destino_com_quadro_demorado():
     corredor.mover(jogador.ESQUERDA)
     corredor.atualizar(config.DURACAO_TROCA_PISTA * 10)
     assert corredor.pista_visual == float(corredor.pista)
+
+
+def test_parado_na_pista_o_corredor_nao_se_inclina():
+    corredor = jogador.Jogador()
+    assert corredor.inclinacao == 0.0
+
+
+def test_inclina_para_o_lado_da_troca():
+    corredor = jogador.Jogador()
+    corredor.mover(jogador.DIREITA)
+    assert corredor.inclinacao > 0
+    corredor.atualizar(config.DURACAO_TROCA_PISTA)
+    corredor.mover(jogador.ESQUERDA)
+    assert corredor.inclinacao < 0
+
+
+def test_a_inclinacao_se_desfaz_ao_chegar_na_pista():
+    corredor = jogador.Jogador()
+    corredor.mover(jogador.DIREITA)
+    corredor.atualizar(config.DURACAO_TROCA_PISTA)
+    assert corredor.inclinacao == 0.0
+
+
+def test_a_inclinacao_nao_passa_do_limite():
+    """Duas trocas seguidas afastam o destino, mas o boneco nao deita de lado."""
+    corredor = jogador.Jogador()
+    corredor.mover(jogador.ESQUERDA)
+    corredor.mover(jogador.ESQUERDA)
+    assert corredor.inclinacao == -1.0

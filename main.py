@@ -60,7 +60,7 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
 
     desenho.desenhar_cenario(tela, partida.distancia)
     desenho.desenhar_comidas(tela, partida.gerador.comidas)
-    personagem.desenhar(tela, partida.corredor)
+    personagem.desenhar(tela, partida.corredor, partida.distancia)
     desenho.desenhar_hud(tela, partida)
     if estado == telas.PAUSADO:
         telas.desenhar_pausa(tela)

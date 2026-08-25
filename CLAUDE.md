@@ -26,8 +26,8 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, já
-está no ar). Substitui a decisão travada "Arte: formas coloridas simples" — o
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; a fase 8, a fundação, e a
+fase 9, a animação do corredor, já estão no ar). Substitui a decisão travada "Arte: formas coloridas simples" — o
 "fácil de trocar por sprites depois" é agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
