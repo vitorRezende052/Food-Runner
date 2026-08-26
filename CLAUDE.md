@@ -19,7 +19,7 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Perspectiva **pseudo-3D**: as 3 pistas convergem para um horizonte, o jogador fica fixo na base e a comida nasce pequena no fundo e cresce ao se aproximar.
 - Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo.
 - Comida boa reduz peso E dá pontos.
-- Arte: cartoon desenhado em código (verde = boa, vermelho = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
+- Arte: cartoon desenhado em código (círculo verde = boa, estrela vermelha = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
 - Áudio: sons sintéticos gerados por código (numpy), sem arquivos externos — jogo autocontido.
 - Tela de menu inicial (com instruções de controle) e tela de game over com a pontuação final.
 - Pausa com ESC/P durante a partida.
@@ -64,12 +64,22 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 - **O corredor** é um atleta cartoon de costas: camiseta coral, shorts azul,
   tênis claros e cabelo escuro, montado em peças separadas para a animação.
 - **A comida fica na cor de verdade e o tipo vai para a auréola.** Comida real
-  tem cor própria, e a maçã, que é saudável, é vermelha. Em vez de mentir na cor
-  do alimento, cada comida ganhou atrás um disco translúcido verde (boa) ou
-  vermelho (ruim): no horizonte, onde ela tem menos de dez pixels e só a cor
+  tem cor própria. Em vez de mentir na cor do alimento, cada comida ganhou atrás
+  uma marca: **círculo verde** se ela for boa, **estrela vermelha espetada** se
+  for ruim. No horizonte, onde o alimento tem uma dúzia de pixels e só a cor
   dominante se lê, é a auréola que avisa; de perto ela vira moldura e o desenho
   do alimento fala por si. `COR_COMIDA_BOA` e `COR_COMIDA_RUIM` são as cores
-  dessa auréola.
+  dessa auréola, e as `*_BORDA`, as do anel que a recorta.
+- **A forma diz o mesmo que a cor, de propósito.** Círculo liso contra estrela
+  espetada é a redundância que faz o aviso funcionar para quem não distingue
+  verde de vermelho, e todo mundo reconhece a silhueta antes de registrar o tom.
+  Um alimento novo não escolhe forma: ela vem do tipo dele.
+- **O marcador de tipo é a única coisa com piso em pixels.** Todo o resto do jogo
+  encolhe junto com a perspectiva; o anel da auréola (`AUREOLA_BORDA_MINIMA`) e o
+  tamanho da comida (`TAMANHO_COMIDA_MINIMO`) não, porque só como fração eles
+  arredondariam para zero justamente no fundo da estrada, que é onde o jogador
+  ainda tem tempo de trocar de pista. É uma exceção consciente à regra das
+  frações, e vale só para o aviso.
 - **O que se move é puxado pela distância percorrida**, nunca por um cronômetro
   próprio: as linhas do asfalto já eram assim e a passada do corredor entrou no
   mesmo esquema na fase 9. Sai de graça a sincronia com a rampa de dificuldade

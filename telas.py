@@ -22,7 +22,16 @@ def desenhar_menu(tela, recorde):
     desenho.escurecer(tela, config.OPACIDADE_VEU_MENU)
     linhas = [
         (config.TAMANHO_FONTE_TITULO, config.TITULO, config.COR_TITULO),
-        (config.TAMANHO_FONTE_AVISO, "Coma o que faz bem e desvie dos ultraprocessados"),
+        (
+            config.TAMANHO_FONTE_AVISO,
+            "Círculo verde: coma e emagreça",
+            config.COR_COMIDA_BOA,
+        ),
+        (
+            config.TAMANHO_FONTE_AVISO,
+            "Estrela vermelha: desvie ou engorda",
+            config.COR_COMIDA_RUIM,
+        ),
         (config.TAMANHO_FONTE_AVISO, "Setas ou A e D trocam de pista"),
         (
             config.TAMANHO_FONTE_AVISO,

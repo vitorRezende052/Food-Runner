@@ -30,10 +30,13 @@ Na primeira execução o `uv` baixa o Python 3.12 e as dependências
 
 As regras:
 
-- **Comida ruim** (vermelha: hambúrguer, batata frita, refrigerante, donut)
-  aumenta o peso.
-- **Comida boa** (verde: maçã, brócolis, cenoura, uva) diminui o peso
-  e ainda dá pontos de bônus.
+- **Comida ruim** — hambúrguer, batata frita, refrigerante e donut — aumenta o
+  peso. Ela vem sobre uma **estrela vermelha espetada**.
+- **Comida boa** — maçã, brócolis, cenoura e uva — diminui o peso e ainda dá
+  pontos de bônus. Ela vem sobre um **círculo verde**.
+- Cada alimento é desenhado na cor de verdade; quem diz se ele é bom ou ruim é a
+  marca atrás dele. A forma repete o recado da cor de propósito, para o aviso
+  funcionar também para quem não distingue verde de vermelho.
 - A pontuação é a distância percorrida mais os bônus.
 - Chegou a **100 kg**, a corrida acaba. O número do peso fica alaranjado quando
   a balança se aproxima do limite.

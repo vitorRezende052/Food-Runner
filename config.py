@@ -24,8 +24,10 @@ COR_TEXTO = (244, 244, 238)
 COR_SOMBRA_TEXTO = (34, 38, 46)  # contorno atras do texto: legivel no ceu claro e no veu
 COR_TITULO = (118, 194, 128)  # verde do titulo do menu, no tom da comida boa
 COR_ALERTA = (232, 138, 62)  # peso perto do limite e titulo do game over
-COR_COMIDA_BOA = (132, 214, 116)  # a aureola de quem e saudavel
-COR_COMIDA_RUIM = (232, 110, 96)  # a aureola de quem e ultraprocessado
+COR_COMIDA_BOA = (132, 214, 116)  # o miolo da aureola de quem e saudavel
+COR_COMIDA_RUIM = (232, 110, 96)  # o miolo da aureola de quem e ultraprocessado
+COR_COMIDA_BOA_BORDA = (58, 146, 74)  # o anel opaco em volta: e ele que se ve la no fundo
+COR_COMIDA_RUIM_BORDA = (186, 52, 46)
 COR_VEU = (14, 16, 22)  # escurece a corrida por tras do menu, da pausa e do game over
 COR_SOMBRA = (32, 38, 46)  # mancha no chao embaixo do que esta em pe
 
@@ -38,7 +40,7 @@ COR_TENIS = (240, 238, 230)
 
 # Alimentos: cada um na cor de verdade. Quem diz se a comida e boa ou ruim e a
 # aureola atras dela, e nao a cor do alimento (ver COR_COMIDA_BOA/RUIM).
-COR_MACA = (198, 74, 72)
+COR_MACA = (164, 196, 86)  # maca verde: o vermelho disputava com a aureola de comida ruim
 COR_CABO = (122, 92, 62)  # o cabinho da maca e o do cacho de uvas
 COR_FOLHA = (110, 168, 92)  # a folha da maca e da uva, e a rama da cenoura
 COR_BROCOLIS = (74, 130, 66)
@@ -127,6 +129,12 @@ JOGADOR_INCLINACAO = 0.22  # em fracao da largura: o quanto o tronco se joga na 
 Z_SPAWN = Z_HORIZONTE  # toda comida nasce no fundo da estrada
 Z_SUMICO = Z_MINIMO  # ja saiu pelo rodape: e o piso da projecao, nao adianta ir alem
 TAMANHO_COMIDA = 90  # lado da comida em pixels quando chega no jogador
+# Os dois pisos abaixo sao em PIXELS, e nao em fracao, de proposito: tudo mais no
+# jogo encolhe junto com a perspectiva, mas o aviso de boa ou ruim e a unica coisa
+# que nao pode sumir la no fundo, que e justamente onde o jogador ainda tem tempo
+# de trocar de pista. Com 12 px a trava so age enquanto z > 0,72 -- o pedaco mais
+# distante da estrada, em que a comida mal aparece.
+TAMANHO_COMIDA_MINIMO = 12  # a comida nunca fica menor que isso, nem no horizonte
 INTERVALO_SPAWN_INICIAL = 1.1  # segundos entre uma comida e a proxima
 INTERVALO_SPAWN_MINIMO = 0.35  # no fim da rampa a estrada fica bem mais cheia
 CHANCE_COMIDA_RUIM_INICIAL = 0.60  # o resto sai comida boa
@@ -135,11 +143,22 @@ COMIDAS_POR_SPAWN_INICIAL = 1  # na largada a estrada solta uma comida por vez
 COMIDAS_POR_SPAWN_MAXIMA = 2  # na metade da rampa passa a soltar duas, em pistas diferentes
 ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das pecas retangulares, em fracao
 
-# A aureola e o disco translucido atras do alimento, verde se ele for bom e
-# vermelho se for ruim. E ela que da o aviso la do horizonte, onde a comida tem
-# menos de dez pixels e so a cor dominante chega aos olhos do jogador.
-AUREOLA_TAMANHO = 1.15  # diametro, em fracao do tamanho da comida
-OPACIDADE_AUREOLA = 105  # de 0 (invisivel) a 255 (disco solido)
+# A aureola e a marca atras do alimento que diz se ele e bom ou ruim: um circulo
+# verde para a comida boa e uma estrela espetada vermelha para a ultraprocessada.
+# E ela que da o aviso la do horizonte, onde o alimento nao tem dez pixels e so a
+# cor dominante chega aos olhos do jogador -- e a forma repete o recado para quem
+# nao distingue verde de vermelho.
+#
+# A marca e montada em duas camadas, como as bagas do cacho de uva: a forma
+# inteira na cor da borda e, por cima, a mesma forma menor no tom do miolo. O que
+# sobra entre uma e outra e o anel.
+AUREOLA_TAMANHO = 1.45  # diametro, em fracao do tamanho da comida
+OPACIDADE_AUREOLA = 170  # de 0 (invisivel) a 255 (solido): o miolo deixa o asfalto aparecer
+OPACIDADE_AUREOLA_BORDA = 240  # o anel e quase solido: e o que recorta a forma
+AUREOLA_BORDA = 0.22  # espessura do anel, em fracao do raio da marca
+AUREOLA_BORDA_MINIMA = 2  # em pixels: o piso que impede o anel de arredondar para zero
+AUREOLA_PONTAS = 8  # espetos da estrela que marca a comida ruim
+AUREOLA_RECUO_PONTA = 0.68  # raio do vale entre dois espetos, em fracao do raio da ponta
 
 # Medidas de cada alimento, todas em fracao do lado da caixa dele: mudar
 # TAMANHO_COMIDA redimensiona os oito juntos, e a perspectiva so multiplica pela

@@ -13,10 +13,11 @@ com numpy e o balanceamento fechado — a corrida agora termina até para quem j
 bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
 gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
 o corredor animado, com a passada puxada pela distância, e os oito alimentos
-desenhados em código, cada um na cor de verdade com uma auréola verde ou
-vermelha atrás dizendo o tipo, com 134 testes verdes). O jogo está completo em
-regras; o que falta das fases 11 e 12 é o resto da redefinição visual descrita
-na **Direção Visual** do `CLAUDE.md`: prédios nas laterais e juice.
+desenhados em código, cada um na cor de verdade, com um círculo verde ou uma
+estrela vermelha atrás dizendo o tipo bem de longe, com 146 testes verdes). O
+jogo está completo em regras; o que falta das fases 11 e 12 é o resto da
+redefinição visual descrita na **Direção Visual** do `CLAUDE.md`: prédios nas
+laterais e juice.
 
 ---
 
@@ -79,7 +80,7 @@ podem seguir o mesmo caminho se pedirem.
 [x] personagem.py  # o corredor visto de costas, montado peça por peça e animado
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio, test_desenho, test_personagem
+                   # test_audio, test_desenho, test_desenho_comida, test_personagem
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -348,7 +349,7 @@ desenhadas em código, com leitura visual clara.
 - **Pronto quando:** dá para distinguir comida boa de ruim num relance, e elas se
   aproximam com perspectiva convincente.
 - **Feito:** os oito alimentos do cardápio agora são desenhados um a um, cada um
-  **na cor de verdade**: a maçã é vermelha com cabinho e folha, o brócolis é um
+  **na cor de verdade**: a maçã é verde com cabinho e folha, o brócolis é um
   talo claro segurando três bolas verdes, a cenoura é um triângulo laranja com a
   rama espetada, a uva é um cacho roxo em pirâmide, o hambúrguer é uma
   pilha (domo de pão, alface, carne e o pão de baixo), a batata frita são
@@ -381,6 +382,50 @@ desenhadas em código, com leitura visual clara.
   as vezes de contorno e separa uma baga da vizinha, já que as filas se
   encostam de propósito. Três testes novos (137 no total) guardam o desenho:
   o cacho cabe na caixa, as bagas se encostam e o miolo deixa contorno.
+- **A auréola foi refeita depois da fase, porque não estava sendo lida.** Jogando,
+  ficava confuso saber de que desviar. A causa apareceu na conta: com
+  `AUREOLA_TAMANHO = 1.15`, o disco sobrava só 7,5% do lado da comida para cada
+  lado, e como tudo era multiplicado pela escala da perspectiva isso dava **meio
+  pixel de anel no horizonte** — a auréola só virava moldura de verdade nos
+  últimos 25% da aproximação, quando já não dá tempo de trocar de pista. Pior: a
+  comida passa mais de 80% da travessia com menos de 30 px, então o jogador
+  *precisa* decidir enquanto ela é pequena, que era justamente onde o aviso não
+  existia. Em 26/08/2026 entraram quatro mudanças:
+  - **A marca ganhou forma além de cor:** círculo liso para a comida boa,
+    **estrela espetada** para a ruim. É a redundância que faz o aviso funcionar
+    para quem não distingue verde de vermelho (cerca de 8% dos homens, e
+    vermelho × verde é o eixo mais comum), e a silhueta é reconhecida antes de o
+    olho registrar o tom. A forma vem do tipo, então alimento novo não escolhe.
+  - **A auréola virou disco de duas camadas**, exatamente como as bagas do cacho
+    de uva: a figura inteira na cor da borda e a mesma figura menor por cima, no
+    tom do miolo. O que sobra entre as duas é um anel opaco que recorta a marca
+    contra o asfalto. Também cresceu (1,15 → 1,45) e ficou mais firme (opacidade
+    105 → 170 no miolo, 240 no anel).
+  - **Dois pisos em pixels**, `AUREOLA_BORDA_MINIMA` e `TAMANHO_COMIDA_MINIMO`.
+    São a única exceção consciente à regra das frações no jogo inteiro, e a razão
+    é a de sempre com marcador de perigo: como fração, ele arredonda para zero
+    no fundo da estrada. Com o piso de 12 px a comida no horizonte passou de 9
+    para 12 px e a marca, de 10 para 17. O preço é o tamanho congelar enquanto
+    `z > 0,72` — os 28% mais distantes da estrada, onde a comida mal aparece.
+    Foram testados 14 px antes: aí o congelamento subia para 40% e dava a
+    impressão de que a comida não estava se aproximando.
+  - **A maçã ficou verde.** Era o único alimento cuja cor mentia sobre o próprio
+    tipo: `(198, 74, 72)` é praticamente a `COR_COMIDA_RUIM` e a cor da
+    embalagem do refri e da batata, então lá no fundo uma maçã era uma mancha
+    vermelha e o jogador desviava do que devia comer — erro pior do que não
+    conseguir ler. Maçã verde é uma cor real, então a decisão da fase 10
+    ("alimento na cor de verdade") continua valendo inteira.
+
+  De quebra, o menu inicial ganhou a legenda "Círculo verde: coma e emagreça" /
+  "Estrela vermelha: desvie ou engorda", cada linha na cor do próprio marcador —
+  usando a cor-por-linha que o `escrever_no_meio` já tinha desde a fase 7.
+  9 testes novos (146 no total): 5 no `test_config.py` guardando os invariantes
+  novos (o anel não engole o miolo, o piso em pixels não é zero, a estrela tem
+  vale de verdade, o piso da comida é menor que o tamanho de chegada e a maçã é
+  esverdeada) e um `test_desenho_comida.py` novo com 4 sobre a geometria da
+  estrela — `pontos_da_estrela` nasceu **pública** pelo mesmo motivo que as
+  contas da passada no `personagem.py`: é matemática pura num módulo gráfico, e
+  o `CLAUDE.md` manda testá-la.
 - **Desvios:** dois. **(1)** As comidas saíram do `desenho.py` para um
   `desenho_comida.py` novo, pelo mesmo motivo que o corredor saiu na fase 8 —
   oito alimentos montados peça a peça pesam mais do que o cenário inteiro. O

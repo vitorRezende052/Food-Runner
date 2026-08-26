@@ -5,12 +5,19 @@ dessa caixa ja vem multiplicado pela escala da perspectiva, entao nenhuma
 medida daqui precisa saber a que distancia a comida esta. Todas elas sao
 fracoes do lado, tiradas do ``config``, como acontece com o corredor.
 
-Cada alimento e pintado na cor de verdade -- a maca e vermelha, o brocolis e
-verde, o pao do lanche e dourado. Quem avisa se a comida e boa ou ruim e a
-**aureola**, um disco translucido verde ou vermelho atras dela: la no horizonte,
-onde o alimento nao tem dez pixels, e a aureola que chega aos olhos do jogador;
-de perto ela vira so uma moldura e o desenho do alimento fala por si.
+Cada alimento e pintado na cor de verdade -- a maca e verde, a cenoura e laranja,
+o pao do lanche e dourado. Quem avisa se a comida e boa ou ruim e a **aureola**,
+a marca atras dela: um circulo verde para o alimento saudavel e uma estrela
+espetada vermelha para o ultraprocessado. La no horizonte, onde o alimento nao
+tem dez pixels, e a aureola que chega aos olhos do jogador; de perto ela vira so
+uma moldura e o desenho do alimento fala por si.
+
+A forma diz o mesmo que a cor de proposito: o jogador que nao distingue verde de
+vermelho le a diferenca entre o circulo liso e o espinho, e todos os outros
+reconhecem a silhueta antes de registrar o tom.
 """
+
+import math
 
 import pygame
 
@@ -33,7 +40,7 @@ def desenhar_comidas(tela, comidas):
 def _desenhar(tela, alimento):
     """Poe um alimento em pe no asfalto, do tamanho que a distancia manda."""
     x, y, escala = perspectiva.projetar(alimento.pista, alimento.z)
-    lado = config.TAMANHO_COMIDA * escala
+    lado = max(config.TAMANHO_COMIDA_MINIMO, config.TAMANHO_COMIDA * escala)
     caixa = pygame.Rect(0, 0, max(1, round(lado)), max(1, round(lado)))
     caixa.midbottom = (round(x), round(y))
 
@@ -42,17 +49,75 @@ def _desenhar(tela, alimento):
     DESENHOS[alimento.nome](tela, caixa)
 
 
-def _desenhar_aureola(tela, alimento, caixa):
-    """Disco translucido atras do alimento: verde se ele for bom, vermelho se ruim."""
-    if alimento.tipo == comida.BOA:
-        cor = config.COR_COMIDA_BOA
+def pontos_da_estrela(centro_x, centro_y, raio, pontas, recuo):
+    """Vertices de uma estrela, alternando uma ponta no raio cheio e um vale recuado.
+
+    Sao ``2 * pontas`` pontos dando a volta no centro. O primeiro olha para cima,
+    para a estrela ficar em pe qualquer que seja o numero de espetos.
+    """
+    passo = math.pi / pontas
+    vertices = []
+    for indice in range(2 * pontas):
+        distancia = raio if indice % 2 == 0 else raio * recuo
+        angulo = -math.pi / 2 + indice * passo
+        vertices.append(
+            (
+                centro_x + distancia * math.cos(angulo),
+                centro_y + distancia * math.sin(angulo),
+            )
+        )
+    return vertices
+
+
+def _desenhar_forma_da_aureola(superficie, tipo, centro, raio, cor, opacidade):
+    """Pinta a forma que diz o tipo: circulo para a comida boa, estrela para a ruim."""
+    if tipo == comida.BOA:
+        pygame.draw.aacircle(superficie, (*cor, opacidade), centro, raio)
     else:
-        cor = config.COR_COMIDA_RUIM
+        pygame.draw.polygon(
+            superficie,
+            (*cor, opacidade),
+            pontos_da_estrela(
+                *centro, raio, config.AUREOLA_PONTAS, config.AUREOLA_RECUO_PONTA
+            ),
+        )
+
+
+def _desenhar_aureola(tela, alimento, caixa):
+    """Marca atras do alimento: circulo verde se ele for bom, estrela vermelha se ruim.
+
+    A forma e montada em duas camadas, como as bagas do cacho de uva: a figura
+    inteira na cor da borda e, por cima, a mesma figura menor no tom do miolo. O
+    que sobra entre as duas e o anel, e ele tem espessura minima em pixels --
+    calculado so como fracao do raio, arredondaria para zero justamente no
+    horizonte, que e onde ele e a unica coisa que o jogador consegue ler.
+
+    A forma repete o recado da cor: quem nao distingue verde de vermelho ainda
+    ve um circulo liso de um lado e um espinho do outro.
+    """
+    if alimento.tipo == comida.BOA:
+        cor, cor_borda = config.COR_COMIDA_BOA, config.COR_COMIDA_BOA_BORDA
+    else:
+        cor, cor_borda = config.COR_COMIDA_RUIM, config.COR_COMIDA_RUIM_BORDA
+
     diametro = max(2, round(caixa.width * config.AUREOLA_TAMANHO))
-    disco = pygame.Surface((diametro, diametro), pygame.SRCALPHA)
+    marca = pygame.Surface((diametro, diametro), pygame.SRCALPHA)
     raio = diametro / 2
-    pygame.draw.aacircle(disco, (*cor, config.OPACIDADE_AUREOLA), (raio, raio), raio)
-    tela.blit(disco, disco.get_rect(center=caixa.center))
+    borda = max(config.AUREOLA_BORDA_MINIMA, round(raio * config.AUREOLA_BORDA))
+    centro = (raio, raio)
+
+    _desenhar_forma_da_aureola(
+        marca, alimento.tipo, centro, raio, cor_borda, config.OPACIDADE_AUREOLA_BORDA
+    )
+    _desenhar_forma_da_aureola(
+        marca,
+        alimento.tipo,
+        centro,
+        max(1, raio - borda),
+        cor,
+        config.OPACIDADE_AUREOLA,
+    )
+    tela.blit(marca, marca.get_rect(center=caixa.center))
 
 
 def _peca(tela, cor, centro_x, base, largura, altura):
@@ -79,7 +144,7 @@ def _trapezio(tela, cor, centro_x, base, altura, largura_topo, largura_base):
 
 
 def _desenhar_maca(tela, caixa):
-    """Bola vermelha com o cabinho espetado e uma folha ao lado dele."""
+    """Bola verde com o cabinho espetado e uma folha ao lado dele."""
     lado = caixa.width
     raio = config.COMIDA_MACA_RAIO * lado
     centro_y = caixa.bottom - raio
