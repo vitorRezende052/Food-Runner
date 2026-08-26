@@ -277,7 +277,7 @@ personagem-protótipo por um boneco de verdade visto de costas.
   vezes por segundo). Abaixo do horizonte entrou grama e, dos dois lados do
   asfalto, uma **calçada** medida em pistas (`LARGURA_CALCADA`), o que a faz
   convergir para o horizonte de graça, na mesma projeção da estrada — é o
-  terreno em que os prédios da fase 11 vão subir. A paleta inteira foi
+  terreno em que os prédios da fase 11 subiram. A paleta inteira foi
   redesenhada em tons macios (nenhuma cor pura, e há um teste garantindo isso),
   e o asfalto clareou para conversar com o céu de dia.
 - **Desvios:** dois. **(1)** O corredor saiu do `desenho.py` para um
@@ -526,7 +526,7 @@ rua de cidade em perspectiva.
     chegando perto da câmera o prédio já saiu inteiro pela lateral, e era a
     fileira do fundo, que é alta, quem mais gastava à toa;
   - **`PREDIO_JANELA_MINIMA` subiu de 2 px para 5 px.** Com 2 px a trava nunca
-    cortava nada — como a janela mede sempre `ALTURA_ANDAR * escala *
+    cortava nada — como a janela mede sempre `PREDIO_ALTURA_ANDAR * escala *
     PREDIO_JANELA_ALTURA`, 2 px só seriam alcançados em `z = 1,47`, além do
     horizonte. Com 5 px o prédio fica liso a partir de `z = 0,52`, onde um andar
     inteiro tem 11 px de altura na tela e a grade já era sujeira;
