@@ -129,7 +129,7 @@ mexeu em dois números; o resto sobreviveu). Todos ficam centralizados no
 | Velocidade | 0,5 z por segundo, subindo ~2× ao longo de ~3 min |
 | Intervalo entre spawns | 1,1 s no começo → 0,35 s no fim |
 | Comidas por spawn | 1 até a metade da rampa → 2, em pistas diferentes |
-| Tamanho da comida | 90 px de lado ao chegar no jogador |
+| Tamanho da comida | 90 px de lado ao chegar no jogador; nunca menos de 12 px |
 | Janela / FPS | 960×720, 60 FPS, movimento por delta time |
 
 A comida boa é mais rara e devolve menos peso do que a ruim adiciona: sem erro

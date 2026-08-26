@@ -145,9 +145,9 @@ ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das pecas retangulares, em fra
 
 # A aureola e a marca atras do alimento que diz se ele e bom ou ruim: um circulo
 # verde para a comida boa e uma estrela espetada vermelha para a ultraprocessada.
-# E ela que da o aviso la do horizonte, onde o alimento nao tem dez pixels e so a
-# cor dominante chega aos olhos do jogador -- e a forma repete o recado para quem
-# nao distingue verde de vermelho.
+# E ela que da o aviso la do horizonte, onde o alimento tem uma duzia de pixels e
+# so a cor dominante chega aos olhos do jogador -- e a forma repete o recado para
+# quem nao distingue verde de vermelho.
 #
 # A marca e montada em duas camadas, como as bagas do cacho de uva: a forma
 # inteira na cor da borda e, por cima, a mesma forma menor no tom do miolo. O que

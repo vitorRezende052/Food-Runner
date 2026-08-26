@@ -8,9 +8,9 @@ fracoes do lado, tiradas do ``config``, como acontece com o corredor.
 Cada alimento e pintado na cor de verdade -- a maca e verde, a cenoura e laranja,
 o pao do lanche e dourado. Quem avisa se a comida e boa ou ruim e a **aureola**,
 a marca atras dela: um circulo verde para o alimento saudavel e uma estrela
-espetada vermelha para o ultraprocessado. La no horizonte, onde o alimento nao
-tem dez pixels, e a aureola que chega aos olhos do jogador; de perto ela vira so
-uma moldura e o desenho do alimento fala por si.
+espetada vermelha para o ultraprocessado. La no horizonte, onde o alimento tem
+uma duzia de pixels, e a aureola que chega aos olhos do jogador; de perto ela
+vira so uma moldura e o desenho do alimento fala por si.
 
 A forma diz o mesmo que a cor de proposito: o jogador que nao distingue verde de
 vermelho le a diferenca entre o circulo liso e o espinho, e todos os outros
