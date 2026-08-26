@@ -176,7 +176,7 @@ Trabalho fase a fase: ao terminar uma, paro para você ver rodando antes da pró
   `testes/test_perspectiva.py` e `testes/test_jogador.py`.
 
 ### [x] Fase 2 — Comida na pista
-- `comida.py`: tipos bons (maçã, brócolis, cenoura, carne grelhada) e ruins (hambúrguer, batata frita, refri, donut) como formas coloridas — verde = boa, vermelho = ruim.
+- `comida.py`: tipos bons (maçã, brócolis, cenoura, uva) e ruins (hambúrguer, batata frita, refri, donut) como formas coloridas — verde = boa, vermelho = ruim.
 - Spawn em `z = 1.0` numa pista sorteada, avanço em direção ao jogador, remoção ao passar.
 - Testes: spawn respeita as pistas válidas, comida some depois de passar, proporção bom/ruim.
 - **Pronto quando:** a comida vem do horizonte crescendo e atravessa o jogador sem efeito.
@@ -350,7 +350,7 @@ desenhadas em código, com leitura visual clara.
 - **Feito:** os oito alimentos do cardápio agora são desenhados um a um, cada um
   **na cor de verdade**: a maçã é vermelha com cabinho e folha, o brócolis é um
   talo claro segurando três bolas verdes, a cenoura é um triângulo laranja com a
-  rama espetada, o bife tem as marcas escuras da grelha, o hambúrguer é uma
+  rama espetada, a uva é um cacho roxo em pirâmide, o hambúrguer é uma
   pilha (domo de pão, alface, carne e o pão de baixo), a batata frita são
   palitos numa caixinha vermelha, o refrigerante é um copo de fast food com
   tampa e canudo, e o donut é um anel com glacê e furo de verdade. Cada um é
@@ -367,10 +367,20 @@ desenhadas em código, com leitura visual clara.
   o desenho do alimento fala por si. As `COR_COMIDA_BOA` e `COR_COMIDA_RUIM`
   passaram a ser exatamente as cores dessa auréola, em tons mais claros, para
   contrastarem com o asfalto escuro por trás e com o alimento por cima.
-- **O cardápio não mudou:** os mesmos oito alimentos. A carne grelhada ficou
-  porque é a única proteína magra do tema, e a semelhança dela com o hambúrguer
-  morreu na silhueta — um é elipse achatada com riscos de grelha, o outro é uma
-  pilha de camadas.
+- **O cardápio mudou uma vez, depois da fase.** A fase 10 fechou com os mesmos
+  oito alimentos de sempre, mas a **carne grelhada** — elipse marrom com três
+  riscos de grelha — era a leitura mais fraca do jogo: no horizonte virava uma
+  mancha marrom, e marrom já era a cor do pão do hambúrguer e da massa do
+  donut. Em 26/08/2026 ela deu lugar a um **cacho de uvas**, escolhido pela
+  cor: roxo é o único tom vivo que a paleta ainda não usava, então nenhum
+  outro alimento disputa com ele lá no fundo. O custo foi o cardápio bom
+  ficar sem proteína — duas frutas e dois vegetais —, aceito porque o que o
+  jogo cobra do jogador é reconhecer *boa ou ruim* num relance, não montar um
+  prato equilibrado. O cacho é uma pirâmide de seis bagas (uma, duas, três),
+  cada uma um disco escuro com um miolo claro por dentro: o anel que sobra faz
+  as vezes de contorno e separa uma baga da vizinha, já que as filas se
+  encostam de propósito. Três testes novos (137 no total) guardam o desenho:
+  o cacho cabe na caixa, as bagas se encostam e o miolo deixa contorno.
 - **Desvios:** dois. **(1)** As comidas saíram do `desenho.py` para um
   `desenho_comida.py` novo, pelo mesmo motivo que o corredor saiu na fase 8 —
   oito alimentos montados peça a peça pesam mais do que o cenário inteiro. O

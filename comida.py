@@ -23,14 +23,14 @@ RUIM = "ruim"
 MACA = "maca"
 BROCOLIS = "brocolis"
 CENOURA = "cenoura"
-CARNE_GRELHADA = "carne grelhada"
+UVA = "uva"
 HAMBURGUER = "hamburguer"
 BATATA_FRITA = "batata frita"
 REFRIGERANTE = "refrigerante"
 DONUT = "donut"
 
 # Cardapio: os saudaveis de um lado, os ultraprocessados do outro.
-COMIDAS_BOAS = (MACA, BROCOLIS, CENOURA, CARNE_GRELHADA)
+COMIDAS_BOAS = (MACA, BROCOLIS, CENOURA, UVA)
 COMIDAS_RUINS = (HAMBURGUER, BATATA_FRITA, REFRIGERANTE, DONUT)
 
 

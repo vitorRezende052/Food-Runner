@@ -32,7 +32,7 @@ As regras:
 
 - **Comida ruim** (vermelha: hambúrguer, batata frita, refrigerante, donut)
   aumenta o peso.
-- **Comida boa** (verde: maçã, brócolis, cenoura, carne grelhada) diminui o peso
+- **Comida boa** (verde: maçã, brócolis, cenoura, uva) diminui o peso
   e ainda dá pontos de bônus.
 - A pontuação é a distância percorrida mais os bônus.
 - Chegou a **100 kg**, a corrida acaba. O número do peso fica alaranjado quando

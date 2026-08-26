@@ -161,28 +161,49 @@ def _desenhar_cenoura(tela, caixa):
     )
 
 
-def _desenhar_carne_grelhada(tela, caixa):
-    """Bife achatado com os riscos escuros que ficaram da grelha."""
-    lado = caixa.width
-    bife = pygame.Rect(
-        caixa.left, 0, caixa.width, max(1, round(config.COMIDA_CARNE_ALTURA * lado))
-    )
-    bife.bottom = caixa.bottom
-    pygame.draw.ellipse(tela, config.COR_CARNE, bife)
+def _desenhar_uva(tela, caixa):
+    """Cacho roxo em piramide, com o cabinho e uma folha espetados no alto.
 
-    marcas = config.COMIDA_CARNE_MARCAS
-    tamanho = config.COMIDA_CARNE_MARCA_TAMANHO * lado
-    espaco = config.COMIDA_CARNE_MARCA_ESPACO * lado
-    espessura = max(1, round(config.COMIDA_CARNE_MARCA_ESPESSURA * lado))
-    for indice in range(marcas):
-        meio = bife.centerx + (indice - (marcas - 1) / 2) * espaco
-        pygame.draw.line(
-            tela,
-            config.COR_GRELHA,
-            (meio - tamanho, bife.centery + tamanho),
-            (meio + tamanho, bife.centery - tamanho),
-            espessura,
-        )
+    Cada baga e um disco escuro com um miolo claro por dentro: o anel que sobra
+    faz as vezes de contorno e e o que separa uma baga da vizinha, ja que as
+    filas se encostam de proposito -- afastadas, o cacho viraria um punhado de
+    bolinhas soltas.
+    """
+    lado = caixa.width
+    raio = config.COMIDA_UVA_RAIO * lado
+    espaco = config.COMIDA_UVA_ESPACO * lado
+    fila = config.COMIDA_UVA_FILA * lado
+    filas = config.COMIDA_UVA_FILAS
+    altura_cabo = config.COMIDA_UVA_CABO_ALTURA * lado
+    topo_do_cacho = caixa.bottom - 2 * raio - (filas - 1) * fila
+
+    _peca(
+        tela,
+        config.COR_CABO,
+        caixa.centerx,
+        topo_do_cacho,
+        config.COMIDA_UVA_CABO_LARGURA * lado,
+        altura_cabo,
+    )
+    folha = pygame.Rect(
+        0,
+        0,
+        max(1, round(config.COMIDA_UVA_FOLHA_LARGURA * lado)),
+        max(1, round(config.COMIDA_UVA_FOLHA_ALTURA * lado)),
+    )
+    folha.midleft = (round(caixa.centerx), round(topo_do_cacho - altura_cabo / 2))
+    pygame.draw.ellipse(tela, config.COR_FOLHA, folha)
+
+    # De tras para a frente: a fila mais larga la em cima primeiro, a baga da
+    # ponta por ultimo, para que a de baixo sempre cubra a de cima.
+    for indice in reversed(range(filas)):
+        meio_da_fila = caixa.bottom - raio - indice * fila
+        for baga in range(indice + 1):
+            centro = (caixa.centerx + (baga - indice / 2) * espaco, meio_da_fila)
+            pygame.draw.aacircle(tela, config.COR_UVA_CONTORNO, centro, raio)
+            pygame.draw.aacircle(
+                tela, config.COR_UVA, centro, raio * config.COMIDA_UVA_MIOLO
+            )
 
 
 def _desenhar_hamburguer(tela, caixa):
@@ -310,7 +331,7 @@ DESENHOS = {
     comida.MACA: _desenhar_maca,
     comida.BROCOLIS: _desenhar_brocolis,
     comida.CENOURA: _desenhar_cenoura,
-    comida.CARNE_GRELHADA: _desenhar_carne_grelhada,
+    comida.UVA: _desenhar_uva,
     comida.HAMBURGUER: _desenhar_hamburguer,
     comida.BATATA_FRITA: _desenhar_batata_frita,
     comida.REFRIGERANTE: _desenhar_refrigerante,

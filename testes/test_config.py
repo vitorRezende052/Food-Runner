@@ -82,6 +82,31 @@ def test_o_donut_tem_furo():
     assert config.COMIDA_DONUT_MASSA < config.COMIDA_DONUT_RAIO
 
 
+def test_o_cacho_de_uvas_cabe_na_caixa_dele():
+    """A piramide de bagas mais o cabinho nao passam do alto nem das laterais."""
+    empilhado = (
+        2 * config.COMIDA_UVA_RAIO
+        + (config.COMIDA_UVA_FILAS - 1) * config.COMIDA_UVA_FILA
+        + config.COMIDA_UVA_CABO_ALTURA
+    )
+    fila_mais_larga = (config.COMIDA_UVA_FILAS - 1) * config.COMIDA_UVA_ESPACO + (
+        2 * config.COMIDA_UVA_RAIO
+    )
+    assert round(empilhado, 6) <= 1.0
+    assert round(fila_mais_larga, 6) <= 1.0
+
+
+def test_as_bagas_do_cacho_se_encostam():
+    """Filas e bagas afastadas alem do diametro soltariam o cacho em bolinhas."""
+    assert config.COMIDA_UVA_FILA < 2 * config.COMIDA_UVA_RAIO
+    assert config.COMIDA_UVA_ESPACO < 2 * config.COMIDA_UVA_RAIO
+
+
+def test_a_baga_tem_contorno():
+    """Miolo do tamanho da baga apagaria o anel escuro que separa uma da outra."""
+    assert config.COMIDA_UVA_MIOLO < 1
+
+
 def test_o_lanche_cabe_na_caixa_dele():
     """A pilha do hamburguer nao passa do alto da caixa.
 

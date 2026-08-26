@@ -39,15 +39,15 @@ COR_TENIS = (240, 238, 230)
 # Alimentos: cada um na cor de verdade. Quem diz se a comida e boa ou ruim e a
 # aureola atras dela, e nao a cor do alimento (ver COR_COMIDA_BOA/RUIM).
 COR_MACA = (198, 74, 72)
-COR_CABO = (122, 92, 62)  # o cabinho da maca
-COR_FOLHA = (110, 168, 92)  # a folha da maca e a rama da cenoura
+COR_CABO = (122, 92, 62)  # o cabinho da maca e o do cacho de uvas
+COR_FOLHA = (110, 168, 92)  # a folha da maca e da uva, e a rama da cenoura
 COR_BROCOLIS = (74, 130, 66)
 COR_BROCOLIS_TALO = (176, 198, 142)
 COR_CENOURA = (222, 138, 66)
-COR_CARNE = (146, 92, 68)  # o bife da carne grelhada
-COR_GRELHA = (86, 54, 42)  # as marcas escuras que o bife traz da grelha
+COR_UVA = (146, 106, 178)  # o roxo das bagas do cacho
+COR_UVA_CONTORNO = (96, 66, 124)  # roxo mais fundo: separa uma baga da vizinha
 COR_PAO = (214, 166, 104)
-COR_HAMBURGUER = (128, 82, 60)  # o disco de carne do lanche, mais escuro que o bife
+COR_HAMBURGUER = (128, 82, 60)  # o disco de carne do lanche, mais escuro que o pao
 COR_ALFACE = (128, 176, 96)
 COR_BATATA = (232, 196, 104)
 COR_EMBALAGEM = (198, 84, 78)  # a caixinha da batata frita e o copo do refrigerante
@@ -163,11 +163,17 @@ COMIDA_CENOURA_RAMA_ALTURA = 0.26  # as folhas espetadas no topo da raiz
 COMIDA_CENOURA_RAMA_FOLHA = 0.15  # largura de cada folha, e tambem o espaco entre elas
 COMIDA_CENOURA_FOLHAS = 3
 
-COMIDA_CARNE_ALTURA = 0.60  # o bife e uma elipse achatada, larga como a caixa
-COMIDA_CARNE_MARCAS = 3
-COMIDA_CARNE_MARCA_ESPESSURA = 0.07
-COMIDA_CARNE_MARCA_TAMANHO = 0.11  # metade do risco diagonal, na horizontal e na vertical
-COMIDA_CARNE_MARCA_ESPACO = 0.24  # de um risco da grelha para o vizinho
+# O cacho e uma piramide de bagas apontando para baixo: uma na ponta, duas na
+# fila seguinte, tres na de cima. O cabinho sai do alto da ultima fila.
+COMIDA_UVA_FILAS = 3
+COMIDA_UVA_RAIO = 0.15  # raio de cada baga
+COMIDA_UVA_ESPACO = 0.25  # de uma baga a vizinha, na mesma fila
+COMIDA_UVA_FILA = 0.22  # de uma fila para a de cima; menor que o diametro, entao elas se encostam
+COMIDA_UVA_MIOLO = 0.80  # fracao do raio pintada no tom claro: o resto vira contorno
+COMIDA_UVA_CABO_ALTURA = 0.16
+COMIDA_UVA_CABO_LARGURA = 0.07
+COMIDA_UVA_FOLHA_LARGURA = 0.28
+COMIDA_UVA_FOLHA_ALTURA = 0.14
 
 # O lanche e uma pilha, montada de cima para baixo: cada camada tapa a de cima.
 COMIDA_HAMBURGUER_PAO = 0.50  # altura do domo do pao; a metade de baixo fica escondida

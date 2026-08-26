@@ -8,7 +8,7 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 ## Regras do jogo
 - Personagem corre sozinho por 3 pistas fixas; o jogador troca de pista (← → e A/D) para desviar de comida ruim e coletar comida boa.
 - Comida ruim (ultraprocessados: hambúrguer, batata frita, refri, donut) → aumenta o peso.
-- Comida boa (frutas, verduras, carne grelhada) → diminui o peso e dá bônus de pontos.
+- Comida boa (frutas e verduras: maçã, brócolis, cenoura, uva) → diminui o peso e dá bônus de pontos.
 - Peso no máximo (100 kg) → game over.
 - Pontuação = distância percorrida + bônus das comidas boas.
 - Dificuldade aumenta ao longo da partida: velocidade, frequência de spawn e chance de comida ruim crescentes e, da metade da rampa em diante, duas comidas por spawn em pistas diferentes (nunca as três — sempre sobra por onde escapar).
