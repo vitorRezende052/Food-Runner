@@ -55,8 +55,9 @@ uv run pytest
 ```
 
 A suíte cobre a lógica pura — perspectiva, troca de pista, ciclo da passada,
-spawn, peso, pontuação, rampa de dificuldade, telas, recorde e síntese de áudio
-— sem abrir janela nenhuma. A camada gráfica não é testada de propósito.
+spawn, peso, pontuação, rampa de dificuldade, telas, recorde, síntese de áudio e
+a geometria da rua — sem abrir janela nenhuma. A camada gráfica não é testada de
+propósito.
 
 ## Como está organizado
 
@@ -70,6 +71,7 @@ spawn, peso, pontuação, rampa de dificuldade, telas, recorde e síntese de áu
 | `dificuldade.py` | a rampa: velocidade, spawn, chance de comida ruim e rajada |
 | `jogo.py` | o estado da partida: peso, pontuação, colisões e fim de jogo |
 | `desenho.py` | cenário em perspectiva (céu, chão, rua), HUD e utilitários de texto |
+| `cidade.py` | a rua dos dois lados do asfalto: prédios, postes, árvores e faixa |
 | `desenho_comida.py` | os oito alimentos desenhados em código, com a auréola do tipo |
 | `personagem.py` | o corredor visto de costas, montado peça por peça e animado |
 | `telas.py` | menu, pausa e game over |

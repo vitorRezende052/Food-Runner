@@ -3,6 +3,7 @@
 import pygame
 
 import audio
+import cidade
 import config
 import desenho
 import desenho_comida
@@ -56,10 +57,12 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
     """Pinta um quadro inteiro: a estrada no fundo e a tela da vez por cima."""
     if estado == telas.MENU:
         desenho.desenhar_cenario(tela, 0.0)  # estrada parada, so de cenario
+        cidade.desenhar(tela, 0.0)
         telas.desenhar_menu(tela, melhor_pontuacao)
         return
 
     desenho.desenhar_cenario(tela, partida.distancia)
+    cidade.desenhar(tela, partida.distancia)
     desenho_comida.desenhar_comidas(tela, partida.gerador.comidas)
     personagem.desenhar(tela, partida.corredor, partida.distancia)
     desenho.desenhar_hud(tela, partida)

@@ -75,11 +75,10 @@ def desenhar(tela, jogador, distancia):
 
 
 def _peca(tela, cor, centro_x, topo, largura, altura):
-    """Retangulo de cantos arredondados: o tijolo de que todas as pecas sao feitas."""
-    caixa = pygame.Rect(0, 0, max(1, round(largura)), max(1, round(altura)))
-    caixa.midtop = (round(centro_x), round(topo))
-    arredondamento = max(1, round(caixa.width * config.JOGADOR_ARREDONDAMENTO))
-    pygame.draw.rect(tela, cor, caixa, border_radius=arredondamento)
+    """O tijolo do boneco: um retangulo de cantos arredondados, sempre no mesmo raio."""
+    desenho.desenhar_peca(
+        tela, cor, centro_x, topo, largura, altura, config.JOGADOR_ARREDONDAMENTO
+    )
 
 
 def _desenhar_pernas(tela, x, chao, quadril, largura, altura, passo):

@@ -4,7 +4,7 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 11 — cenário de rua da cidade** (Fases 0 a 10 concluídas:
+Status geral: **Fase 12 — juice e polimento final** (Fases 0 a 11 concluídas:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
@@ -12,12 +12,13 @@ de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
 com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
 bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
 gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
-o corredor animado, com a passada puxada pela distância, e os oito alimentos
+o corredor animado, com a passada puxada pela distância, os oito alimentos
 desenhados em código, cada um na cor de verdade, com um círculo verde ou uma
-estrela vermelha atrás dizendo o tipo bem de longe, com 146 testes verdes). O
-jogo está completo em regras; o que falta das fases 11 e 12 é o resto da
-redefinição visual descrita na **Direção Visual** do `CLAUDE.md`: prédios nas
-laterais e juice.
+estrela vermelha atrás dizendo o tipo bem de longe, e a rua de cidade nas
+laterais — duas fileiras de prédios com janelas, postes, árvores e faixa de
+pedestres —, com 167 testes verdes). O jogo está completo em regras e em
+cenário; o que falta da fase 12 é o juice descrito na **Direção Visual** do
+`CLAUDE.md`.
 
 ---
 
@@ -54,21 +55,21 @@ sem pygame no meio — dá para testar tudo com pytest. A projeção fica isolad
 A `pista` aceita valor quebrado e fora do intervalo 0–2, e é assim que o cenário
 é desenhado: as bordas do asfalto são as pistas `-0.5` e `2.5`, e a calçada da
 fase 8 vai de cada borda até `LARGURA_CALCADA` de pista mais para fora. Quem
-mede em pistas converge para o horizonte de graça — os prédios da fase 11 seguem
-a mesma receita.
+mede em pistas converge para o horizonte de graça — foi assim que os prédios, os
+postes e as árvores da fase 11 subiram, sem uma conta própria de perspectiva.
 
 ---
 
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem, e a fase 7 mexeu em cinco deles sem criar nenhum. As fases 11 e 12
-mexem sobretudo no `desenho.py` e no `config.py` (a paleta nova); se o desenho do
-personagem, das comidas ou do cenário deixar o `desenho.py` grande demais, cada
-um vira um arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu duas
-vezes: com o corredor na fase 8, que saiu para o `personagem.py`, e com as
-comidas na fase 10, que saíram para o `desenho_comida.py`. Os prédios da fase 11
-podem seguir o mesmo caminho se pedirem.
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. A fase 12 mexe
+sobretudo no `desenho.py` e no `config.py`; se o desenho do personagem, das
+comidas ou do cenário deixar o `desenho.py` grande demais, cada um vira um
+arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu três vezes: com o
+corredor na fase 8, que saiu para o `personagem.py`, com as comidas na fase 10,
+que saíram para o `desenho_comida.py`, e com a rua na fase 11, que virou o
+`cidade.py`.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -78,9 +79,11 @@ podem seguir o mesmo caminho se pedirem.
 [x] desenho.py     # desenha céu, chão, rua, o HUD e os utilitários de texto
 [x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado peça por peça e animado
+[x] cidade.py      # a rua: prédios, postes, árvores e faixa de pedestres
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio, test_desenho, test_desenho_comida, test_personagem
+                   # test_audio, test_desenho, test_desenho_comida, test_personagem,
+                   # test_cidade
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -89,22 +92,26 @@ podem seguir o mesmo caminho se pedirem.
 [x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-A estrutura real ficou bem perto da planejada. São quatro os desvios: o ponto de
+A estrutura real ficou bem perto da planejada. São cinco os desvios: o ponto de
 entrada, que virou `main.py`; o `dificuldade.py`, arquivo novo que a fase 4
 trouxe — o plano imaginava a rampa dentro do `jogo.py`, mas ela é lógica pura
 sobre o tempo, do mesmo naipe da `perspectiva.py`, e sozinha num arquivo dá para
 ler a curva inteira de uma vez; o `personagem.py`, que a fase 8 tirou do
 `desenho.py` porque o corredor é a peça mais detalhada do jogo — e a fase 9 o
-engordou mesmo, com o ciclo da passada; e o `desenho_comida.py`, que a fase 10
+engordou mesmo, com o ciclo da passada; o `desenho_comida.py`, que a fase 10
 tirou do mesmo lugar pelo mesmo motivo, já que oito alimentos desenhados peça a
-peça pesam mais do que o cenário inteiro.
+peça pesam mais do que o cenário inteiro; e o `cidade.py`, que a fase 11 abriu
+para a rua, como o próprio plano já previa.
 
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
 mudou-se para o `telas.py` na fase 5, junto do menu e da pausa. O `desenho.py`
 ficou com o cenário (céu, chão, calçadas, estrada), o HUD e os
 utilitários que as outras camadas usam: os de texto (`fonte`, `com_separador`,
-`escrever_no_meio`, `escurecer`) e, desde a fase 8, a `desenhar_sombra` e a
-`misturar_cores`. O `audio.py` da fase 6 nasceu exatamente onde o plano previa,
+`escrever_no_meio`, `escurecer`), desde a fase 8 a `desenhar_sombra` e a
+`misturar_cores`, e desde a fase 11 a `desenhar_peca` (o retângulo de cantos
+arredondados que o corredor já usava e que os postes e as árvores passaram a
+usar) mais as duas contas de perspectiva que a rua precisava enxergar,
+`bordas_da_estrada` e `ponto_no_chao`, que eram privadas e viraram públicas. O `audio.py` da fase 6 nasceu exatamente onde o plano previa,
 sem tocar em nenhum outro módulo além de sete linhas no `main.py` e seis no
 `jogo.py`. Nada disso é definitivo: se um arquivo ficar pequeno demais ou grande
 demais no caminho, ele é fundido ou dividido — e a mudança é anotada aqui.
@@ -444,21 +451,111 @@ desenhadas em código, com leitura visual clara.
   abrir o jogo, e uma partida inteira de 200 s rodou sem janela para garantir
   que os oito alimentos são desenhados de verdade.
 
-### [ ] Fase 11 — Cenário de Rua da Cidade
+### [x] Fase 11 — Cenário de Rua da Cidade
 **Objetivo:** preencher as laterais transformando as faixas de grama vazias numa
 rua de cidade em perspectiva.
-- [ ] Adicionar prédios nas laterais que surgem pequenos no horizonte e crescem
+- [x] Adicionar prédios nas laterais que surgem pequenos no horizonte e crescem
   ao se aproximar, respeitando a perspectiva da estrada.
 - [x] Adicionar calçada entre a estrada e os prédios. *(adiantado na fase 8: ela
   já ladeia o asfalto, medida em pistas, e é o terreno em que os prédios sobem.)*
-- [ ] Adicionar elementos de rua recorrentes (ex.: postes, faixas, árvores) que
+- [x] Adicionar elementos de rua recorrentes (ex.: postes, faixas, árvores) que
   passam junto com o movimento.
-- [ ] Aplicar efeito de parallax de profundidade (elementos ao fundo se movem
+- [x] Aplicar efeito de parallax de profundidade (elementos ao fundo se movem
   mais devagar que os da frente).
-- [ ] Variar levemente cores/alturas dos prédios para não ficar repetitivo — a
+- [x] Variar levemente cores/alturas dos prédios para não ficar repetitivo — a
   `desenho.misturar_cores` da fase 8 serve para isso.
 - **Pronto quando:** as laterais parecem uma rua de cidade com sensação de
   velocidade e profundidade, sem faixas vazias.
+- **Feito:** a rua inteira mora num `cidade.py` novo e nasce da mesma receita do
+  resto do jogo — cada elemento é uma `(pista, z)` e quem o move é a **distância
+  percorrida**, nunca um cronômetro próprio. São **duas fileiras de prédios** de
+  cada lado (a da frente na beirada da calçada, a de trás mais afastada, mais
+  alta e mais lenta), **postes e árvores se revezando** na calçada e uma **faixa
+  de pedestres** pintada por cima das marcações do asfalto de tempos em tempos.
+- **O índice inteiro é o coração da fase.** A `posicoes(distancia, espacamento,
+  deslocamento)` devolve os elementos visíveis de uma fila como pares
+  `(indice, z)`: eles ficam plantados na rua de espaçamento em espaçamento e é a
+  corrida que passa por eles, então o elemento `i` está em
+  `(i + deslocamento) * espacamento - distancia`. O índice é o **lugar do
+  elemento na rua**, e não uma vaga que se recicla como as linhas do asfalto da
+  fase 1 — por isso ele só cresce, nunca repete, e serve de **identidade
+  permanente**. É dele que saem a altura, a cor e as janelas acesas de cada
+  prédio, pela `variacao(indice, chave)`: o índice e a chave entram
+  multiplicados por irracionais diferentes (razão áurea, raiz de dois, raiz de
+  três) e o produto dos dois entra por um terceiro. Resultado: a rua não repete,
+  nada é sorteado e nada é guardado entre um quadro e outro — o mesmo quadro
+  desenhado duas vezes sai idêntico, e a cidade congela na pausa de graça, como
+  já acontecia com o corredor.
+- **Cada prédio é uma caixa de duas paredes:** a lateral, virada para a rua, e a
+  fachada, virada para a câmera. Uma parede é descrita pelos seus **dois pés**,
+  cada um uma `(pista, z)`, e é a interpolação entre eles que a faz convergir
+  para o horizonte — a mesma função desenha as duas, porque a lateral anda em
+  profundidade e a fachada anda em pistas, mas as duas andam de um pé ao outro.
+  A lateral sai mais escura que a fachada (`PREDIO_SOMBRA_LATERAL` puxando para
+  a `COR_SOMBRA`), que é o que faz o bloco ler como caixa e não como recorte.
+- **A altura é um número inteiro de andares**, e não um valor livre: assim a
+  grade de janelas fecha certinho por mais alto que o prédio saia, e a janela
+  tem sempre o mesmo tamanho em pixels a uma dada distância, seja qual for o
+  prédio. A fileira do fundo ganha `PREDIO_FUNDO_ANDARES_EXTRAS` andares a mais
+  justamente para aparecer por cima da da frente.
+- **O parallax é a fileira do fundo andando `PREDIO_FUNDO_PARALLAX` (0,55) da
+  distância.** Numa perspectiva de verdade o parallax já acontece sozinho — o
+  que está longe anda menos na tela —, mas com uma fileira só a lateral ficava
+  rala. Duas fileiras, a de trás se arrastando, é o parallax clássico e é o que
+  dá a sensação de cidade funda.
+- **Desvios:** três, todos de arquitetura. **(1)** A rua saiu para um `cidade.py`
+  novo, pelo mesmo motivo do `personagem.py` e do `desenho_comida.py` — o
+  próprio plano já previa essa saída. Como o `desenho.py` teria de importar o
+  `cidade.py` e o `cidade.py` importa o `desenho.py`, quem chama os dois em
+  ordem é o `main.py`, exatamente como já fazia com as comidas e o corredor: o
+  `desenhar_cenario` pinta o chão e as marcações, o `cidade.desenhar` pinta a rua
+  por cima. **(2)** Três utilitários do `desenho.py` mudaram de status: o
+  `_bordas_da_estrada` e o `_ponto` viraram públicos (`bordas_da_estrada` e
+  `ponto_no_chao`), porque a rua precisa das mesmas contas, e o tijolo retangular
+  do corredor virou `desenho.desenhar_peca` — os postes e os troncos são feitos
+  do mesmo retângulo, só que de canto vivo. O `personagem._peca` ficou como um
+  apelido de duas linhas que fixa o arredondamento do boneco. **(3)** A
+  `cantos_da_janela`, que nasceu devolvendo os quatro cantos de uma janela, virou
+  o par `faixa_da_coluna` / `faixa_do_andar` — ver o custo, logo abaixo.
+- **O custo teve de ser trabalhado.** A primeira versão gastava **11,1 ms por
+  quadro** só na cidade, de um orçamento de 16,7 ms a 60 FPS: eram 1232
+  polígonos, quase todos janela, e o gargalo não era pintar, era o Python
+  projetando quatro cantos por janela. Três mudanças derrubaram para **4,2 ms**
+  sem tirar um pixel:
+  - **prédio fora da tela não é desenhado** (`_na_tela` olha os quatro pés dele):
+    chegando perto da câmera o prédio já saiu inteiro pela lateral, e era a
+    fileira do fundo, que é alta, quem mais gastava à toa;
+  - **`PREDIO_JANELA_MINIMA` subiu de 2 px para 5 px.** Com 2 px a trava nunca
+    cortava nada — como a janela mede sempre `ALTURA_ANDAR * escala *
+    PREDIO_JANELA_ALTURA`, 2 px só seriam alcançados em `z = 1,47`, além do
+    horizonte. Com 5 px o prédio fica liso a partir de `z = 0,52`, onde um andar
+    inteiro tem 11 px de altura na tela e a grade já era sujeira;
+  - **uma projeção por coluna, e não quatro por janela.** As duas bordas de uma
+    coluna são as mesmas em todos os andares dela, então os dois pés são
+    projetados uma vez só (`_pe_da_parede`) e cada janela vira uma multiplicação
+    (`_no_alto`). Foi isso que fez a `cantos_da_janela` se abrir em
+    `faixa_da_coluna` e `faixa_do_andar` — que, de quebra, ficaram mais fáceis de
+    testar do que a original.
+
+  Medido numa partida inteira até o game over: mediana de **6,1 ms** por quadro
+  cheio e **11,3 ms** no percentil 99.
+- **Ajustes de olho, em PNG salvo com `SDL_VIDEODRIVER=dummy`:** a profundidade
+  do prédio subiu de 0,13 para 0,16 (com espaçamento de 0,19), porque o vão entre
+  um prédio e o vizinho deixava a grama aparecer no meio do quarteirão; e a
+  janela, que tinha nascido larga e baixa (0,52 × 0,46) e parecia uma fresta,
+  ficou mais estreita e mais alta (0,45 × 0,60).
+- **Testes:** 21 novos (167 no total). O `testes/test_cidade.py` cobre as contas
+  puras — a fila nunca fica vazia, todo elemento visível está entre o horizonte e
+  o rodapé, o espaçamento é regular, a corrida aproxima os elementos, o índice
+  nunca se repete, o deslocamento desencontra os dois lados, a variação cabe
+  entre 0 e 1, é determinística, espalha pelos quatro quartos e **duas chaves não
+  andam juntas** (se a cor fosse só a altura deslocada, o prédio mais alto teria
+  sempre a mesma cor); e a grade de janelas cabe na parede, deixa parede entre
+  uma janela e a vizinha e fica centrada na célula. No `test_config.py` entraram
+  7 invariantes: os prédios não se atravessam, a fileira do fundo se arrasta e é
+  mais alta, o prédio tem pelo menos um andar, a janela não ocupa o andar
+  inteiro, a faixa de pedestres não se repete em cima de si mesma e as listras
+  dela deixam asfalto entre elas.
 
 ### [ ] Fase 12 — Juice e Polimento Final
 **Objetivo:** adicionar o feedback visual que separa protótipo de jogo

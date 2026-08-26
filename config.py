@@ -86,6 +86,63 @@ ESPESSURA_LINHA_CHAO = 5  # em pixels, na base; encolhe junto com a perspectiva
 ESPESSURA_DIVISORIA = 2  # em pixels, das linhas que separam as pistas
 LARGURA_CALCADA = 0.7  # em fracao da distancia entre pistas, de cada lado do asfalto
 
+# --- Cidade ---
+# A rua que ladeia o asfalto: duas fileiras de predios, postes, arvores e a faixa
+# de pedestres. Como todo o resto do jogo, cada elemento e uma (pista, z) -- quem
+# mede em pistas converge para o horizonte de graca, na mesma projecao da estrada.
+# As alturas sao em pixels na base, e a perspectiva as encolhe pela escala.
+COR_PREDIO_CLARO = (208, 200, 188)  # as duas pontas da variacao de cor das fachadas
+COR_PREDIO_ESCURO = (146, 130, 136)
+COR_JANELA = (98, 118, 140)  # vidro apagado, refletindo o ceu
+COR_JANELA_ACESA = (244, 216, 142)  # a luz de dentro
+COR_POSTE = (108, 112, 118)
+COR_LUMINARIA = (232, 228, 210)
+COR_TRONCO = (124, 92, 68)
+COR_COPA = (94, 146, 84)
+
+# Fileira da frente: os predios sobem na beirada da calcada.
+PREDIO_LARGURA = 1.3  # em pistas: a fachada virada para a camera
+PREDIO_PROFUNDIDADE = 0.16  # em z: o quanto o predio avanca rua adentro
+PREDIO_ESPACAMENTO = 0.19  # em z, de um predio ao proximo da mesma fileira
+PREDIO_DESENCONTRO = 0.5  # em fracao do espacamento: um lado nao fica de frente para o outro
+PREDIO_ALTURA_ANDAR = 62  # em pixels na base: a altura e sempre um numero inteiro de andares
+PREDIO_ANDARES_MINIMOS = 4
+PREDIO_ANDARES_MAXIMOS = 9
+PREDIO_SOMBRA_LATERAL = 0.35  # o quanto a parede virada para a rua puxa para COR_SOMBRA
+
+# Fileira do fundo: mais afastada, mais alta e andando mais devagar. E ela que da
+# o parallax de profundidade -- o resto da rua passa voando e o fundo se arrasta.
+PREDIO_FUNDO_AFASTAMENTO = 1.9  # em pistas, do fim da calcada ate a parede de tras
+PREDIO_FUNDO_ANDARES_EXTRAS = 5  # mais alta, para aparecer por cima da fileira da frente
+PREDIO_FUNDO_PARALLAX = 0.55  # fracao da distancia percorrida que essa fileira anda
+
+PREDIO_JANELAS_POR_ANDAR = 3  # colunas de janela em cada parede
+PREDIO_JANELA_LARGURA = 0.45  # em fracao da coluna reservada a janela; o resto e parede
+PREDIO_JANELA_ALTURA = 0.60  # em fracao do andar
+PREDIO_JANELA_MINIMA = 5  # em pixels: abaixo disso a grade vira sujeira e nao e desenhada
+PREDIO_CHANCE_JANELA_ACESA = 0.28  # a fracao das janelas com a luz acesa
+
+# Postes e arvores se revezam na calcada, um elemento a cada POSTE_ESPACAMENTO.
+POSTE_RECUO = 0.35  # em pistas, da borda do asfalto ate o pe do poste
+POSTE_ESPACAMENTO = 0.26  # em z, de um elemento de rua ao proximo
+POSTE_DESENCONTRO = 0.5  # em fracao do espacamento: um lado da rua nao espelha o outro
+POSTE_ALTURA = 260  # em pixels na base
+POSTE_LARGURA = 9
+POSTE_BRACO = 70  # o quanto o braco avanca por cima do asfalto
+POSTE_LUMINARIA = 26  # largura da luminaria pendurada na ponta do braco
+ARVORE_TRONCO_ALTURA = 96
+ARVORE_TRONCO_LARGURA = 16
+ARVORE_COPA_RAIO = 52
+ARVORE_COPA_AFASTAMENTO = 0.62  # em fracao do raio, do meio da copa ao meio de cada bola
+
+# A faixa de pedestres e pintada por cima das marcacoes do asfalto, como na rua de
+# verdade. As listras correm no sentido da corrida, ao contrario das linhas de
+# chao, que atravessam a pista: assim uma nao se confunde com a outra.
+FAIXA_ESPACAMENTO = 2.6  # em z, de uma faixa de pedestres a proxima
+FAIXA_COMPRIMENTO = 0.09  # em z, o quanto ela ocupa do asfalto
+FAIXA_LISTRAS = 7
+FAIXA_LARGURA_LISTRA = 0.6  # em fracao do espaco de cada listra; o resto fica asfalto
+
 # --- Sombra no chao ---
 SOMBRA_LARGURA = 1.25  # em fracao da largura do objeto que faz a sombra
 SOMBRA_ALTURA = 0.22  # em fracao da largura da propria sombra: uma elipse achatada

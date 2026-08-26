@@ -26,10 +26,10 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; as fases 8 a 10 — a
-fundação, a animação do corredor e as comidas — já estão no ar). Substitui a
-decisão travada "Arte: formas coloridas simples" — o "fácil de trocar por
-sprites depois" é agora.
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; as fases 8 a 11 — a
+fundação, a animação do corredor, as comidas e a rua da cidade — já estão no
+ar; falta o juice da fase 12). Substitui a decisão travada "Arte: formas
+coloridas simples" — o "fácil de trocar por sprites depois" é agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
   sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
@@ -56,11 +56,11 @@ sprites depois" é agora.
   anti-aliasing e, desde a fase 8, com um sombreado escuro atrás para o texto
   ficar legível tanto sobre o céu claro quanto sobre o véu das telas.
 
-### Escolhas já feitas (fases 8 a 10)
+### Escolhas já feitas (fases 8 a 11)
 Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 - **Dia claro:** o céu vai do azul suave no topo ao branco-azulado no horizonte.
 - **Rua de cidade:** calçada dos dois lados do asfalto e grama além dela — é
-  nesse terreno que os prédios da fase 11 sobem.
+  nesse terreno que os prédios da fase 11 subiram.
 - **O corredor** é um atleta cartoon de costas: camiseta coral, shorts azul,
   tênis claros e cabelo escuro, montado em peças separadas para a animação.
 - **A comida fica na cor de verdade e o tipo vai para a auréola.** Comida real
@@ -81,10 +81,36 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
   ainda tem tempo de trocar de pista. É uma exceção consciente à regra das
   frações, e vale só para o aviso.
 - **O que se move é puxado pela distância percorrida**, nunca por um cronômetro
-  próprio: as linhas do asfalto já eram assim e a passada do corredor entrou no
-  mesmo esquema na fase 9. Sai de graça a sincronia com a rampa de dificuldade
-  (a corrida acelera, tudo acelera junto) e o congelamento na pausa. Os postes,
-  as árvores e o parallax da fase 11 seguem a mesma receita.
+  próprio: as linhas do asfalto já eram assim, a passada do corredor entrou no
+  mesmo esquema na fase 9 e a rua inteira, na fase 11. Sai de graça a sincronia
+  com a rampa de dificuldade (a corrida acelera, tudo acelera junto) e o
+  congelamento na pausa.
+
+### A rua da cidade (fase 11)
+As laterais deixaram de ser grama vazia. Valem para o que vier:
+- **A rua é uma fila plantada, e é a corrida que passa por ela.** Cada elemento
+  (prédio, poste, árvore, faixa de pedestres) tem um lugar fixo na rua e um
+  **índice inteiro que nunca se repete**: `z = (indice + deslocamento) *
+  espacamento - distancia`. É o contrário das linhas do asfalto da fase 1, que
+  são vagas recicladas — e essa diferença é o ponto, porque um índice que só
+  cresce serve de **identidade permanente**.
+- **Nada é sorteado e nada é guardado.** Altura, cor e janelas acesas saem do
+  índice pela `cidade.variacao(indice, chave)`, que multiplica índice e chave por
+  irracionais diferentes. Sem `random`, sem estado entre quadros: o mesmo quadro
+  desenhado duas vezes sai idêntico, e a cidade congela na pausa sozinha.
+- **Um prédio é uma caixa de duas paredes** — a lateral (virada para a rua, mais
+  escura) e a fachada (virada para a câmera). Cada parede é descrita pelos seus
+  **dois pés**, cada um uma `(pista, z)`, e a interpolação entre eles é o que a
+  faz convergir para o horizonte. Uma função só desenha as duas.
+- **A altura do prédio é um número inteiro de andares.** A grade de janelas fecha
+  certinho em qualquer altura, e a janela mede sempre o mesmo em pixels a uma
+  dada distância — foi isso que deu um limiar honesto (`PREDIO_JANELA_MINIMA`)
+  para o prédio distante ficar liso em vez de sujo.
+- **Desenho custa, e a fase 11 chegou perto do teto.** A primeira versão gastava
+  11 ms de um orçamento de 16,7 ms por quadro. Sempre que a rua crescer: não
+  desenhe o que já saiu da tela, não desenhe detalhe menor que uns poucos pixels
+  e projete uma vez por coluna em vez de uma vez por peça. A conferência é uma
+  partida inteira rodando sem janela, medindo a mediana e o percentil 99.
 
 ## Stack
 - Python + pygame-ce.
@@ -107,7 +133,7 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
 ## Estrutura
 Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
 
-`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py` e o `desenho_comida.py`, que as fases 8 e 10 separaram do `desenho.py` (o status por fase fica no `PLAN.md`).
+`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py`, o `desenho_comida.py` e o `cidade.py`, que as fases 8, 10 e 11 separaram do `desenho.py` (o status por fase fica no `PLAN.md`).
 
 ```
 [x] main.py        # loop principal e troca de telas (ponto de entrada)
@@ -117,6 +143,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] desenho.py     # cenário, pistas, HUD e utilitários de texto
 [x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado em peças e animado
+[x] cidade.py      # a rua: prédios, postes, árvores e faixa de pedestres
 [x] testes/        # testes pytest da lógica pura
 [x] comida.py      # spawn e tipos de comida
 [x] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade

@@ -39,6 +39,19 @@ def desenhar_sombra(tela, x, y, largura):
     tela.blit(mancha, mancha.get_rect(center=(round(x), round(y))))
 
 
+def desenhar_peca(tela, cor, centro_x, topo, largura, altura, arredondamento=0.0):
+    """Retangulo de cantos arredondados pendurado pelo meio do topo.
+
+    E o tijolo de que sao feitos o corredor, os postes e os troncos das arvores.
+    ``arredondamento`` e a fracao da largura que vira canto redondo; zero deixa o
+    canto vivo.
+    """
+    caixa = pygame.Rect(0, 0, max(1, round(largura)), max(1, round(altura)))
+    caixa.midtop = (round(centro_x), round(topo))
+    raio = round(caixa.width * arredondamento)
+    pygame.draw.rect(tela, cor, caixa, border_radius=max(0, raio))
+
+
 def desenhar_hud(tela, partida):
     """Escreve o peso num canto de cima e a pontuacao no outro."""
     letra = fonte(config.TAMANHO_FONTE_HUD)
@@ -139,12 +152,12 @@ def _com_cor(linha):
     return linha
 
 
-def _bordas_da_estrada():
+def bordas_da_estrada():
     """Pistas imaginarias meia faixa alem da primeira e da ultima: os limites do asfalto."""
     return -0.5, config.QTD_PISTAS - 0.5
 
 
-def _ponto(pista, z):
+def ponto_no_chao(pista, z):
     """Coordenada (x, y) na tela, sem a escala, do jeito que o pygame quer."""
     x, y, _ = perspectiva.projetar(pista, z)
     return x, y
@@ -185,26 +198,26 @@ def _desenhar_calcadas(tela):
     A calcada e medida em pistas, entao ela converge para o horizonte junto com o
     resto da rua sem precisar de conta propria.
     """
-    esquerda, direita = _bordas_da_estrada()
+    esquerda, direita = bordas_da_estrada()
     for borda, lado in ((esquerda, -1), (direita, 1)):
         fora = borda + lado * config.LARGURA_CALCADA
         cantos = [
-            _ponto(borda, config.Z_HORIZONTE),
-            _ponto(fora, config.Z_HORIZONTE),
-            _ponto(fora, config.Z_FUNDO_TELA),
-            _ponto(borda, config.Z_FUNDO_TELA),
+            ponto_no_chao(borda, config.Z_HORIZONTE),
+            ponto_no_chao(fora, config.Z_HORIZONTE),
+            ponto_no_chao(fora, config.Z_FUNDO_TELA),
+            ponto_no_chao(borda, config.Z_FUNDO_TELA),
         ]
         pygame.draw.polygon(tela, config.COR_CALCADA, cantos)
 
 
 def _desenhar_estrada(tela):
     """Preenche o trapezio do asfalto, estreito no horizonte e largo na base."""
-    esquerda, direita = _bordas_da_estrada()
+    esquerda, direita = bordas_da_estrada()
     cantos = [
-        _ponto(esquerda, config.Z_HORIZONTE),
-        _ponto(direita, config.Z_HORIZONTE),
-        _ponto(direita, config.Z_FUNDO_TELA),
-        _ponto(esquerda, config.Z_FUNDO_TELA),
+        ponto_no_chao(esquerda, config.Z_HORIZONTE),
+        ponto_no_chao(direita, config.Z_HORIZONTE),
+        ponto_no_chao(direita, config.Z_FUNDO_TELA),
+        ponto_no_chao(esquerda, config.Z_FUNDO_TELA),
     ]
     pygame.draw.polygon(tela, config.COR_PISTA, cantos)
 
@@ -225,24 +238,24 @@ def _profundidades_das_linhas(distancia):
 
 def _desenhar_linhas_de_chao(tela, distancia):
     """Risca o asfalto de lado a lado para dar a sensacao de velocidade."""
-    esquerda, direita = _bordas_da_estrada()
+    esquerda, direita = bordas_da_estrada()
     for z in _profundidades_das_linhas(distancia):
         escala = perspectiva.fator(z)
         espessura = max(1, round(config.ESPESSURA_LINHA_CHAO * escala))
         pygame.draw.line(
-            tela, config.COR_LINHA_CHAO, _ponto(esquerda, z), _ponto(direita, z), espessura
+            tela, config.COR_LINHA_CHAO, ponto_no_chao(esquerda, z), ponto_no_chao(direita, z), espessura
         )
 
 
 def _desenhar_divisorias(tela):
     """Traca as linhas que separam as pistas, do horizonte ate a base."""
-    esquerda, _ = _bordas_da_estrada()
+    esquerda, _ = bordas_da_estrada()
     for indice in range(config.QTD_PISTAS + 1):
         divisoria = esquerda + indice
         pygame.draw.line(
             tela,
             config.COR_FAIXA,
-            _ponto(divisoria, config.Z_HORIZONTE),
-            _ponto(divisoria, config.Z_FUNDO_TELA),
+            ponto_no_chao(divisoria, config.Z_HORIZONTE),
+            ponto_no_chao(divisoria, config.Z_FUNDO_TELA),
             config.ESPESSURA_DIVISORIA,
         )

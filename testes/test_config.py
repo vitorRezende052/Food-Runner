@@ -154,3 +154,40 @@ def test_opacidades_cabem_em_um_byte():
     for nome, valor in vars(config).items():
         if nome.startswith("OPACIDADE_"):
             assert 0 <= valor <= 255, f"{nome} tem opacidade fora de 0-255"
+
+
+def test_os_predios_nao_se_atravessam():
+    """Predio mais fundo que o espacamento entraria dentro do vizinho de tras."""
+    assert 0 < config.PREDIO_PROFUNDIDADE <= config.PREDIO_ESPACAMENTO
+
+
+def test_a_fileira_do_fundo_se_arrasta():
+    """O parallax e isso: andando o mesmo tanto que a da frente, ela nao daria
+    profundidade nenhuma; parada, descolaria da rua."""
+    assert 0 < config.PREDIO_FUNDO_PARALLAX < 1
+
+
+def test_a_fileira_do_fundo_aparece_por_cima_da_da_frente():
+    """Mais baixa, ela ficaria escondida atras da primeira fileira e nao seria vista."""
+    assert config.PREDIO_FUNDO_ANDARES_EXTRAS > 0
+
+
+def test_o_predio_tem_pelo_menos_um_andar():
+    assert 0 < config.PREDIO_ANDARES_MINIMOS <= config.PREDIO_ANDARES_MAXIMOS
+
+
+def test_a_janela_nao_ocupa_o_andar_inteiro():
+    """Ocupando tudo, uma janela encostaria na vizinha e a grade sumiria."""
+    assert 0 < config.PREDIO_JANELA_LARGURA < 1
+    assert 0 < config.PREDIO_JANELA_ALTURA < 1
+
+
+def test_a_faixa_de_pedestres_nao_se_repete_em_cima_de_si_mesma():
+    """Mais comprida que o espacamento, uma faixa comecaria antes de a outra acabar."""
+    assert 0 < config.FAIXA_COMPRIMENTO < config.FAIXA_ESPACAMENTO
+
+
+def test_as_listras_da_faixa_deixam_asfalto_entre_elas():
+    """Listra do tamanho da celula pintaria o asfalto inteiro de branco."""
+    assert 0 < config.FAIXA_LARGURA_LISTRA < 1
+    assert config.FAIXA_LISTRAS > 1
