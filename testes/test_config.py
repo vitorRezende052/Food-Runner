@@ -1,5 +1,7 @@
 """Testes das constantes de configuracao: pegam erro de digitacao cedo."""
 
+import math
+
 import config
 
 
@@ -185,3 +187,65 @@ def test_as_listras_da_faixa_deixam_asfalto_entre_elas():
     """Listra do tamanho da celula pintaria o asfalto inteiro de branco."""
     assert 0 < config.FAIXA_LARGURA_LISTRA < 1
     assert config.FAIXA_LISTRAS > 1
+
+
+def test_as_duracoes_do_juice_sao_positivas():
+    """Duracao zero dividiria por zero na hora de calcular o que ja passou."""
+    assert config.FLASH_DURACAO > 0
+    assert config.TREMOR_DURACAO > 0
+    assert config.PARTICULA_VIDA > 0
+    assert config.TRANSICAO_DURACAO > 0
+
+
+def test_o_juice_e_curto():
+    """Efeito que dura mais que um segundo vira atrapalho, e nao resposta."""
+    assert config.FLASH_DURACAO <= 1.0
+    assert config.TREMOR_DURACAO <= 1.0
+    assert config.PARTICULA_VIDA <= 1.0
+    assert config.TRANSICAO_DURACAO <= 1.0
+
+
+def test_as_opacidades_cabem_num_canal_alfa():
+    for nome, valor in vars(config).items():
+        if nome.startswith("OPACIDADE_"):
+            assert 0 <= valor <= 255, f"{nome} esta fora de 0-255"
+
+
+def test_o_flash_nao_esconde_a_estrada():
+    """Vermelho solido tiraria do jogador justamente o quadro em que ele reage."""
+    assert 0 < config.OPACIDADE_FLASH < 255
+
+
+def test_a_capsula_do_hud_deixa_o_jogo_aparecer_atras():
+    assert 0 < config.OPACIDADE_PAINEL_HUD < 255
+    assert config.PAINEL_HUD_FOLGA > 0
+    assert 0 < config.PAINEL_HUD_ARREDONDAMENTO <= 0.5
+
+
+def test_o_tranco_e_pequeno_perto_da_tela():
+    """A beirada escura que o quadro descobre ao tremer nao pode virar uma tarja."""
+    assert 0 < config.TREMOR_AMPLITUDE < config.ALTURA / 20
+    assert config.TREMOR_VOLTAS > 1
+
+
+def test_o_leque_das_fagulhas_aponta_para_cima():
+    """Meia volta de abertura ja jogaria fagulha para os lados; mais que isso,
+    para tras."""
+    assert 0 < config.PARTICULA_ABERTURA < math.pi
+
+
+def test_a_fagulha_nao_sai_toda_igual_nem_para_tras():
+    """Variacao de 1.0 ou mais deixaria uma fagulha parada ou saindo ao contrario."""
+    assert 0 < config.PARTICULA_VARIACAO_VELOCIDADE < 1
+
+
+def test_as_fagulhas_nascem_no_corpo_do_corredor():
+    assert 0 < config.PARTICULA_ALTURA <= 1
+    assert config.PARTICULAS_POR_COLETA > 0
+    assert config.PARTICULA_RAIO > 0
+
+
+def test_a_gravidade_puxa_as_fagulhas_para_baixo():
+    """Gravidade zero deixaria a fagulha subindo para sempre, sem arco nenhum."""
+    assert config.PARTICULA_GRAVIDADE > 0
+    assert config.PARTICULA_VELOCIDADE > 0

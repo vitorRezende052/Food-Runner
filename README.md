@@ -43,6 +43,8 @@ As regras:
   rápida, a comida vem mais seguido, o ultraprocessado fica mais provável e,
   passada a metade da rampa, cada spawn solta duas comidas em pistas diferentes.
   Sempre sobra uma pista livre — quem perde escolheu mal, não deu azar.
+- Cada coleta tem resposta: a comida boa estoura em **fagulhas verdes** e a ruim
+  faz a tela **piscar em vermelho** e levar um tranco.
 
 A maior pontuação fica gravada em `recorde.json`, ao lado do jogo, e aparece no
 menu e na tela de game over.
@@ -54,9 +56,9 @@ uv run pytest
 ```
 
 A suíte cobre a lógica pura — perspectiva, troca de pista, ciclo da passada,
-spawn, peso, pontuação, rampa de dificuldade, telas, recorde, síntese de áudio e
-a geometria da rua — sem abrir janela nenhuma. A camada gráfica não é testada de
-propósito.
+spawn, peso, pontuação, rampa de dificuldade, telas, recorde, síntese de áudio,
+a geometria da rua e a vida dos efeitos — sem abrir janela nenhuma. A camada
+gráfica não é testada de propósito.
 
 ## Como está organizado
 
@@ -73,6 +75,7 @@ propósito.
 | `cidade.py` | a rua dos dois lados do asfalto: prédios, postes, árvores e faixa |
 | `desenho_comida.py` | os oito alimentos desenhados em código, com a auréola do tipo |
 | `personagem.py` | o corredor visto de costas, montado peça por peça e animado |
+| `efeitos.py` | o juice: fagulhas, flash do impacto, tranco da tela e a cortina |
 | `telas.py` | menu, pausa e game over |
 | `audio.py` | os quatro sons, sintetizados com numpy — sem arquivo externo |
 | `recorde.py` | lê e grava a maior pontuação |

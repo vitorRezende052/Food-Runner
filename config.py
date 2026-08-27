@@ -294,10 +294,44 @@ TAMANHO_FONTE_HUD = 40
 TAMANHO_FONTE_TITULO = 76
 TAMANHO_FONTE_AVISO = 36
 MARGEM_HUD = 24  # respiro entre o texto e a borda da tela
+COR_PAINEL_HUD = (22, 26, 34)  # a capsula arredondada atras do peso e dos pontos
+OPACIDADE_PAINEL_HUD = 115  # de 0 a 255: da fundo ao texto sem tapar a estrada
+PAINEL_HUD_FOLGA = 14  # em pixels, do texto ate a borda da capsula
+PAINEL_HUD_ARREDONDAMENTO = 0.5  # em fracao da altura: 0.5 deixa a ponta redonda
 DESLOCAMENTO_SOMBRA_TEXTO = 3  # em pixels, o quanto a sombra do texto sai por tras dele
 ESPACO_ENTRE_LINHAS = 40  # separacao entre as linhas de texto das telas
 OPACIDADE_VEU = 200  # de 0 (invisivel) a 255 (tampa a tela toda)
 OPACIDADE_VEU_MENU = 130  # no menu o veu e mais leve: a estrada fica a vista
+
+# --- Juice: o feedback que responde ao jogador ---
+# Sao a unica coisa do jogo puxada por um cronometro proprio, e nao pela
+# distancia percorrida como o cenario e a passada do corredor. A regra existe
+# para o que se move ficar em sincronia com a rampa e congelar na pausa; um
+# flash nao e cenario, e um evento -- ele tem de acabar mesmo depois de a
+# corrida parar. Por isso as duracoes abaixo sao todas em segundos.
+
+# O ultraprocessado acerta: a tela pisca vermelho e leva um tranco.
+COR_FLASH_RUIM = (204, 66, 54)
+OPACIDADE_FLASH = 120  # de 0 a 255: o vermelho avisa sem esconder a estrada
+FLASH_DURACAO = 0.35  # segundos ate o veu sumir de todo
+TREMOR_DURACAO = 0.28
+TREMOR_AMPLITUDE = 10  # em pixels: o maior desvio do quadro, no primeiro instante
+TREMOR_VOLTAS = 3.5  # voltas que o quadro da enquanto o tranco passa
+
+# A comida boa e coletada: fagulhas no verde da aureola, a mesma cor que ja
+# dizia "isso e saudavel" enquanto o alimento vinha vindo.
+PARTICULAS_POR_COLETA = 14
+PARTICULA_VIDA = 0.50  # segundos que cada fagulha dura
+PARTICULA_VELOCIDADE = 420  # em pixels por segundo, com que ela e cuspida
+PARTICULA_VARIACAO_VELOCIDADE = 0.45  # fracao sorteada para mais ou para menos
+PARTICULA_ABERTURA = 2.10  # em radianos: o leque em torno do "para cima"
+PARTICULA_GRAVIDADE = 900  # em pixels por segundo ao quadrado: sobem e caem
+PARTICULA_RAIO = 10  # em pixels ao nascer; encolhe ate sumir no fim da vida
+PARTICULA_ALTURA = 0.80  # em fracao da altura do jogador: saem na altura dos ombros
+
+# A cortina que abre a cada troca de tela.
+TRANSICAO_DURACAO = 0.28  # segundos que a tela nova leva para clarear
+OPACIDADE_TRANSICAO = 255  # de 0 a 255: no primeiro instante a cortina tapa tudo
 
 # --- Audio ---
 # Os quatro sons do jogo. Os nomes moram aqui, e nao no audio.py, porque a

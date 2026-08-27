@@ -4,7 +4,7 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **Fase 12 — juice e polimento final** (Fases 0 a 11 concluídas:
+Status geral: **todas as fases concluídas** (Fases 0 a 12:
 ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
 vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
 rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
@@ -14,11 +14,13 @@ bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
 gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
 o corredor animado, com a passada puxada pela distância, os oito alimentos
 desenhados em código, cada um na cor de verdade, com uma auréola verde ou
-vermelha atrás dizendo o tipo bem de longe, e a rua de cidade nas
+vermelha atrás dizendo o tipo bem de longe, a rua de cidade nas
 laterais — duas fileiras de prédios com janelas, postes, árvores e faixa de
-pedestres —, com 162 testes verdes). O jogo está completo em regras e em
-cenário; o que falta da fase 12 é o juice descrito na **Direção Visual** do
-`CLAUDE.md`.
+pedestres — e, por fim, o juice: fagulhas na comida boa, flash vermelho e tranco
+no ultraprocessado, a cortina que abre a cada troca de tela e o HUD em cápsula,
+com 203 testes verdes). O jogo está completo: regras, cenário e resposta ao
+jogador. O que sobra do plano original é a **entrega** — gerar o executável com
+o PyInstaller.
 
 ---
 
@@ -63,13 +65,12 @@ postes e as árvores da fase 11 subiram, sem uma conta própria de perspectiva.
 ## Estrutura de arquivos
 
 `[x]` = já existe no repositório. Desde a fase 6 todos os módulos previstos
-existem, e a fase 7 mexeu em cinco deles sem criar nenhum. A fase 12 mexe
-sobretudo no `desenho.py` e no `config.py`; se o desenho do personagem, das
-comidas ou do cenário deixar o `desenho.py` grande demais, cada um vira um
-arquivo seu — e a mudança é anotada aqui. Foi o que aconteceu três vezes: com o
-corredor na fase 8, que saiu para o `personagem.py`, com as comidas na fase 10,
-que saíram para o `desenho_comida.py`, e com a rua na fase 11, que virou o
-`cidade.py`.
+existem, e a fase 7 mexeu em cinco deles sem criar nenhum. Sempre que uma parte
+do desenho deixou o `desenho.py` grande demais, ela virou um arquivo seu — e a
+mudança foi anotada aqui. Foi o que aconteceu quatro vezes: com o corredor na
+fase 8, que saiu para o `personagem.py`, com as comidas na fase 10, que saíram
+para o `desenho_comida.py`, com a rua na fase 11, que virou o `cidade.py`, e com
+o juice na fase 12, que virou o `efeitos.py`.
 
 ```
 [x] main.py        # ponto de entrada: loop, eventos, troca entre menu/jogo/pausa/game over
@@ -80,9 +81,11 @@ que saíram para o `desenho_comida.py`, e com a rua na fase 11, que virou o
 [x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado peça por peça e animado
 [x] cidade.py      # a rua: prédios, postes, árvores e faixa de pedestres
+[x] efeitos.py     # o juice: fagulhas, flash, tranco da tela e a cortina
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio, test_desenho, test_personagem, test_cidade
+                   # test_audio, test_desenho, test_personagem, test_cidade,
+                   # test_efeitos
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -91,7 +94,7 @@ que saíram para o `desenho_comida.py`, e com a rua na fase 11, que virou o
 [x] recorde.py     # lê e grava a maior pontuação em arquivo local
 ```
 
-A estrutura real ficou bem perto da planejada. São cinco os desvios: o ponto de
+A estrutura real ficou bem perto da planejada. São seis os desvios: o ponto de
 entrada, que virou `main.py`; o `dificuldade.py`, arquivo novo que a fase 4
 trouxe — o plano imaginava a rampa dentro do `jogo.py`, mas ela é lógica pura
 sobre o tempo, do mesmo naipe da `perspectiva.py`, e sozinha num arquivo dá para
@@ -99,8 +102,10 @@ ler a curva inteira de uma vez; o `personagem.py`, que a fase 8 tirou do
 `desenho.py` porque o corredor é a peça mais detalhada do jogo — e a fase 9 o
 engordou mesmo, com o ciclo da passada; o `desenho_comida.py`, que a fase 10
 tirou do mesmo lugar pelo mesmo motivo, já que oito alimentos desenhados peça a
-peça pesam mais do que o cenário inteiro; e o `cidade.py`, que a fase 11 abriu
-para a rua, como o próprio plano já previa.
+peça pesam mais do que o cenário inteiro; o `cidade.py`, que a fase 11 abriu
+para a rua, como o próprio plano já previa; e o `efeitos.py`, que a fase 12 abriu
+para o juice, porque ele é a única parte do jogo que anda por um cronômetro
+próprio, e não pela distância percorrida.
 
 O aviso de game over da fase 3 nasceu dentro do `desenho.py` e, como previsto,
 mudou-se para o `telas.py` na fase 5, junto do menu e da pausa. O `desenho.py`
@@ -568,14 +573,79 @@ rua de cidade em perspectiva.
   inteiro, a faixa de pedestres não se repete em cima de si mesma e as listras
   dela deixam asfalto entre elas.
 
-### [ ] Fase 12 — Juice e Polimento Final
+### [x] Fase 12 — Juice e Polimento Final
 **Objetivo:** adicionar o feedback visual que separa protótipo de jogo
 finalizado.
-- [ ] Adicionar partículas ao coletar comida boa.
-- [ ] Adicionar flash/feedback visual (ex.: tela avermelhada) ao pegar comida
+- [x] Adicionar partículas ao coletar comida boa.
+- [x] Adicionar flash/feedback visual (ex.: tela avermelhada) ao pegar comida
   ruim.
-- [ ] Adicionar leve screen shake em impactos/coletas importantes.
-- [ ] Adicionar transições suaves (fade in/out) entre telas.
-- [ ] Revisar HUD ("kg" e "Pontos") para combinar com o novo estilo cartoon.
+- [x] Adicionar leve screen shake em impactos/coletas importantes.
+- [x] Adicionar transições suaves (fade in/out) entre telas.
+- [x] Revisar HUD ("kg" e "Pontos") para combinar com o novo estilo cartoon.
 - **Pronto quando:** o jogo tem resposta tátil e visual em todas as ações
   principais e transições limpas entre telas.
+- **Feito:** o juice inteiro mora num `efeitos.py` novo, e ele não inventou
+  nenhum caminho de informação: a `Efeitos.reagir` lê a **mesma lista
+  `partida.eventos`** de que o `main` já tirava os sons desde a fase 6. Comida
+  boa engolida solta um punhado de **fagulhas verdes** na altura dos ombros do
+  corredor; ultraprocessado acende um **véu vermelho** por cima da corrida
+  inteira e dá um **tranco** na tela. O `jogo.py` não ganhou uma linha, e
+  continua sem saber o que é um pixel.
+- **É a primeira coisa do jogo puxada por um cronômetro próprio,** e essa é a
+  decisão da fase. Da fase 1 em diante tudo o que se move vem da distância
+  percorrida, e o motivo é bom: sai de graça a sincronia com a rampa de
+  dificuldade e o congelamento na pausa. Só que a regra vale para **cenário**, e
+  um flash de 0,35 s não é cenário — é um evento, e ele tem de acabar mesmo
+  depois de a corrida ter parado, que é exatamente o que acontece no game over.
+  Então o `efeitos.py` conta o próprio tempo, em segundos, e é a exceção
+  consciente à regra. A pausa continua congelando tudo porque o `main` só
+  atualiza os efeitos em `JOGANDO` e em `FIM`.
+- **O tranco não é sorteio, é uma volta que se fecha.** A intensidade cai de 1 a
+  0 em `TREMOR_DURACAO`, e o ângulo do desvio corre `TREMOR_VOLTAS` vezes nesse
+  mesmo caminho: `angulo = (1 - tremor) * TREMOR_VOLTAS * 2π`, com o raio
+  encolhendo junto. A tela gira e se acalma sozinha, sem `random` e sem um
+  segundo cronômetro — e o teste consegue percorrer o tranco inteiro conferindo
+  que ele nunca passa da amplitude.
+- **A tela treme sem nenhum outro módulo saber disso.** O `main` passou a montar
+  o quadro numa `Surface` e a jogá-la na tela deslocada pelo tranco; quando o
+  desvio é diferente de zero, a tela é preenchida de escuro antes, para a
+  beirada que o quadro descobre não vir com lixo. Nenhuma função de desenho
+  mudou de assinatura por causa do tremor.
+- **O fade é só fade in — uma cortina que abre.** A troca de tela acontece na
+  hora e a tela nova nasce escura, clareando em `TRANSICAO_DURACAO`. A
+  alternativa (escurecer, trocar, clarear) exigiria o `main` guardar um estado
+  pendente e ignorar teclas durante a cortina, e a pausa justamente não pode
+  demorar a responder. Vale para todas as trocas, inclusive o game over, que
+  chama a `comecar` no mesmo ponto em que grava o recorde.
+- **O HUD ganhou cápsula.** O peso e a pontuação agora ficam sobre um retângulo
+  translúcido escuro de pontas redondas. O texto passava o tempo todo por cima
+  de coisas diferentes — céu claro, asfalto escuro, prédio — e dependia só do
+  sombreado da fase 8 para se salvar; a cápsula dá a ele um fundo próprio, e as
+  pontas redondas são as mesmas do resto do desenho. O número continua sendo
+  número, sem barra e sem ícone, como manda a decisão travada.
+- **Reuso, e não código novo:** o véu vermelho, a cortina e o escuro que já
+  ficava atrás do menu são todos a mesma função — o `desenho.escurecer` virou
+  uma chamada de um `desenho.veu(tela, cor, opacidade)` novo. A cápsula do HUD é
+  o retângulo arredondado que o `desenhar_peca` já sabia fazer desde a fase 11.
+- **Custo:** o blit do quadro inteiro em cima da tela é o preço do tranco. Medido
+  numa partida até o game over, sem janela: a mediana passou de **6,1 ms** (fase
+  11) para **7,2 ms** e o percentil 99, de 11,3 ms para **13,9 ms** — dentro dos
+  16,7 ms de um quadro a 60 FPS.
+- **Ajustes de olho, em PNG salvo com `SDL_VIDEODRIVER=dummy`:** as fagulhas
+  nasceram com leque estreito demais (0,66 rad) e devagar (330 px/s), e ficavam
+  amontoadas em cima da nuca do corredor, lendo como uma mancha verde e não como
+  um estouro. Abriram para 2,1 rad, aceleraram para 420 px/s, engordaram (8 →
+  10 px) e subiram dos peito para os ombros (0,62 → 0,80 da altura).
+- **Desvios:** um. O `efeitos.py` guarda **duas** classes — a `Efeitos`, da
+  partida, e a `Transicao`, das telas —, o que contraria um pouco o "uma
+  responsabilidade por arquivo". Ficaram juntas porque são a mesma ideia: as
+  duas únicas coisas do jogo que acontecem por um instante e somem sozinhas, no
+  próprio relógio. Separar daria um arquivo de vinte linhas.
+- **Testes:** 41 novos (203 no total). O `testes/test_efeitos.py` cobre o que
+  acende (cada evento com o seu efeito, e o `SOM_FIM` sem efeito nenhum), o que
+  se apaga sozinho (nada fica negativo, nem num quadro demorado), a vida de uma
+  fagulha (sobe, a gravidade traz de volta, encolhe, morre e sai da lista) e o
+  tranco (some no fim, nunca passa da amplitude, volta ao lugar). No
+  `test_config.py` entraram 10 invariantes, entre eles que toda constante
+  `OPACIDADE_*` do jogo cabe num canal alfa, que nenhum efeito dura mais de um
+  segundo e que o leque das fagulhas aponta para cima.
