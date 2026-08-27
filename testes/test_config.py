@@ -88,12 +88,6 @@ def test_o_anel_da_aureola_nunca_arredonda_para_zero():
     assert config.AUREOLA_BORDA_MINIMA >= 1
 
 
-def test_a_estrela_da_comida_ruim_tem_espeto():
-    """Sem vale recuado a estrela seria lisa e nao se distinguiria do circulo da boa."""
-    assert config.AUREOLA_PONTAS >= 3
-    assert 0 < config.AUREOLA_RECUO_PONTA < 1
-
-
 def test_o_piso_da_comida_e_menor_que_o_tamanho_de_chegada():
     """Piso maior que o tamanho cheio congelaria a comida na estrada inteira."""
     assert 0 < config.TAMANHO_COMIDA_MINIMO < config.TAMANHO_COMIDA

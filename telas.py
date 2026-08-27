@@ -29,7 +29,7 @@ def desenhar_menu(tela, recorde):
         ),
         (
             config.TAMANHO_FONTE_AVISO,
-            "Estrela vermelha: desvie ou engorda",
+            "Círculo vermelho: desvie ou engorda",
             config.COR_COMIDA_RUIM,
         ),
         (config.TAMANHO_FONTE_AVISO, "Setas ou A e D trocam de pista"),

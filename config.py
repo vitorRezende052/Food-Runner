@@ -200,22 +200,19 @@ COMIDAS_POR_SPAWN_INICIAL = 1  # na largada a estrada solta uma comida por vez
 COMIDAS_POR_SPAWN_MAXIMA = 2  # na metade da rampa passa a soltar duas, em pistas diferentes
 ARREDONDAMENTO_COMIDA = 0.18  # canto arredondado das pecas retangulares, em fracao
 
-# A aureola e a marca atras do alimento que diz se ele e bom ou ruim: um circulo
-# verde para a comida boa e uma estrela espetada vermelha para a ultraprocessada.
-# E ela que da o aviso la do horizonte, onde o alimento tem uma duzia de pixels e
-# so a cor dominante chega aos olhos do jogador -- e a forma repete o recado para
-# quem nao distingue verde de vermelho.
+# A aureola e o disco atras do alimento que diz se ele e bom ou ruim: verde para
+# a comida boa, vermelho para a ultraprocessada. E ela que da o aviso la do
+# horizonte, onde o alimento tem uma duzia de pixels e so a cor dominante chega
+# aos olhos do jogador.
 #
-# A marca e montada em duas camadas, como as bagas do cacho de uva: a forma
-# inteira na cor da borda e, por cima, a mesma forma menor no tom do miolo. O que
-# sobra entre uma e outra e o anel.
+# O disco e montado em duas camadas, como as bagas do cacho de uva: o circulo
+# inteiro na cor da borda e, por cima, um circulo menor no tom do miolo. O que
+# sobra entre um e outro e o anel.
 AUREOLA_TAMANHO = 1.45  # diametro, em fracao do tamanho da comida
 OPACIDADE_AUREOLA = 170  # de 0 (invisivel) a 255 (solido): o miolo deixa o asfalto aparecer
-OPACIDADE_AUREOLA_BORDA = 240  # o anel e quase solido: e o que recorta a forma
+OPACIDADE_AUREOLA_BORDA = 240  # o anel e quase solido: e o que recorta o disco
 AUREOLA_BORDA = 0.22  # espessura do anel, em fracao do raio da marca
 AUREOLA_BORDA_MINIMA = 2  # em pixels: o piso que impede o anel de arredondar para zero
-AUREOLA_PONTAS = 8  # espetos da estrela que marca a comida ruim
-AUREOLA_RECUO_PONTA = 0.68  # raio do vale entre dois espetos, em fracao do raio da ponta
 
 # Medidas de cada alimento, todas em fracao do lado da caixa dele: mudar
 # TAMANHO_COMIDA redimensiona os oito juntos, e a perspectiva so multiplica pela

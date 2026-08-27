@@ -19,7 +19,7 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Perspectiva **pseudo-3D**: as 3 pistas convergem para um horizonte, o jogador fica fixo na base e a comida nasce pequena no fundo e cresce ao se aproximar.
 - Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo.
 - Comida boa reduz peso E dá pontos.
-- Arte: cartoon desenhado em código (círculo verde = boa, estrela vermelha = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
+- Arte: cartoon desenhado em código (auréola verde = boa, auréola vermelha = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
 - Áudio: sons sintéticos gerados por código (numpy), sem arquivos externos — jogo autocontido.
 - Tela de menu inicial (com instruções de controle) e tela de game over com a pontuação final.
 - Pausa com ESC/P durante a partida.
@@ -65,16 +65,17 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
   tênis claros e cabelo escuro, montado em peças separadas para a animação.
 - **A comida fica na cor de verdade e o tipo vai para a auréola.** Comida real
   tem cor própria. Em vez de mentir na cor do alimento, cada comida ganhou atrás
-  uma marca: **círculo verde** se ela for boa, **estrela vermelha espetada** se
-  for ruim. No horizonte, onde o alimento tem uma dúzia de pixels e só a cor
-  dominante se lê, é a auréola que avisa; de perto ela vira moldura e o desenho
+  uma auréola: um **disco verde** se ela for boa, **vermelho** se for ruim. No
+  horizonte, onde o alimento tem uma dúzia de pixels e só a cor dominante se lê,
+  é a auréola que avisa; de perto ela vira moldura e o desenho
   do alimento fala por si. `COR_COMIDA_BOA` e `COR_COMIDA_RUIM` são as cores
   dessa auréola, e as `*_BORDA`, as do anel que a recorta.
-- **A forma diz o mesmo que a cor, de propósito.** Círculo liso contra estrela
-  espetada é a redundância que faz o aviso funcionar para quem não distingue
-  verde de vermelho, e todo mundo reconhece a silhueta antes de registrar o tom.
-  Um alimento novo não escolhe forma: ela vem do tipo dele.
-- **O marcador de tipo é a única coisa com piso em pixels.** Todo o resto do jogo
+- **A forma é a mesma para os dois tipos; só a cor muda.** A auréola é sempre um
+  disco — em 27/08/2026 a estrela espetada da comida ruim virou círculo, a
+  pedido, para os dois marcadores ficarem irmãos. O custo é o aviso passar a
+  depender só do tom, sem a redundância de silhueta que ajudava quem não
+  distingue verde de vermelho; a cor da auréola ficou sendo o único canal.
+- **A auréola é a única coisa com piso em pixels.** Todo o resto do jogo
   encolhe junto com a perspectiva; o anel da auréola (`AUREOLA_BORDA_MINIMA`) e o
   tamanho da comida (`TAMANHO_COMIDA_MINIMO`) não, porque só como fração eles
   arredondariam para zero justamente no fundo da estrada, que é onde o jogador
@@ -159,7 +160,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 - **Acentos só no que o jogador lê:** dentro do código (nomes, comentários e docstrings) escrevemos sem acento e sem cedilha, como já está em `config.py` e `perspectiva.py`; o texto que aparece na tela vai acentuado normalmente.
 - Sem números mágicos: cores, tamanhos e balanceamento centralizados num módulo de configuração (não espalhados pelo código).
 - Commits pequenos, descritivos, **em português**, no modo imperativo (ex.: `adiciona troca de pista`).
-- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica. Conta que não toca pixel vale teste mesmo morando num módulo gráfico — é o caso da `desenho.misturar_cores`, das constantes da paleta, da `desenho_comida.pontos_da_estrela` e das contas da rua no `cidade.py` (`posicoes`, `variacao` e as faixas da grade de janelas).
+- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica. Conta que não toca pixel vale teste mesmo morando num módulo gráfico — é o caso da `desenho.misturar_cores`, das constantes da paleta e das contas da rua no `cidade.py` (`posicoes`, `variacao` e as faixas da grade de janelas).
 
 ## Git
 - **Você roda os comandos git neste repositório** (`add`, `commit`, `status`, `log`) sem precisar pedir permissão a cada vez.

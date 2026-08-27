@@ -13,10 +13,10 @@ com numpy e o balanceamento fechado — a corrida agora termina até para quem j
 bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
 gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
 o corredor animado, com a passada puxada pela distância, os oito alimentos
-desenhados em código, cada um na cor de verdade, com um círculo verde ou uma
-estrela vermelha atrás dizendo o tipo bem de longe, e a rua de cidade nas
+desenhados em código, cada um na cor de verdade, com uma auréola verde ou
+vermelha atrás dizendo o tipo bem de longe, e a rua de cidade nas
 laterais — duas fileiras de prédios com janelas, postes, árvores e faixa de
-pedestres —, com 167 testes verdes). O jogo está completo em regras e em
+pedestres —, com 162 testes verdes). O jogo está completo em regras e em
 cenário; o que falta da fase 12 é o juice descrito na **Direção Visual** do
 `CLAUDE.md`.
 
@@ -82,8 +82,7 @@ que saíram para o `desenho_comida.py`, e com a rua na fase 11, que virou o
 [x] cidade.py      # a rua: prédios, postes, árvores e faixa de pedestres
 [x] testes/        # test_config, test_perspectiva, test_jogador, test_comida,
                    # test_jogo, test_dificuldade, test_recorde, test_telas,
-                   # test_audio, test_desenho, test_desenho_comida, test_personagem,
-                   # test_cidade
+                   # test_audio, test_desenho, test_personagem, test_cidade
 [x] comida.py      # tipos de comida, spawn e avanço em z
 [x] jogo.py        # estado da partida: peso, pontuação, dificuldade, colisões
 [x] dificuldade.py # rampa: velocidade, intervalo de spawn e chance de comida ruim
@@ -433,6 +432,18 @@ desenhadas em código, com leitura visual clara.
   estrela — `pontos_da_estrela` nasceu **pública** pelo mesmo motivo que as
   contas da passada no `personagem.py`: é matemática pura num módulo gráfico, e
   o `CLAUDE.md` manda testá-la.
+- **A estrela voltou a ser círculo em 27/08/2026, a pedido.** Os dois marcadores
+  ficaram irmãos — o mesmo disco de duas camadas, mudando só a cor: verde para a
+  comida boa, vermelho para a ruim. O que ficou para trás foi a redundância de
+  silhueta descrita acima: o aviso passa a viajar só na cor, sem o segundo canal
+  que ajudava quem não distingue verde de vermelho. O resto da refação de
+  26/08 continua valendo inteiro — o tamanho de 1,45, o anel opaco, os dois
+  pisos em pixels e a maçã verde, que aliás ficou ainda mais necessária, já que
+  agora a cor é a única coisa que diz o tipo. Saíram do `config.py` a
+  `AUREOLA_PONTAS` e a `AUREOLA_RECUO_PONTA`, e com elas a
+  `desenho_comida.pontos_da_estrela` e o `testes/test_desenho_comida.py`
+  inteiro, que só cobria a geometria dela (162 testes no total). A legenda do
+  menu virou "Círculo vermelho: desvie ou engorda".
 - **Desvios:** dois. **(1)** As comidas saíram do `desenho.py` para um
   `desenho_comida.py` novo, pelo mesmo motivo que o corredor saiu na fase 8 —
   oito alimentos montados peça a peça pesam mais do que o cenário inteiro. O
