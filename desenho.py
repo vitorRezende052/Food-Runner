@@ -63,11 +63,32 @@ def desenhar_hud(tela, partida):
     pontos = _com_sombra(
         letra, f"Pontos: {com_separador(partida.pontuacao)}", config.COR_TEXTO
     )
-    tela.blit(peso, (config.MARGEM_HUD, config.MARGEM_HUD))
-    largura_pontos = pontos.get_width()
-    tela.blit(
-        pontos, (config.LARGURA - config.MARGEM_HUD - largura_pontos, config.MARGEM_HUD)
+    _numa_capsula(tela, peso, config.MARGEM_HUD)
+    _numa_capsula(
+        tela, pontos, config.LARGURA - config.MARGEM_HUD - pontos.get_width()
     )
+
+
+def _numa_capsula(tela, imagem, x):
+    """Poe o texto do HUD por cima de uma capsula translucida de pontas redondas.
+
+    O jogo passa atras do HUD o tempo todo -- ora o ceu claro, ora o asfalto
+    escuro, ora um predio. A capsula da ao texto um fundo proprio, para ele nao
+    depender do que estiver passando, e as pontas redondas sao as do resto do
+    desenho cartoon.
+    """
+    folga = config.PAINEL_HUD_FOLGA
+    texto = imagem.get_rect(topleft=(x, config.MARGEM_HUD))
+    caixa = texto.inflate(2 * folga, 2 * folga)
+    capsula = pygame.Surface(caixa.size, pygame.SRCALPHA)
+    pygame.draw.rect(
+        capsula,
+        (*config.COR_PAINEL_HUD, config.OPACIDADE_PAINEL_HUD),
+        capsula.get_rect(),
+        border_radius=round(caixa.height * config.PAINEL_HUD_ARREDONDAMENTO),
+    )
+    tela.blit(capsula, caixa)
+    tela.blit(imagem, texto)
 
 
 def _cor_do_peso(peso):
@@ -77,12 +98,24 @@ def _cor_do_peso(peso):
     return config.COR_TEXTO
 
 
+def veu(tela, cor, opacidade):
+    """Cobre a tela inteira com uma camada translucida da cor pedida.
+
+    E o mesmo gesto do escuro que fica atras do menu, do vermelho que pisca no
+    impacto e da cortina que abre a cada troca de tela; opacidade zero nao
+    desenha nada.
+    """
+    if opacidade <= 0:
+        return
+    camada = pygame.Surface((config.LARGURA, config.ALTURA))
+    camada.fill(cor)
+    camada.set_alpha(opacidade)
+    tela.blit(camada, (0, 0))
+
+
 def escurecer(tela, opacidade=config.OPACIDADE_VEU):
     """Joga um veu escuro por cima do jogo, para o texto da tela por cima aparecer."""
-    veu = pygame.Surface((config.LARGURA, config.ALTURA))
-    veu.fill(config.COR_VEU)
-    veu.set_alpha(opacidade)
-    tela.blit(veu, (0, 0))
+    veu(tela, config.COR_VEU, opacidade)
 
 
 _fontes = {}

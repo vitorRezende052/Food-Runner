@@ -7,6 +7,7 @@ import cidade
 import config
 import desenho
 import desenho_comida
+import efeitos
 import jogador
 import jogo
 import personagem
@@ -53,7 +54,7 @@ def tratar_tecla(estado, partida, tecla):
     return estado
 
 
-def desenhar(tela, estado, partida, melhor_pontuacao):
+def desenhar(tela, estado, partida, melhor_pontuacao, efeito):
     """Pinta um quadro inteiro: a estrada no fundo e a tela da vez por cima."""
     if estado == telas.MENU:
         desenho.desenhar_cenario(tela, 0.0)  # estrada parada, so de cenario
@@ -65,7 +66,9 @@ def desenhar(tela, estado, partida, melhor_pontuacao):
     cidade.desenhar(tela, partida.distancia)
     desenho_comida.desenhar_comidas(tela, partida.gerador.comidas)
     personagem.desenhar(tela, partida.corredor, partida.distancia)
+    efeito.desenhar_fagulhas(tela)  # as fagulhas saem de dentro do corredor
     desenho.desenhar_hud(tela, partida)
+    efeito.desenhar_flash(tela)  # o vermelho do impacto cobre a corrida inteira
     if estado == telas.PAUSADO:
         telas.desenhar_pausa(tela)
     elif estado == telas.FIM:
@@ -80,7 +83,13 @@ def executar():
     pygame.display.set_caption(config.TITULO)
     relogio = pygame.time.Clock()
 
+    # O quadro e montado nesta superficie e so depois vai para a tela, deslocado
+    # pelo tranco do impacto: e assim que a tela treme sem nenhum outro modulo
+    # precisar saber que existe um tremor.
+    quadro = pygame.Surface((config.LARGURA, config.ALTURA))
     partida = jogo.Jogo()
+    efeito = efeitos.Efeitos()
+    transicao = efeitos.Transicao()
     melhor_pontuacao = recorde.ler()
     estado = telas.MENU
 
@@ -94,20 +103,35 @@ def executar():
                 proximo = tratar_tecla(estado, partida, evento.key)
                 if proximo != estado:  # trocou de tela: confirma para o jogador
                     audio.tocar(config.SOM_CONFIRMACAO)
+                    transicao.comecar()
+                    if proximo == telas.JOGANDO and estado != telas.PAUSADO:
+                        efeito.limpar()  # partida nova, sem sobra da anterior
                 estado = proximo
 
         if estado == telas.SAINDO:
             continue  # pediram para fechar: nao vale desenhar mais um quadro
 
+        transicao.atualizar(dt)  # a cortina abre em qualquer tela, ate na pausa
+
         if estado == telas.JOGANDO:
             partida.atualizar(dt)
+            efeito.reagir(partida)  # os mesmos eventos que viram som viram juice
             for som in partida.eventos:  # o que a partida acabou de fazer soar
                 audio.tocar(som)
             if partida.acabou:  # unico ponto em que a partida termina
                 melhor_pontuacao = recorde.salvar(partida.pontuacao)
                 estado = telas.FIM
+                transicao.comecar()
 
-        desenhar(tela, estado, partida, melhor_pontuacao)
+        if estado in (telas.JOGANDO, telas.FIM):
+            efeito.atualizar(dt)  # no fim os efeitos ainda tem de se apagar
+
+        desenhar(quadro, estado, partida, melhor_pontuacao, efeito)
+        transicao.desenhar(quadro)
+        desvio = efeito.deslocamento()
+        if desvio != (0, 0):  # tremendo: a beirada que o quadro descobre fica escura
+            tela.fill(config.COR_VEU)
+        tela.blit(quadro, desvio)
         pygame.display.flip()
 
     pygame.quit()

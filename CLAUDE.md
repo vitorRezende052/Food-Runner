@@ -17,7 +17,7 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 ## Decisões travadas (não mudar sem confirmar)
 - Desktop / executável (sem navegador).
 - Perspectiva **pseudo-3D**: as 3 pistas convergem para um horizonte, o jogador fica fixo na base e a comida nasce pequena no fundo e cresce ao se aproximar.
-- Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo.
+- Peso mostrado como número (`45 / 100 kg`) — sem barra nem ícone; perto do limite o número fica alaranjado, que é o único aviso de perigo do jogo. Desde a fase 12 ele e a pontuação ficam sobre uma cápsula translúcida de pontas redondas, que dá fundo ao texto sem virar barra nem ícone.
 - Comida boa reduz peso E dá pontos.
 - Arte: cartoon desenhado em código (auréola verde = boa, auréola vermelha = ruim) — ver **Direção Visual** abaixo, que substituiu as formas coloridas simples do protótipo.
 - Áudio: sons sintéticos gerados por código (numpy), sem arquivos externos — jogo autocontido.
@@ -26,10 +26,10 @@ Endless runner (estilo Subway Surfers) com temática de alimentação saudável.
 - Recorde (maior pontuação) salvo em arquivo local, exibido no menu e no game over.
 
 ## Direção Visual
-Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`; as fases 8 a 11 — a
-fundação, a animação do corredor, as comidas e a rua da cidade — já estão no
-ar; falta o juice da fase 12). Substitui a decisão travada "Arte: formas
-coloridas simples" — o "fácil de trocar por sprites depois" é agora.
+Redefinição visual do jogo (fases 8 a 12 do `PLAN.md`, todas no ar: a fundação,
+a animação do corredor, as comidas, a rua da cidade e o juice). Substitui a
+decisão travada "Arte: formas coloridas simples" — o "fácil de trocar por
+sprites depois" é agora.
 
 - **Estilo: cartoon colorido e vibrante** — formas lisas, cantos arredondados e
   sombreamento suave (nada de gradientes complexos, texturas ou pixel art).
@@ -85,7 +85,33 @@ Valem para as fases seguintes, para o visual não brigar consigo mesmo:
   próprio: as linhas do asfalto já eram assim, a passada do corredor entrou no
   mesmo esquema na fase 9 e a rua inteira, na fase 11. Sai de graça a sincronia
   com a rampa de dificuldade (a corrida acelera, tudo acelera junto) e o
-  congelamento na pausa.
+  congelamento na pausa. **A única exceção é o `efeitos.py`** — ver abaixo.
+- **O juice conta o próprio tempo, e só ele.** A regra acima vale para cenário;
+  um flash de 0,35 s é um evento, e tem de acabar mesmo depois de a corrida ter
+  parado, que é o que acontece no game over. Por isso o `efeitos.py` é o único
+  módulo que anda em segundos. A pausa continua congelando tudo porque o `main`
+  só atualiza os efeitos enquanto o jogo está em `JOGANDO` ou em `FIM`.
+
+### O juice (fase 12)
+O feedback de cada ação, todo num `efeitos.py`:
+- **Nada de canal novo de informação.** A `Efeitos.reagir` lê a mesma lista
+  `partida.eventos` de que o `main` já tirava os sons desde a fase 6: comida boa
+  vira fagulhas verdes nos ombros do corredor, ultraprocessado vira véu vermelho
+  mais tranco na tela. O `jogo.py` não ganhou uma linha e continua sem saber o
+  que é um pixel.
+- **O tranco é uma volta que se fecha, não um sorteio.** O ângulo do desvio corre
+  com o que já passou do tremor e o raio encolhe com o que falta — sem `random`
+  e sem um segundo cronômetro, o que deixa a conta testável de ponta a ponta.
+- **A tela treme sem nenhum outro módulo saber.** O `main` monta o quadro numa
+  `Surface` e a joga na tela deslocada; nenhuma função de desenho mudou de
+  assinatura por causa disso. O preço é um blit de tela cheia por quadro
+  (a mediana passou de 6,1 ms para 7,2 ms).
+- **O fade é só fade in.** A troca de tela acontece na hora e a tela nova nasce
+  escura e clareia. Escurecer-trocar-clarear obrigaria o `main` a guardar um
+  estado pendente e a ignorar teclas durante a cortina, e a pausa é justamente o
+  que não pode demorar a responder.
+- **O véu é um só.** O escuro do menu, o vermelho do impacto e a cortina saem
+  todos do `desenho.veu(tela, cor, opacidade)`.
 
 ### A rua da cidade (fase 11)
 As laterais deixaram de ser grama vazia. Valem para o que vier:
@@ -134,7 +160,7 @@ As laterais deixaram de ser grama vazia. Valem para o que vier:
 ## Estrutura
 Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, junte, divida ou renomeie o que fizer mais sentido conforme o jogo cresce, anotando a mudança no `PLAN.md`. O que vale mesmo são as Convenções e o "Como trabalhar" desta página.
 
-`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py`, o `desenho_comida.py` e o `cidade.py`, que as fases 8, 10 e 11 separaram do `desenho.py` (o status por fase fica no `PLAN.md`).
+`[x]` = já existe. Todos os módulos previstos existem desde a fase 6, mais o `personagem.py`, o `desenho_comida.py`, o `cidade.py` e o `efeitos.py`, que as fases 8, 10, 11 e 12 separaram do `desenho.py` (o status por fase fica no `PLAN.md`).
 
 ```
 [x] main.py        # loop principal e troca de telas (ponto de entrada)
@@ -145,6 +171,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 [x] desenho_comida.py # os oito alimentos e a auréola que diz o tipo deles
 [x] personagem.py  # o corredor visto de costas, montado em peças e animado
 [x] cidade.py      # a rua: prédios, postes, árvores e faixa de pedestres
+[x] efeitos.py     # o juice: fagulhas, flash, tranco da tela e a cortina
 [x] testes/        # testes pytest da lógica pura
 [x] comida.py      # spawn e tipos de comida
 [x] jogo.py        # estado da partida, colisões, pontuação, peso, dificuldade
@@ -160,7 +187,7 @@ Você decide a arquitetura. O mapa abaixo é o que o `PLAN.md` prevê: ajuste, j
 - **Acentos só no que o jogador lê:** dentro do código (nomes, comentários e docstrings) escrevemos sem acento e sem cedilha, como já está em `config.py` e `perspectiva.py`; o texto que aparece na tela vai acentuado normalmente.
 - Sem números mágicos: cores, tamanhos e balanceamento centralizados num módulo de configuração (não espalhados pelo código).
 - Commits pequenos, descritivos, **em português**, no modo imperativo (ex.: `adiciona troca de pista`).
-- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica. Conta que não toca pixel vale teste mesmo morando num módulo gráfico — é o caso da `desenho.misturar_cores`, das constantes da paleta e das contas da rua no `cidade.py` (`posicoes`, `variacao` e as faixas da grade de janelas).
+- Testes automatizados com pytest para a lógica pura (peso, pontuação, spawn, balanceamento); não testar a camada gráfica. Conta que não toca pixel vale teste mesmo morando num módulo gráfico — é o caso da `desenho.misturar_cores`, das constantes da paleta, das contas da rua no `cidade.py` (`posicoes`, `variacao` e as faixas da grade de janelas) e de todo o `efeitos.py` fora do desenho (o decaimento, a vida da fagulha e o tranco).
 
 ## Git
 - **Você roda os comandos git neste repositório** (`add`, `commit`, `status`, `log`) sem precisar pedir permissão a cada vez.
