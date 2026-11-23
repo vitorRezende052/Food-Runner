@@ -13,3 +13,10 @@ dist/
 
 # dados gerados pelo jogo na maquina do jogador
 recorde.json
+
+# planejamento e configuracao local dos assistentes
+PLAN.md
+AGENTS.md
+CLAUDE.md
+.codex/
+.claude/
