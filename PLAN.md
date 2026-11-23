@@ -4,23 +4,13 @@ Plano de execução do jogo. **Documento vivo:** cada fase concluída é marcada
 (`[x]`), com o resumo do que ficou pronto e os desvios do plano anotados na
 própria fase. As decisões travadas do projeto ficam no `CLAUDE.md`.
 
-Status geral: **todas as fases concluídas** (Fases 0 a 12:
-ambiente uv, estrada em perspectiva rolando, jogador trocando de pista, comida
-vindo do horizonte, a partida completa — peso, pontuação, HUD e game over —, a
-rampa de dificuldade que aperta a corrida ao longo de 3 minutos, o ciclo fechado
-de menu, pausa, game over e recorde em arquivo, os quatro sons sintetizados
-com numpy e o balanceamento fechado — a corrida agora termina até para quem joga
-bem —, com o `README.md` no ar, a fundação do visual cartoon — céu em
-gradiente, grama e calçadas, paleta harmônica e o corredor de costas com sombra —
-o corredor animado, com a passada puxada pela distância, os oito alimentos
-desenhados em código, cada um na cor de verdade, com uma auréola verde ou
-vermelha atrás dizendo o tipo bem de longe, a rua de cidade nas
-laterais — duas fileiras de prédios com janelas, postes, árvores e faixa de
-pedestres — e, por fim, o juice: fagulhas na comida boa, flash vermelho e tranco
-no ultraprocessado, a cortina que abre a cada troca de tela e o HUD em cápsula,
-com 203 testes verdes). O jogo está completo: regras, cenário e resposta ao
-jogador. O que sobra do plano original é a **entrega** — gerar o executável com
-o PyInstaller.
+## Entrega de Fábrica de Software
+
+As fases 0 a 12 estão concluídas. O histórico de cada fase está abaixo, e o [README](README.md) relaciona os marcos às três sprints.
+
+- [x] Corrigir a colisão em quedas de FPS. Na velocidade máxima, o teste de 110 ms cobre uma comida que atravessa toda a zona de colisão e chega ao ponto de descarte no mesmo quadro.
+- [x] Validar a partida. Os 204 testes passaram. Uma corrida simulada percorreu menu, pausa, retomada, coletas, dificuldade progressiva, game over aos 100 kg e reinício.
+- [x] Gerar o executável de 64 bits no Windows com `uv run pyinstaller --onefile --windowed --name Food-Runner main.py`.
 
 ---
 

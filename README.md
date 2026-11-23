@@ -1,90 +1,42 @@
 # Food Runner
 
-Endless runner de mesa, no estilo Subway Surfers, com temática de alimentação
-saudável. O personagem corre sozinho por três pistas em perspectiva; o jogador
-só troca de faixa para desviar dos ultraprocessados e coletar comida de verdade.
-Feito em Python com [pygame-ce](https://pyga.me/), como trabalho acadêmico
-individual.
+Jogo de corrida em três pistas para a disciplina de Fábrica de Software. O atleta corre sozinho por uma rua em perspectiva. Você escolhe a pista para coletar frutas e verduras e desviar dos ultraprocessados. Python facilita testar as regras da partida, e o pygame-ce reúne desenho, teclado e som na mesma janela.
 
-## Como rodar
+## Jogar no Windows
 
-O projeto usa [uv](https://docs.astral.sh/uv/) para o ambiente e as
-dependências — não é preciso criar venv nem instalar nada à mão:
+[Baixe o Food-Runner.exe para Windows de 64 bits](https://github.com/vitorRezende052/Food-Runner/releases/download/v0.1.0/Food-Runner.exe). Salve-o em uma pasta onde você possa gravar arquivos e abra-o com um duplo clique. O executável inclui o Python. Ao fim da partida, o jogo salva o recorde em `recorde.json` nessa pasta.
+
+## Rodar pelo código-fonte
+
+Instale o [uv](https://docs.astral.sh/uv/getting-started/installation/) e baixe ou clone o repositório. Na pasta do projeto, execute os comandos abaixo. Na primeira vez, o uv precisa de internet para obter o Python 3.12 e as dependências.
 
 ```sh
+uv sync --locked
 uv run main.py
 ```
 
-Na primeira execução o `uv` baixa o Python 3.12 e as dependências
-(`pygame-ce` e `numpy`) sozinho.
+Para executar os testes, use `uv run pytest`.
 
-## Como jogar
+## Controles e regras
 
-| Tecla | O que faz |
+| Tecla | Ação |
 |---|---|
-| ← → ou A D | troca de pista |
-| ESC ou P | pausa a corrida |
-| Espaço ou Enter | começa a partida e joga de novo depois do game over |
-| M | volta ao menu (na pausa e no game over) |
-| ESC no menu | fecha o jogo |
+| Enter ou Espaço | Inicia a corrida ou joga novamente após o game over |
+| ← / → ou A / D | Troca de pista |
+| Esc ou P | Pausa ou retoma a partida |
+| M | Volta ao menu durante a pausa ou após o game over |
+| Esc no menu | Fecha o jogo |
 
-As regras:
+Você começa com **45 kg**. Frutas e verduras (disco verde) reduzem o peso em 2 kg e somam 50 pontos. Ultraprocessados (disco vermelho) acrescentam 4 kg. Aos **100 kg**, a partida termina. A pontuação final soma os pontos da distância percorrida e os bônus de coleta.
 
-- **Comida ruim** — hambúrguer, batata frita, refrigerante e donut — aumenta o
-  peso. Ela vem sobre uma **auréola vermelha**.
-- **Comida boa** — maçã, brócolis, cenoura e uva — diminui o peso e ainda dá
-  pontos de bônus. Ela vem sobre uma **auréola verde**.
-- Cada alimento é desenhado na cor de verdade; quem diz se ele é bom ou ruim é a
-  auréola atrás dele — o mesmo disco para os dois tipos, mudando só a cor.
-- A pontuação é a distância percorrida mais os bônus.
-- Chegou a **100 kg**, a corrida acaba. O número do peso fica alaranjado quando
-  a balança se aproxima do limite.
-- A partida vai **apertando**: em três minutos a corrida fica duas vezes mais
-  rápida, a comida vem mais seguido, o ultraprocessado fica mais provável e,
-  passada a metade da rampa, cada spawn solta duas comidas em pistas diferentes.
-  Sempre sobra uma pista livre — quem perde escolheu mal, não deu azar.
-- Cada coleta tem resposta: a comida boa estoura em **fagulhas verdes** e a ruim
-  faz a tela **piscar em vermelho** e levar um tranco.
+Nos primeiros três minutos, a velocidade, a frequência de alimentos e a chance de ultraprocessados aumentam. A partir da metade desse período, os alimentos aparecem aos pares em pistas diferentes.
 
-A maior pontuação fica gravada em `recorde.json`, ao lado do jogo, e aparece no
-menu e na tela de game over.
+## As três sprints no histórico
 
-## Como testar
-
-```sh
-uv run pytest
-```
-
-A suíte cobre a lógica pura — perspectiva, troca de pista, ciclo da passada,
-spawn, peso, pontuação, rampa de dificuldade, telas, recorde, síntese de áudio,
-a geometria da rua e a vida dos efeitos — sem abrir janela nenhuma. A camada
-gráfica não é testada de propósito.
-
-## Como está organizado
-
-| Arquivo | Responsabilidade |
+| Sprint | Marcos registrados |
 |---|---|
-| `main.py` | ponto de entrada: loop, teclado e troca entre as telas |
-| `config.py` | todas as constantes: tela, cores, balanceamento, áudio |
-| `perspectiva.py` | projeta `(pista, profundidade)` em pixels de tela |
-| `jogador.py` | pista atual, o deslize até a pista vizinha e a inclinação na troca |
-| `comida.py` | cardápio, sorteio do spawn e avanço dos alimentos |
-| `dificuldade.py` | a rampa: velocidade, spawn, chance de comida ruim e rajada |
-| `jogo.py` | o estado da partida: peso, pontuação, colisões e fim de jogo |
-| `desenho.py` | cenário em perspectiva (céu, chão, rua), HUD e utilitários de texto |
-| `cidade.py` | a rua dos dois lados do asfalto: prédios, postes, árvores e faixa |
-| `desenho_comida.py` | os oito alimentos desenhados em código, com a auréola do tipo |
-| `personagem.py` | o corredor visto de costas, montado peça por peça e animado |
-| `efeitos.py` | o juice: fagulhas, flash do impacto, tranco da tela e a cortina |
-| `telas.py` | menu, pausa e game over |
-| `audio.py` | os quatro sons, sintetizados com numpy — sem arquivo externo |
-| `recorde.py` | lê e grava a maior pontuação |
-| `testes/` | os testes pytest da lógica pura |
+| 1 · Movimento e colisão | [Estrada e troca de pista](https://github.com/vitorRezende052/Food-Runner/commit/78f883e), [alimentos vindos do horizonte](https://github.com/vitorRezende052/Food-Runner/commit/9983faf) e [colisão na pista do jogador](https://github.com/vitorRezende052/Food-Runner/commit/b97d85e). |
+| 2 · Peso, pontuação e dificuldade | O [mesmo commit da colisão](https://github.com/vitorRezende052/Food-Runner/commit/b97d85e) aplicou peso e pontos. Depois vieram a [rampa de dificuldade](https://github.com/vitorRezende052/Food-Runner/commit/fc4f469) e o [ajuste de balanceamento](https://github.com/vitorRezende052/Food-Runner/commit/9f21c36). |
+| 3 · Arte, som, telas e testes | [Menu, pausa, game over e recorde](https://github.com/vitorRezende052/Food-Runner/commit/b4bdffb), [áudio sintético](https://github.com/vitorRezende052/Food-Runner/commit/c889ea2), [animação do corredor](https://github.com/vitorRezende052/Food-Runner/commit/8177dbe), [cenário urbano](https://github.com/vitorRezende052/Food-Runner/commit/689bebd) e [efeitos visuais com testes](https://github.com/vitorRezende052/Food-Runner/commit/4e7a9dc). |
 
-A ideia que sustenta o desenho: cada objeto do jogo é descrito por só dois
-números — a **pista** (0, 1 ou 2) e a **profundidade `z`** (1,0 no horizonte,
-0,0 na altura do jogador). Só o `perspectiva.py` sabe transformar isso em pixel,
-então colisão, spawn e dificuldade continuam sendo matemática pura e testável.
-
-O plano de execução, fase a fase, e as decisões tomadas no caminho estão no
-[`PLAN.md`](PLAN.md).
+O [plano do projeto](PLAN.md) registra as fases de desenvolvimento e a validação da entrega.
