@@ -98,6 +98,22 @@ def test_a_zona_de_colisao_aguenta_a_velocidade_maxima():
     assert avanco_por_quadro < 2 * config.ZONA_COLISAO
 
 
+def test_colisao_em_quadro_de_110_ms_na_velocidade_maxima():
+    partida = partida_limpa()
+    partida.tempo = config.DURACAO_RAMPA
+    dt = 0.110
+    z = config.Z_JOGADOR + config.VELOCIDADE_MAXIMA * dt / 2
+    assert z > config.Z_JOGADOR + config.ZONA_COLISAO
+    assert z - config.VELOCIDADE_MAXIMA * dt < config.Z_JOGADOR - config.ZONA_COLISAO
+    alimento = por_na_estrada(partida, comida.RUIM, partida.corredor.pista, z)
+
+    partida.atualizar(dt)
+
+    assert partida.peso == config.PESO_INICIAL + config.PESO_GANHO_COMIDA_RUIM
+    assert partida.eventos == [config.SOM_IMPACTO]
+    assert alimento not in partida.gerador.comidas
+
+
 def test_zona_de_colisao_cabe_dentro_da_estrada_visivel():
     """A comida so e descartada depois de sair da zona: nao da para escapar por fora."""
     assert config.Z_JOGADOR - config.ZONA_COLISAO > config.Z_SUMICO

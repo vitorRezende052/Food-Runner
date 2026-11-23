@@ -50,26 +50,28 @@ class Jogo:
             return
         self.eventos = []  # o que acontecer neste quadro, para o main sonorizar
         self.tempo += dt
-        self.distancia += dificuldade.velocidade(self.tempo) * dt
+        avanco = dificuldade.velocidade(self.tempo) * dt
+        self.distancia += avanco
         self.corredor.atualizar(dt)
+        self._resolver_colisoes(avanco)
         self.gerador.atualizar(dt, self.tempo)
-        self._resolver_colisoes()
 
-    def _resolver_colisoes(self):
-        """Come o que estiver encostando no jogador e tira da estrada."""
+    def _resolver_colisoes(self, avanco):
+        """Coleta as comidas no trajeto antes que o gerador descarte as que passaram."""
         sobreviventes = []
         for alimento in self.gerador.comidas:
-            if self._encostou(alimento):
+            if not self.acabou and self._encostou(alimento, avanco):
                 self._comer(alimento)
             else:
                 sobreviventes.append(alimento)
         self.gerador.comidas = sobreviventes
 
-    def _encostou(self, alimento):
-        """Mesma pista e perto o bastante do plano do jogador para valer como acerto."""
+    def _encostou(self, alimento, avanco):
+        """O segmento entre o z inicial e o final toca a zona do jogador."""
         return (
             alimento.pista == self.corredor.pista
-            and abs(alimento.z - config.Z_JOGADOR) <= config.ZONA_COLISAO
+            and alimento.z >= config.Z_JOGADOR - config.ZONA_COLISAO
+            and alimento.z - avanco <= config.Z_JOGADOR + config.ZONA_COLISAO
         )
 
     def _comer(self, alimento):
