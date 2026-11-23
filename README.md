@@ -6,6 +6,8 @@ Jogo de corrida em três pistas para a disciplina de Fábrica de Software. O atl
 
 [Baixe o Food-Runner.exe para Windows de 64 bits](https://github.com/vitorRezende052/Food-Runner/releases/download/v0.1.0/Food-Runner.exe). Salve-o em uma pasta onde você possa gravar arquivos e abra-o com um duplo clique. O executável inclui o Python. Ao fim da partida, o jogo salva o recorde em `recorde.json` nessa pasta.
 
+Ao gerar o executável localmente com PyInstaller, você o encontra em `dist/Food-Runner.exe`, a partir da pasta do projeto.
+
 ## Rodar pelo código-fonte
 
 Instale o [uv](https://docs.astral.sh/uv/getting-started/installation/) e baixe ou clone o repositório. Na pasta do projeto, execute os comandos abaixo. Na primeira vez, o uv precisa de internet para obter o Python 3.12 e as dependências.
