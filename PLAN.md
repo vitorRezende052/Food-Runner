@@ -11,6 +11,8 @@ As fases 0 a 12 estão concluídas. O histórico de cada fase está abaixo, e o 
 - [x] Corrigir a colisão em quedas de FPS. Na velocidade máxima, o teste de 110 ms cobre uma comida que atravessa toda a zona de colisão e chega ao ponto de descarte no mesmo quadro.
 - [x] Validar a partida. Os 204 testes passaram. Uma corrida simulada percorreu menu, pausa, retomada, coletas, dificuldade progressiva, game over aos 100 kg e reinício.
 - [x] Gerar o executável de 64 bits no Windows com `uv run pyinstaller --onefile --windowed --name Food-Runner main.py`.
+- [x] Testar o executável em uma pasta separada no Windows. A partida terminou com 2.061 pontos, gravou o recorde e fechou normalmente.
+- [x] Publicar a [Release v0.1.0](https://github.com/vitorRezende052/Food-Runner/releases/tag/v0.1.0) e baixar o executável pelo link público do README. O SHA-256 do download coincidiu com o do arquivo testado.
 
 ---
 
